@@ -1,20 +1,24 @@
 ---
 title: "yu_agent — Unified Multi-Model Agent Framework"
 date: 2025-01-01
-description: "OpenAI-compatible agent framework supporting 8+ LLM providers with four reasoning modes, built-in tool system, MCP protocol, and a four-tier memory architecture."
+description: "A personal exploration into LLM agent architecture — OpenAI-compatible, supporting 8+ providers with four reasoning modes and a multi-tier memory system."
 tags: ["Python", "LLM", "Agent", "Qdrant", "Neo4j", "MCP"]
 ---
 
 ## Overview
 
-An OpenAI-compatible agent framework supporting 8+ LLM providers (DeepSeek, Tongyi, Kimi, etc.).
+A personal project to explore LLM agent design from scratch. The goal was to build a unified framework that abstracts away provider differences and experiments with different reasoning strategies — without relying on heavyweight orchestration libraries.
 
 ## Features
 
-- **8+ LLM providers**: DeepSeek, Tongyi, Kimi, and more — unified API
-- **4 reasoning modes**: Simple · ReAct · Reflection · PlanAndSolve
+- **Unified API across 8+ LLM providers** — DeepSeek, Tongyi, Kimi, and others behind a single OpenAI-compatible interface
+- **4 reasoning modes** — Simple · ReAct · Reflection · PlanAndSolve, switchable per task
 - **Built-in tool system** with MCP protocol support
-- **4-tier memory architecture**: backed by Qdrant vector search + Neo4j knowledge graphs
+- **4-tier memory architecture** — in-context → working memory → Qdrant vector search → Neo4j knowledge graph
+
+## Motivation
+
+Most agent frameworks (LangChain, LlamaIndex) abstract too much and make it hard to understand what's actually happening. This was an attempt to build the core primitives myself and develop a clearer mental model of how agents work at the reasoning and memory layer.
 
 ## Links
 

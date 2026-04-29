@@ -1,14 +1,14 @@
 baseURL = "https://xiaoyu-ops.github.io/"
-locale = "zh-cn"
-title = "Xiaoyu's Space"
+locale = "en"
+title = "Zhuoyang Wu"
 theme = "PaperMod"
 paginate = 10
 
 [params]
-  author = "Xiaoyu"
-  description = "个人主页 — 关于我、我的工作与未来规划"
+  author = "Zhuoyang Wu"
+  description = "Zhuoyang Wu — Embodied AI, AI Agents, Data Systems. Undergraduate at Sun Yat-sen University."
   defaultTheme = "auto"
-  ShowReadingTime = true
+  ShowReadingTime = false
   ShowShareButtons = false
   ShowPostNavLinks = true
   ShowBreadCrumbs = true
