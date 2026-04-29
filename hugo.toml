@@ -1,0 +1,50 @@
+baseURL = "https://xiaoyu-ops.github.io/"
+locale = "zh-cn"
+title = "Xiaoyu's Space"
+theme = "PaperMod"
+paginate = 10
+
+[params]
+  author = "Xiaoyu"
+  description = "个人主页 — 关于我、我的工作与未来规划"
+  defaultTheme = "auto"
+  ShowReadingTime = true
+  ShowShareButtons = false
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowToc = true
+
+  [params.homeInfoParams]
+    Title = "Hi, 我是 Xiaoyu 👋"
+    Content = """
+欢迎来到我的个人主页。
+
+我热衷于探索新技术，喜欢把想法变成现实。这里记录了我的工作、项目和思考。
+"""
+
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/xiaoyu-ops"
+
+[menu]
+  [[menu.main]]
+    identifier = "about"
+    name = "关于我"
+    url = "/about/"
+    weight = 1
+  [[menu.main]]
+    identifier = "work"
+    name = "我的工作"
+    url = "/work/"
+    weight = 2
+  [[menu.main]]
+    identifier = "future"
+    name = "未来规划"
+    url = "/future/"
+    weight = 3
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
