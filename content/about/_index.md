@@ -5,7 +5,7 @@ description: "Zhuoyang Wu — Embodied AI, AI Agents, Data Systems"
 
 ## Background
 
-I am a third-year undergraduate at **Sun Yat-sen University**, School of Cyberspace Security (Class of 2027), based in Shenzhen, China.
+I am a third-year undergraduate at **Sun Yat-sen University**, School of Cyberspace Security (Class of 2027), based in Shenzhen, China. Cumulative GPA: **3.6 / 5.0**.
 
 I have close to **1.5 years of research experience** at SYSU, primarily in data systems and AI infrastructure. My engineering work spans AI Agent frameworks, large-scale multimodal data pipelines, and distributed systems.
 
