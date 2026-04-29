@@ -17,7 +17,7 @@ My current direction is **Embodied AI** — specifically VLA (Vision-Language-Ac
 Data mining for a self-evolving endpoint-security Agent (Tianwen AI team). Built a dual-path clustering pipeline for rare attack pattern identification (Rare TTP).
 
 **Undergraduate Researcher** · Sun Yat-sen University · ~1.5 years
-Worked on multimodal data deduplication pipelines for LLM training datasets. Co-authored a paper submitted to VLDB'26; national invention patent and software copyright filed.
+Worked on multimodal data deduplication pipelines for LLM training datasets. Co-authored a paper currently under submission; national invention patent and software copyright filed.
 
 ## Stack
 
