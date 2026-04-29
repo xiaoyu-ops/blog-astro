@@ -46,17 +46,17 @@ Feel free to reach out via email or WeChat (`woshiwudachong`) — I'm always hap
 [menu]
   [[menu.main]]
     identifier = "about"
-    name = "关于我"
+    name = "About"
     url = "/about/"
     weight = 1
   [[menu.main]]
     identifier = "work"
-    name = "我的工作"
+    name = "Work"
     url = "/work/"
     weight = 2
   [[menu.main]]
     identifier = "future"
-    name = "未来规划"
+    name = "What's Next"
     url = "/future/"
     weight = 3
 
