@@ -1,21 +1,26 @@
 ---
-title: "关于我"
-description: "一些关于我的介绍"
+title: "About"
+description: "Zhuoyang Wu — Embodied AI, AI Agents, Data Systems"
 ---
 
-## 你好，我是 Xiaoyu
+## About
 
-<!-- 在这里写你的自我介绍，比如：你的背景、兴趣、技能 -->
+I am an undergraduate student at **Sun Yat-sen University**, majoring in Cyberspace Security (Class of 2027), based in Shenzhen, China.
 
-我目前从事 [填写你的领域]，热衷于 [你的兴趣方向]。
+My current focus is **Embodied AI** — bridging perception, reasoning, and physical action. I have a solid engineering background in AI Agent systems and large-scale data pipelines, and I am now transitioning toward robotics and embodied intelligence.
 
-## 技能
+## Stack
 
-- 技能一
-- 技能二
-- 技能三
+**Languages** · Go / Python / C++
 
-## 联系我
+**Frameworks & Tools** · ROS · PyTorch · LangGraph · RAG · MCP Protocol
 
-- GitHub: [xiaoyu-ops](https://github.com/xiaoyu-ops)
-- 邮箱: <!-- 填写你的邮箱 -->
+**Databases** · PostgreSQL · Redis · Qdrant · Neo4j
+
+**Other** · LLM Orchestration · Distributed Systems · Tauri / Vue3
+
+## Contact
+
+- **Email**: wuzhuoyang252@gmail.com
+- **GitHub**: [@xiaoyu-ops](https://github.com/xiaoyu-ops)
+- **Phone**: (+86) 150-1401-5904

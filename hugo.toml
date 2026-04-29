@@ -16,11 +16,13 @@ paginate = 10
   ShowToc = true
 
   [params.homeInfoParams]
-    Title = "Hi, 我是 Xiaoyu 👋"
+    Title = "Hi, I'm Zhuoyang Wu (Xiaoyu)"
     Content = """
-欢迎来到我的个人主页。
+Building AI that interacts with the physical world.
 
-我热衷于探索新技术，喜欢把想法变成现实。这里记录了我的工作、项目和思考。
+Undergraduate @ Sun Yat-sen University · Embodied AI · AI Agents · Data Systems
+
+*"Code that runs. AI that acts."*
 """
 
   [[params.socialIcons]]

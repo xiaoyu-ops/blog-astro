@@ -1,24 +1,14 @@
 ---
-title: "未来规划"
-description: "我的方向与目标"
+title: "What's Next"
+description: "Near-term goals and long-term direction"
 ---
 
-## 短期目标
+## Near Term
 
-<!-- 接下来 3-6 个月想做的事 -->
+1. **IELTS** — Get the score locked in.
+2. **Embodied AI project** — Reproduce a hardware-software integrated robotics project to build hands-on experience in the new direction.
 
-- [ ] 目标一
-- [ ] 目标二
+## Long Term
 
-## 长期愿景
-
-<!-- 1-3 年的方向 -->
-
-我希望在 [领域] 上持续深耕，探索 [方向]，最终实现 [目标]。
-
-## 正在学习
-
-<!-- 当前在学的东西 -->
-
-- 学习项目一
-- 学习项目二
+- **Embodied Intelligence** — Transition fully into robotics and embodied AI research and engineering.
+- **Resubmit the paper** — Revise and resubmit the previous work that was rejected.

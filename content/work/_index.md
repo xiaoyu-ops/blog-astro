@@ -1,8 +1,6 @@
 ---
-title: "我的工作"
-description: "过去做过的项目与工作"
+title: "Work"
+description: "Projects and work experience"
 ---
 
-这里记录了我参与的项目和工作成果。
-
----
+A collection of projects and work I've done — spanning data systems, AI agents, and security engineering.
