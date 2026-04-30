@@ -13,6 +13,7 @@ defaultContentLanguageInSubdir = false
     languageName = "中文"
     languageCode = "zh-CN"
     weight = 1
+    contentDir = "content"
     [languages.zh.params]
       author = "吴卓阳"
       description = "吴卓阳 — 具身智能、AI Agent、数据系统。中山大学本科生。"
@@ -27,6 +28,7 @@ defaultContentLanguageInSubdir = false
     languageName = "English"
     languageCode = "en-US"
     weight = 2
+    contentDir = "content/en"
     [languages.en.params]
       author = "Zhuoyang Wu"
       description = "Zhuoyang Wu — Embodied AI, AI Agents, Data Systems. Undergraduate at Sun Yat-sen University."
