@@ -76,7 +76,7 @@ New URL arrives
   │
   ├─► L2: Redis Set (SETNX + TTL 7 days)
   │     Exact verification, O(1) lookup, ~0.1ms
-  │     Handles the few漏网 (about 0.1%) that L1 lets through
+  │     Handles the few slip-throughs (about 0.1%) that L1 lets through
   │
   └─► L3: PostgreSQL UNIQUE Constraint
         Final defense, catches extreme race conditions where both L1 and L2 are passed
@@ -91,7 +91,7 @@ Using Bloom Filter alone: has false positives and cannot handle concurrent race 
 Three-tier combination: 99.9% of duplicates are intercepted at L1 in nanoseconds, the remainder are precisely intercepted at L2, and extreme race conditions are handled by L3.
 
 **Bloom Filter Implementation Details:**
-- Loads URLs from content table for the last 7 days at startup to preheat the filter
+- Loads URLs from content table for the last 7 days at startup to warm up the filter
 - Uses multiple hash functions to reduce collision probability
 - Not persisted (rebuilt on every startup), simple and correct
 

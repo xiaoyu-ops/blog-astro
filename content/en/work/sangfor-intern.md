@@ -1,7 +1,7 @@
 ---
 title: "Sangfor Technologies — AI Algorithm Intern"
 date: 2026-02-01
-description: "Built a dual-path clustering pipeline for a self-evolving endpoint security agent to identify rare attack patterns (Rare TTP). Achieved >70% identification accuracy and generated 2,000+ high-value training samples."
+description: "Built a dual-path clustering pipeline for an autonomous endpoint security agent to identify rare attack patterns (Rare TTP). Achieved >70% identification accuracy and generated 2,000+ high-value training samples."
 tags: ["Python", "Clustering", "Security", "AI", "Internship"]
 ---
 

@@ -82,11 +82,11 @@ class AgentsLLM:
 
 | Provider | Detection Method | Characteristics |
 |----------|------------------|---------------|
-| DeepSeek | Environment variable / Domain | Strong reasoning, high cost-performance |
-| Qwen (Tongyi) | Domain / Key prefix | Optimized for Chinese |
+| DeepSeek | Environment variable / Domain | Strong reasoning, excellent value |
+| Qwen (Tongyi) | Domain / Key prefix | Strong Chinese-language performance |
 | Kimi (Moonshot) | Domain | Long context support |
 | OpenAI | Domain | Full features, baseline benchmark |
-| ModelScope | Key prefix (`ms-`) | Domestic model aggregation platform |
+| ModelScope | Key prefix (`ms-`) | Chinese model aggregation platform |
 | Local Models | base_url=localhost | Privacy protection, zero cost |
 
 ### Limitations & Optimization Directions
@@ -97,7 +97,7 @@ class AgentsLLM:
 
 **Optimization Directions**:
 - **Router Layer**: Distribute tasks to different-sized models based on complexity (simple vs. complex reasoning)
-- **Exception Degradation**: After catching specific errors in `invoke()`, automatically switch to a backup Provider
+- **Graceful Degradation**: After catching specific errors in `invoke()`, automatically switch to a backup Provider
 
 ---
 
