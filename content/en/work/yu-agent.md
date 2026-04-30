@@ -1,7 +1,8 @@
 ---
 title: "yu_agent — Unified Multi-Model Agent Framework"
 date: 2025-01-01
-description: "A personal exploration into LLM Agent architecture — compatible with OpenAI, supporting 8+ providers, featuring four reasoning modes and a multi-tier memory system."
+description: "A personal exploration into LLM agent architecture — OpenAI-compatible, supporting 8+ providers with four reasoning modes and a multi-tier memory system."
+summary: "Unified multi-model agent framework. Compatible with 8+ LLM providers, 4 reasoning modes (Simple/ReAct/Reflection/PlanAndSolve), 4-tier memory architecture (in-context → working memory → Qdrant → Neo4j), MCP protocol support."
 tags: ["Python", "LLM", "Agent", "Qdrant", "Neo4j", "MCP"]
 ---
 

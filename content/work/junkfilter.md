@@ -2,6 +2,7 @@
 title: "JunkFilter — 基于 Agent 的内容评估系统"
 date: 2025-03-01
 description: "异构 Go + Python 分布式管道，用于 RSS 内容过滤，具备三级去重和 LangGraph 多 Agent 评估功能。LLM API 成本降低 30%。"
+summary: "个人 RSS 智能过滤系统。异构 Go + Python 分布式管道，三级去重 + LangGraph 评估 + ReAct Agent。LLM API 成本降低 30%。"
 tags: ["Go", "Python", "LangGraph", "分布式系统", "Tauri"]
 ---
 

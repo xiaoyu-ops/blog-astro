@@ -2,6 +2,7 @@
 title: "JunkFilter — Agent-Based Content Evaluation System"
 date: 2025-03-01
 description: "Heterogeneous Go + Python distributed pipeline for RSS content filtering, featuring three-tier deduplication and LangGraph multi-agent evaluation. LLM API cost reduced by 30%."
+summary: "Personal RSS intelligent filtering system. Heterogeneous Go + Python distributed pipeline, three-tier deduplication + LangGraph evaluation + ReAct Agent. LLM API cost reduced by 30%."
 tags: ["Go", "Python", "LangGraph", "Distributed Systems", "Tauri"]
 ---
 

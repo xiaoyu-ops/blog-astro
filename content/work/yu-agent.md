@@ -2,6 +2,7 @@
 title: "yu_agent — 统一多模型 Agent 框架"
 date: 2025-01-01
 description: "对大语言模型 Agent 架构的个人探索 —— 兼容 OpenAI，支持 8+ 提供商，具备四种推理模式和多层级记忆系统。"
+summary: "统一多模型 Agent 框架。兼容 8+ LLM 提供商，4 种推理模式（Simple/ReAct/Reflection/PlanAndSolve），4 层记忆架构（上下文→工作记忆→Qdrant→Neo4j），MCP 协议支持。"
 tags: ["Python", "大语言模型", "Agent", "Qdrant", "Neo4j", "MCP"]
 ---
 
