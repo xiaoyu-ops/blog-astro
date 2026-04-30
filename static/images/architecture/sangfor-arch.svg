@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" style="background:#0d1117">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#58a6ff;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#58a6ff;stop-opacity:0.05"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#8b949e"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="450" y="35" text-anchor="middle" fill="#e6edf3" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold">深信服 — 双路径聚类管道</text>
+
+  <!-- Terminal Data -->
+  <rect x="50" y="70" width="140" height="50" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <text x="120" y="90" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="11">终端行为数据</text>
+  <text x="120" y="108" text-anchor="middle" fill="#6e7681" font-family="system-ui" font-size="9">进程树 · API 调用 · 文件操作</text>
+
+  <!-- Arrow -->
+  <path d="M190 95 L230 95" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Path A: Semantic Vector -->
+  <rect x="240" y="60" width="160" height="70" rx="10" fill="url(#grad1)" stroke="#58a6ff" stroke-width="2" filter="url(#shadow)"/>
+  <text x="320" y="82" text-anchor="middle" fill="#58a6ff" font-family="system-ui" font-size="14" font-weight="bold">路径 A: 语义向量</text>
+  <text x="320" y="100" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">Embedding 编码</text>
+  <text x="320" y="116" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">基于嵌入的相似性聚类</text>
+
+  <!-- Path B: Process Tree -->
+  <rect x="240" y="150" width="160" height="70" rx="10" fill="url(#grad1)" stroke="#a371f7" stroke-width="2" filter="url(#shadow)"/>
+  <text x="320" y="172" text-anchor="middle" fill="#a371f7" font-family="system-ui" font-size="14" font-weight="bold">路径 B: 进程树</text>
+  <text x="320" y="190" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">DFS 序列化</text>
+  <text x="320" y="206" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">结构模式匹配</text>
+
+  <!-- Arrows to Fusion -->
+  <path d="M400 95 L440 95 L440 130 L480 130" stroke="#58a6ff" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <path d="M400 185 L440 185 L440 160 L480 160" stroke="#a371f7" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+  <!-- Fusion Layer -->
+  <rect x="490" y="100" width="180" height="90" rx="10" fill="url(#grad1)" stroke="#f0883e" stroke-width="2" filter="url(#shadow)"/>
+  <text x="580" y="125" text-anchor="middle" fill="#f0883e" font-family="system-ui" font-size="14" font-weight="bold">双路径融合层</text>
+  <text x="580" y="145" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">向量相似度 + 结构匹配</text>
+  <text x="580" y="162" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">联合评分 → 异常检测</text>
+  <text x="580" y="179" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">Rare TTP 识别</text>
+
+  <!-- Arrow to Output -->
+  <path d="M670 145 L710 145" stroke="#f0883e" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Output -->
+  <rect x="720" y="110" width="160" height="70" rx="10" fill="#21262d" stroke="#3fb950" stroke-width="2" filter="url(#shadow)"/>
+  <text x="800" y="135" text-anchor="middle" fill="#3fb950" font-family="system-ui" font-size="14" font-weight="bold">输出结果</text>
+  <text x="800" y="155" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">罕见攻击模式标注</text>
+  <text x="800" y="172" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">高价值训练样本</text>
+
+  <!-- Legend -->
+  <rect x="50" y="260" width="800" height="180" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="70" y="285" fill="#e6edf3" font-family="system-ui" font-size="14" font-weight="bold">核心设计决策</text>
+
+  <text x="70" y="310" fill="#8b949e" font-family="system-ui" font-size="11">• 双路径设计: 语义向量捕获行为意图相似性，进程树结构捕获执行路径相似性，两者互补</text>
+  <text x="70" y="330" fill="#8b949e" font-family="system-ui" font-size="11">• DFS 序列化: 将进程树转换为序列表示，保留父子关系和执行顺序，适用于结构匹配</text>
+  <text x="70" y="350" fill="#8b949e" font-family="system-ui" font-size="11">• Rare TTP 识别: 正常行为形成密集簇，罕见攻击模式落在稀疏区域，通过密度检测发现</text>
+  <text x="70" y="370" fill="#8b949e" font-family="system-ui" font-size="11">• 自进化 Agent: 识别出的 Rare TTP 自动加入训练集，持续提升终端安全 Agent 的检测能力</text>
+  <text x="70" y="390" fill="#8b949e" font-family="system-ui" font-size="11">• 运营合格: 识别结果经过运营团队验证，&gt;80% 合格率确保训练样本质量</text>
+  <text x="70" y="410" fill="#8b949e" font-family="system-ui" font-size="11">• 准确率 &gt;70%: 在罕见样本（正样本极少）场景下，通过双路径融合实现较高的识别准确率</text>
+</svg>

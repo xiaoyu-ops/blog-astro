@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" style="background:#0d1117">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#58a6ff;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#58a6ff;stop-opacity:0.05"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="450" y="35" text-anchor="middle" fill="#e6edf3" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold">JunkFilter 系统架构图</text>
+
+  <!-- RSS Sources -->
+  <rect x="50" y="70" width="120" height="40" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <text x="110" y="95" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="12">RSS 源 (73个)</text>
+
+  <!-- Arrow -->
+  <path d="M170 90 L210 90" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Go Fetch Layer -->
+  <rect x="220" y="60" width="160" height="60" rx="10" fill="url(#grad1)" stroke="#58a6ff" stroke-width="2" filter="url(#shadow)"/>
+  <text x="300" y="82" text-anchor="middle" fill="#58a6ff" font-family="system-ui" font-size="14" font-weight="bold">Go 抓取层</text>
+  <text x="300" y="100" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">协程池 + 三级去重</text>
+  <text x="300" y="114" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">质量过滤 + Favicon推导</text>
+
+  <!-- Arrow -->
+  <path d="M380 90 L420 90" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Redis Stream -->
+  <rect x="430" y="60" width="140" height="60" rx="10" fill="#21262d" stroke="#a371f7" stroke-width="2" filter="url(#shadow)"/>
+  <text x="500" y="82" text-anchor="middle" fill="#a371f7" font-family="system-ui" font-size="14" font-weight="bold">Redis Stream</text>
+  <text x="500" y="100" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">ingestion_queue</text>
+  <text x="500" y="114" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">消费者组 + 至少一次语义</text>
+
+  <!-- Arrow -->
+  <path d="M570 90 L610 90" stroke="#a371f7" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Python Eval Layer -->
+  <rect x="620" y="60" width="160" height="60" rx="10" fill="url(#grad1)" stroke="#3fb950" stroke-width="2" filter="url(#shadow)"/>
+  <text x="700" y="82" text-anchor="middle" fill="#3fb950" font-family="system-ui" font-size="14" font-weight="bold">Python 评估层</text>
+  <text x="700" y="100" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">LangGraph 状态机</text>
+  <text x="700" y="114" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">自动重试 + 偏好注入</text>
+
+  <!-- Down arrows to storage -->
+  <path d="M700 120 L700 160" stroke="#3fb950" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- PostgreSQL -->
+  <rect x="620" y="170" width="160" height="50" rx="8" fill="#21262d" stroke="#f0883e" stroke-width="2" filter="url(#shadow)"/>
+  <text x="700" y="192" text-anchor="middle" fill="#f0883e" font-family="system-ui" font-size="13" font-weight="bold">PostgreSQL</text>
+  <text x="700" y="210" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">content + evaluation + JSONB</text>
+
+  <!-- Left branch: ReAct Agent -->
+  <path d="M620 90 L500 90 L500 200 L420 200" stroke="#3fb950" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+  <!-- ReAct Agent -->
+  <rect x="250" y="170" width="160" height="60" rx="10" fill="url(#grad1)" stroke="#f778ba" stroke-width="2" filter="url(#shadow)"/>
+  <text x="330" y="192" text-anchor="middle" fill="#f778ba" font-family="system-ui" font-size="14" font-weight="bold">ReAct Agent</text>
+  <text x="330" y="210" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">自研实现 · 5个工具</text>
+  <text x="330" y="224" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">SSE 流式 + 工具调用可视化</text>
+
+  <!-- Arrow to Frontend -->
+  <path d="M330 230 L330 270" stroke="#f778ba" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Frontend -->
+  <rect x="250" y="280" width="160" height="50" rx="8" fill="#21262d" stroke="#58a6ff" stroke-width="2" filter="url(#shadow)"/>
+  <text x="330" y="302" text-anchor="middle" fill="#58a6ff" font-family="system-ui" font-size="13" font-weight="bold">前端 (Vue3 + Tauri)</text>
+  <text x="330" y="320" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">桌面应用 · 跨平台</text>
+
+  <!-- Right branch: Telegram Bot -->
+  <path d="M780 90 L780 130 L850 130 L850 200" stroke="#3fb950" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+  <!-- Telegram Bot -->
+  <rect x="740" y="210" width="140" height="60" rx="10" fill="#21262d" stroke="#2f81f7" stroke-width="2" filter="url(#shadow)"/>
+  <text x="810" y="232" text-anchor="middle" fill="#2f81f7" font-family="system-ui" font-size="14" font-weight="bold">Telegram Bot</text>
+  <text x="810" y="250" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">长轮询 + 任务队列</text>
+  <text x="810" y="264" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">三层防护 + 上下文记忆</text>
+
+  <!-- Arrow to Push -->
+  <path d="M810 270 L810 310" stroke="#2f81f7" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- iOS Push -->
+  <rect x="740" y="320" width="140" height="40" rx="8" fill="#21262d" stroke="#3fb950" stroke-width="2" filter="url(#shadow)"/>
+  <text x="810" y="345" text-anchor="middle" fill="#3fb950" font-family="system-ui" font-size="12">iOS 推送通知</text>
+
+  <!-- Legend -->
+  <rect x="50" y="400" width="800" height="160" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="70" y="425" fill="#e6edf3" font-family="system-ui" font-size="14" font-weight="bold">核心设计决策</text>
+
+  <text x="70" y="450" fill="#8b949e" font-family="system-ui" font-size="11">• 三级去重: Bloom Filter(L1) → Redis Set(L2) → PostgreSQL UNIQUE(L3) — 99.9% 重复在纳秒级拦截</text>
+  <text x="70" y="470" fill="#8b949e" font-family="system-ui" font-size="11">• 异构语言: Go 做 I/O 密集抓取，Python 做 LLM 评估 — 各取所长</text>
+  <text x="70" y="490" fill="#8b949e" font-family="system-ui" font-size="11">• Redis Stream 解耦: 抓取速率(ms)与评估速率(s)差距 1000 倍，Stream 作弹性缓冲</text>
+  <text x="70" y="510" fill="#8b949e" font-family="system-ui" font-size="11">• 偏好零样本注入: 自然语言描述偏好 → 动态拼入 system prompt → 无需重训练改变评估权重</text>
+  <text x="70" y="530" fill="#8b949e" font-family="system-ui" font-size="11">• SSE 流式: fetch + ReadableStream 手动消费，支持 POST 带 body，实时推送评估结果</text>
+  <text x="70" y="550" fill="#8b949e" font-family="system-ui" font-size="11">• 自研 ReAct: 不依赖 Agent SDK，兼容任意 OpenAI Function Calling 协议，完全控制中间步骤输出</text>
+
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#8b949e"/>
+    </marker>
+  </defs>
+</svg>

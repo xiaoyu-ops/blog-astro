@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" style="background:#0d1117">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#58a6ff;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#58a6ff;stop-opacity:0.05"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#8b949e"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="450" y="35" text-anchor="middle" fill="#e6edf3" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold">MMdedup 多模态去重架构</text>
+
+  <!-- Raw Data Input -->
+  <rect x="50" y="70" width="140" height="45" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <text x="120" y="88" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="11">原始多模态数据</text>
+  <text x="120" y="105" text-anchor="middle" fill="#6e7681" font-family="system-ui" font-size="9">文本 · 图像 · 音频</text>
+
+  <!-- Arrow -->
+  <path d="M190 92 L230 92" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Phase 1: Sorter -->
+  <rect x="240" y="60" width="180" height="65" rx="10" fill="url(#grad1)" stroke="#f0883e" stroke-width="2" filter="url(#shadow)"/>
+  <text x="330" y="82" text-anchor="middle" fill="#f0883e" font-family="system-ui" font-size="14" font-weight="bold">阶段 1: Sorter</text>
+  <text x="330" y="100" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">魔数排序 · 可打印性分析</text>
+  <text x="330" y="116" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">语义解析 → 按模态分类</text>
+
+  <!-- Arrow -->
+  <path d="M420 92 L470 92" stroke="#f0883e" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Phase 2: Deduplication -->
+  <rect x="480" y="60" width="200" height="65" rx="10" fill="url(#grad1)" stroke="#3fb950" stroke-width="2" filter="url(#shadow)"/>
+  <text x="580" y="82" text-anchor="middle" fill="#3fb950" font-family="system-ui" font-size="14" font-weight="bold">阶段 2: 模态特定去重</text>
+  <text x="580" y="100" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">精确去重 + 近似去重</text>
+  <text x="580" y="116" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">N-gram · CLIP · 频谱指纹</text>
+
+  <!-- Down arrows to modality boxes -->
+  <path d="M530 125 L530 160" stroke="#3fb950" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M580 125 L580 160" stroke="#3fb950" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M630 125 L630 160" stroke="#3fb950" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Text Modality -->
+  <rect x="440" y="170" width="140" height="70" rx="8" fill="#21262d" stroke="#58a6ff" stroke-width="2" filter="url(#shadow)"/>
+  <text x="510" y="192" text-anchor="middle" fill="#58a6ff" font-family="system-ui" font-size="13" font-weight="bold">文本去重</text>
+  <text x="510" y="210" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">N-gram + Jaccard</text>
+  <text x="510" y="226" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">MinHash LSH</text>
+
+  <!-- Image Modality -->
+  <rect x="600" y="170" width="140" height="70" rx="8" fill="#21262d" stroke="#a371f7" stroke-width="2" filter="url(#shadow)"/>
+  <text x="670" y="192" text-anchor="middle" fill="#a371f7" font-family="system-ui" font-size="13" font-weight="bold">图像去重</text>
+  <text x="670" y="210" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">CLIP 嵌入 + K-means</text>
+  <text x="670" y="226" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">Faiss 分布式分片</text>
+
+  <!-- Audio Modality -->
+  <rect x="760" y="170" width="130" height="70" rx="8" fill="#21262d" stroke="#f778ba" stroke-width="2" filter="url(#shadow)"/>
+  <text x="825" y="192" text-anchor="middle" fill="#f778ba" font-family="system-ui" font-size="13" font-weight="bold">音频去重</text>
+  <text x="825" y="210" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">频谱指纹 + MinHash</text>
+  <text x="825" y="226" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">LSH 近似匹配</text>
+
+  <!-- Left: Parallel Pipeline -->
+  <path d="M330 125 L330 200 L420 200" stroke="#f0883e" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+  <rect x="120" y="170" width="180" height="70" rx="8" fill="#21262d" stroke="#f0883e" stroke-width="2" filter="url(#shadow)"/>
+  <text x="210" y="192" text-anchor="middle" fill="#f0883e" font-family="system-ui" font-size="13" font-weight="bold">并行流水线</text>
+  <text x="210" y="210" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">Parallel & Pipelined</text>
+  <text x="210" y="226" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">计算/通信重叠掩盖</text>
+
+  <!-- Output -->
+  <path d="M510 240 L510 270" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M670 240 L670 270 L580 270 L580 280" stroke="#a371f7" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <path d="M825 240 L825 270 L670 270" stroke="#f778ba" stroke-width="2" fill="none"/>
+
+  <rect x="440" y="290" width="280" height="50" rx="8" fill="#21262d" stroke="#3fb950" stroke-width="2" filter="url(#shadow)"/>
+  <text x="580" y="312" text-anchor="middle" fill="#3fb950" font-family="system-ui" font-size="14" font-weight="bold">去重后数据集</text>
+  <text x="580" y="330" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">存储减少 90% · 吞吐量提升 3.6×</text>
+
+  <!-- Legend -->
+  <rect x="50" y="370" width="800" height="120" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="70" y="395" fill="#e6edf3" font-family="system-ui" font-size="14" font-weight="bold">核心设计决策</text>
+
+  <text x="70" y="420" fill="#8b949e" font-family="system-ui" font-size="11">• 两阶段架构: Sorter 分类 → 模态特定去重，避免不同模态混用同一种算法导致的精度损失</text>
+  <text x="70" y="440" fill="#8b949e" font-family="system-ui" font-size="11">• Voronoi 分片: 512维空间划分为 k 个单元，每个 Worker 负责一部分，避免单机显存瓶颈</text>
+  <text x="70" y="460" fill="#8b949e" font-family="system-ui" font-size="11">• 计算/通信重叠: 当节点 C 对比上一批次时，节点 A/B 在计算当前批次 Embedding，流水线掩盖延迟</text>
+  <text x="70" y="480" fill="#8b949e" font-family="system-ui" font-size="11">• 特征级传输: 跨节点只传 512维向量(2KB)而非原始图像(MB)，通信开销降低 1000 倍以上</text>
+</svg>
