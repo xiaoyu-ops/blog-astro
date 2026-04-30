@@ -1,0 +1,64 @@
+baseURL = "https://xiaoyu-ops.github.io/"
+locale = "en"
+title = "Zhuoyang Wu"
+theme = "PaperMod"
+paginate = 10
+
+[params]
+  author = "Zhuoyang Wu"
+  description = "Zhuoyang Wu — Embodied AI, AI Agents, Data Systems. Undergraduate at Sun Yat-sen University."
+  defaultTheme = "auto"
+  ShowReadingTime = false
+  ShowShareButtons = false
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowToc = true
+
+  [params.profileMode]
+    enabled = true
+    title = "Zhuoyang Wu (Xiaoyu)"
+    subtitle = "Building AI that interacts with the physical world."
+    imageUrl = "/images/avatar.png"
+    imageWidth = 160
+    imageHeight = 160
+    imageTitle = "Zhuoyang Wu"
+
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/xiaoyu-ops"
+
+  [[params.socialIcons]]
+    name = "email"
+    url = "mailto:wuzhuoyang252@gmail.com"
+
+  [[params.socialIcons]]
+    name = "wechat"
+    url = "weixin://dl/chat?woshiwudachong"
+
+[menu]
+  [[menu.main]]
+    identifier = "blog"
+    name = "Blog"
+    url = "/posts/"
+    weight = 1
+  [[menu.main]]
+    identifier = "about"
+    name = "About"
+    url = "/about/"
+    weight = 1
+  [[menu.main]]
+    identifier = "work"
+    name = "Work"
+    url = "/work/"
+    weight = 2
+  [[menu.main]]
+    identifier = "future"
+    name = "What's Next"
+    url = "/future/"
+    weight = 3
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

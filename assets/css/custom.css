@@ -1,0 +1,52 @@
+/* 语言切换按钮样式 - 固定在右上角 */
+.lang-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 8px;
+}
+
+.lang-menu li {
+    display: inline-block;
+}
+
+.lang-menu a {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border);
+    color: var(--primary);
+    background: var(--entry);
+}
+
+.lang-menu a:hover {
+    background: var(--primary);
+    color: var(--theme);
+    transform: translateY(-1px);
+}
+
+/* 当前语言高亮 */
+.lang-menu a.active {
+    background: var(--primary);
+    color: var(--theme);
+    font-weight: 600;
+}
+
+/* 确保 logo-switches 在右上角 */
+.logo-switches {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+/* 分隔符样式 */
+.logo-switches span {
+    color: var(--secondary);
+    opacity: 0.5;
+}
