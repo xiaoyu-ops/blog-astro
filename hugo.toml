@@ -1,11 +1,13 @@
 baseURL = "https://xiaoyu-ops.github.io/"
 title = "Zhuoyang Wu"
 theme = "PaperMod"
-paginate = 10
 
 # 默认语言改为中文
 defaultContentLanguage = "zh"
 defaultContentLanguageInSubdir = false
+
+[pagination]
+  pagerSize = 10
 
 # 多语言配置
 [languages]
