@@ -44,14 +44,14 @@ body {
 }
 
 #menu a {
-    border-radius: 999px;
-    padding-inline: 10px;
-    transition: background 160ms ease, color 160ms ease;
+    padding-inline: 4px;
+    border-bottom: 1px solid transparent;
+    transition: border-color 160ms ease, color 160ms ease;
 }
 
 #menu a:hover,
 #menu .active {
-    background: var(--xy-accent-soft);
+    border-bottom-color: color-mix(in srgb, var(--xy-accent) 58%, transparent);
     color: var(--xy-accent);
 }
 
@@ -69,21 +69,22 @@ body {
 .lang-menu a {
     display: inline-flex;
     align-items: center;
-    padding: 4px 9px;
-    border: 1px solid var(--xy-border);
-    border-radius: 999px;
-    background: var(--xy-surface);
-    color: var(--primary);
+    padding: 2px 3px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--secondary);
     font-size: 13px;
     font-weight: 560;
     text-decoration: none;
-    transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+    border-bottom: 1px solid transparent;
+    transition: border-color 160ms ease, color 160ms ease;
 }
 
 .lang-menu a:hover,
 .lang-menu a.active {
-    border-color: color-mix(in srgb, var(--xy-accent) 44%, var(--xy-border));
-    background: var(--xy-accent-soft);
+    border-bottom-color: color-mix(in srgb, var(--xy-accent) 58%, transparent);
+    background: transparent;
     color: var(--xy-accent);
 }
 
@@ -121,15 +122,15 @@ body {
 }
 
 .clean-avatar {
-    width: 148px;
-    height: 148px;
+    width: 112px;
+    height: 112px;
     object-fit: cover;
-    margin: 0 auto 24px;
-    border-radius: 50%;
+    margin: 0 auto 22px;
+    border-radius: 18px;
     border: 1px solid var(--xy-border);
-    padding: 5px;
-    background: var(--xy-surface-solid);
-    box-shadow: 0 12px 34px rgba(20, 26, 23, 0.10);
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .profile_inner.clean-hero h1 {
@@ -155,18 +156,26 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 8px;
-    margin: 22px auto 8px;
+    gap: 0;
+    margin: 20px auto 8px;
+    color: var(--xy-muted);
+    font-size: 0.88rem;
 }
 
 .clean-tags span {
-    padding: 6px 11px;
-    border: 1px solid var(--xy-border);
-    border-radius: 999px;
-    background: var(--xy-surface);
-    color: color-mix(in srgb, var(--xy-ink) 76%, var(--xy-muted));
-    font-size: 0.84rem;
-    line-height: 1;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--xy-muted);
+    font-size: 0.88rem;
+    line-height: 1.6;
+}
+
+.clean-tags span + span::before {
+    content: "·";
+    margin: 0 9px;
+    color: color-mix(in srgb, var(--xy-muted) 52%, transparent);
 }
 
 .social-icons {
@@ -185,37 +194,39 @@ body {
 .clean-actions {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 18px;
     flex-wrap: wrap;
-    margin-top: 24px;
+    margin-top: 22px;
 }
 
 .clean-actions a {
     display: inline-flex;
     align-items: center;
-    min-height: 40px;
-    padding: 0 15px;
-    border-radius: 999px;
-    border: 1px solid var(--xy-border);
-    background: var(--xy-surface-solid);
+    min-height: auto;
+    padding: 0 0 3px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
     color: var(--xy-ink);
-    font-size: 0.93rem;
+    font-size: 0.96rem;
     font-weight: 620;
     text-decoration: none;
-    box-shadow: 0 8px 22px rgba(20, 26, 23, 0.045);
-    transition: border-color 160ms ease, color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+    border-bottom: 1px solid color-mix(in srgb, var(--xy-border) 80%, transparent);
+    box-shadow: none;
+    transition: border-color 160ms ease, color 160ms ease;
 }
 
 .clean-actions a:first-child {
-    border-color: color-mix(in srgb, var(--xy-accent) 35%, var(--xy-border));
-    background: linear-gradient(180deg, var(--xy-surface-solid), color-mix(in srgb, var(--xy-accent) 7%, var(--xy-surface-solid)));
+    border-color: color-mix(in srgb, var(--xy-accent) 38%, var(--xy-border));
+    background: transparent;
     color: var(--xy-accent);
 }
 
 .clean-actions a:hover {
-    transform: translateY(-1px);
-    border-color: color-mix(in srgb, var(--xy-accent) 46%, var(--xy-border));
-    box-shadow: var(--xy-shadow);
+    transform: none;
+    border-color: var(--xy-accent);
+    box-shadow: none;
+    color: var(--xy-accent);
 }
 
 .profile-bio.clean-bio {
@@ -279,9 +290,9 @@ body {
     }
 
     .clean-avatar {
-        width: 124px;
-        height: 124px;
-        margin-bottom: 20px;
+        width: 96px;
+        height: 96px;
+        margin-bottom: 18px;
     }
 
     .profile_inner.clean-hero h1 {
