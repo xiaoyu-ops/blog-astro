@@ -19,7 +19,7 @@ defaultContentLanguageInSubdir = false
     [languages.zh.params]
       author = "吴卓阳"
       description = "吴卓阳 — 具身智能、AI Agent、数据系统。中山大学本科生。"
-      profileModeTitle = "吴卓阳 (小宇)"
+      profileModeTitle = "吴卓阳"
       profileModeSubtitle = "构建能与物理世界交互的 AI"
       menuBlog = "博客"
       menuAbout = "关于"
