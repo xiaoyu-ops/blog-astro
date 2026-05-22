@@ -1,12 +1,12 @@
-<div class="profile hero-profile">
+<div class="profile clean-profile">
     {{- with site.Params.profileMode }}
     {{- $lang := site.Language.Lang -}}
     {{- $isZh := ne $lang "en" -}}
     {{- $profileTitle := .title | default site.Params.profileModeTitle | default site.Title -}}
     {{- $profileSubtitle := .subtitle | default site.Params.profileModeSubtitle -}}
-    <div class="profile_inner hero-panel">
-        <div class="hero-orbit" aria-hidden="true"></div>
-        <div class="hero-mainline" aria-hidden="true"></div>
+    <div class="profile_inner clean-hero">
+        <div class="clean-hero__topline">{{ if $isZh }}中山大学 · 网络空间安全 · AI Agent{{ else }}Sun Yat-sen University · AI Agent · Embodied AI{{ end }}</div>
+
         {{- if .imageUrl -}}
         {{- $img := "" }}
         {{- if not (urls.Parse .imageUrl).IsAbs }}
@@ -29,48 +29,29 @@
                     {{- $img = $img.Resize "150x150" }}
                 {{- end }}
             {{- end }}
-            <div class="profile-avatar-shell">
-                <img draggable="false" src="{{ $img.Permalink }}" alt="{{ .imageTitle | default "profile image" }}" title="{{ .imageTitle }}"
-                    height="{{ .imageHeight | default 150 }}" width="{{ .imageWidth | default 150 }}" />
-            </div>
-        {{- else }}
-        <div class="profile-avatar-shell">
-            <img draggable="false" src="{{ .imageUrl | absURL }}" alt="{{ .imageTitle | default "profile image" }}" title="{{ .imageTitle }}"
+            <img class="clean-avatar" draggable="false" src="{{ $img.Permalink }}" alt="{{ .imageTitle | default "profile image" }}" title="{{ .imageTitle }}"
                 height="{{ .imageHeight | default 150 }}" width="{{ .imageWidth | default 150 }}" />
-        </div>
+        {{- else }}
+        <img class="clean-avatar" draggable="false" src="{{ .imageUrl | absURL }}" alt="{{ .imageTitle | default "profile image" }}" title="{{ .imageTitle }}"
+            height="{{ .imageHeight | default 150 }}" width="{{ .imageWidth | default 150 }}" />
         {{- end }}
         {{- end }}
-        <p class="hero-kicker">{{ if $isZh }}SYSU · AI Agent · Embodied Intelligence{{ else }}SYSU · AI Agent · Embodied Intelligence{{ end }}</p>
-        <h1>{{ $profileTitle | markdownify }}</h1>
-        {{- with $profileSubtitle }}<span class="hero-subtitle">{{ . | markdownify }}</span>{{- end }}
 
-        <div class="hero-tags" aria-label="research interests">
+        <h1>{{ $profileTitle | markdownify }}</h1>
+        {{- with $profileSubtitle }}<span class="clean-subtitle">{{ . | markdownify }}</span>{{- end }}
+
+        <div class="clean-tags" aria-label="focus areas">
             <span>{{ if $isZh }}具身智能{{ else }}Embodied AI{{ end }}</span>
-            <span>VLA / World Models</span>
-            <span>{{ if $isZh }}自进化 Agent{{ else }}Self-evolving Agents{{ end }}</span>
-            <span>{{ if $isZh }}数据系统{{ else }}Data Systems{{ end }}</span>
+            <span>VLA</span>
+            <span>{{ if $isZh }}世界模型{{ else }}World Models{{ end }}</span>
+            <span>AI Agent</span>
         </div>
 
         {{- partial "social_icons.html" -}}
 
-        <div class="hero-actions">
-            <a class="hero-action primary" href="{{ if $isZh }}/work/{{ else }}/en/work/{{ end }}">{{ if $isZh }}查看作品集{{ else }}View Work{{ end }}</a>
-            <a class="hero-action secondary" href="{{ if $isZh }}/about/{{ else }}/en/about/{{ end }}">{{ if $isZh }}了解更多{{ else }}About Me{{ end }}</a>
-        </div>
-
-        <div class="hero-signal-grid" aria-label="highlights">
-            <div class="hero-signal-card">
-                <span>{{ if $isZh }}研究方向{{ else }}Research{{ end }}</span>
-                <strong>{{ if $isZh }}具身智能 / VLA{{ else }}Embodied AI / VLA{{ end }}</strong>
-            </div>
-            <div class="hero-signal-card">
-                <span>{{ if $isZh }}工程实践{{ else }}Engineering{{ end }}</span>
-                <strong>{{ if $isZh }}Agent 系统{{ else }}Agent Systems{{ end }}</strong>
-            </div>
-            <div class="hero-signal-card">
-                <span>{{ if $isZh }}当前身份{{ else }}Current{{ end }}</span>
-                <strong>{{ if $isZh }}SYSU · 2027{{ else }}SYSU · 2027{{ end }}</strong>
-            </div>
+        <div class="clean-actions">
+            <a href="{{ if $isZh }}/work/{{ else }}/en/work/{{ end }}">{{ if $isZh }}作品 / Projects{{ else }}Projects{{ end }}</a>
+            <a href="{{ if $isZh }}/about/{{ else }}/en/about/{{ end }}">{{ if $isZh }}关于 / About{{ else }}About{{ end }}</a>
         </div>
 
         {{- with .buttons }}
@@ -96,7 +77,7 @@
     {{- end}}
 </div>
 {{- with $.Content }}
-<div class="profile-bio editorial-bio">
+<div class="profile-bio clean-bio">
     {{ . }}
 </div>
 {{- end }}
