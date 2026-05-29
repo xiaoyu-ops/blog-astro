@@ -3,76 +3,30 @@
     {{- $lang := site.Language.Lang -}}
     {{- $isZh := ne $lang "en" -}}
     {{- $profileTitle := .title | default site.Params.profileModeTitle | default site.Title -}}
-    {{- $profileSubtitle := .subtitle | default site.Params.profileModeSubtitle -}}
     <div class="profile_inner clean-hero">
-        <div class="clean-hero__topline">{{ if $isZh }}中山大学 · 网络空间安全 · AI Agent{{ else }}Sun Yat-sen University · AI Agent · Embodied AI{{ end }}</div>
-
         {{- if .imageUrl -}}
         {{- $img := "" }}
         {{- if not (urls.Parse .imageUrl).IsAbs }}
             {{- $img = resources.Get .imageUrl }}
         {{- end }}
         {{- if $img }}
-            {{- $processableFormats := (slice "jpg" "jpeg" "png" "tif" "bmp" "gif") -}}
-            {{- if hugo.IsExtended -}}
-                {{- $processableFormats = $processableFormats | append "webp" -}}
-            {{- end -}}
-            {{- $prod := (hugo.IsProduction | or (eq site.Params.env "production")) }}
-            {{- if and (in $processableFormats $img.MediaType.SubType) (eq $prod true)}}
-                {{- if (not (and (not .imageHeight) (not .imageWidth))) }}
-                    {{- $img = $img.Resize (printf "%dx%d" .imageWidth .imageHeight) }}
-                {{- else if .imageHeight }}
-                    {{- $img = $img.Resize (printf "x%d" .imageHeight) }}
-                {{ else if .imageWidth }}
-                    {{- $img = $img.Resize (printf "%dx" .imageWidth) }}
-                {{ else }}
-                    {{- $img = $img.Resize "150x150" }}
-                {{- end }}
-            {{- end }}
-            <img class="clean-avatar" draggable="false" src="{{ $img.Permalink }}" alt="{{ .imageTitle | default "profile image" }}" title="{{ .imageTitle }}"
-                height="{{ .imageHeight | default 150 }}" width="{{ .imageWidth | default 150 }}" />
+            {{- $img = $img.Resize "96x96" }}
+            <img class="clean-avatar" draggable="false" src="{{ $img.Permalink }}" alt="{{ .imageTitle | default "profile image" }}" />
         {{- else }}
-        <img class="clean-avatar" draggable="false" src="{{ .imageUrl | absURL }}" alt="{{ .imageTitle | default "profile image" }}" title="{{ .imageTitle }}"
-            height="{{ .imageHeight | default 150 }}" width="{{ .imageWidth | default 150 }}" />
+        <img class="clean-avatar" draggable="false" src="{{ .imageUrl | absURL }}" alt="{{ .imageTitle | default "profile image" }}" />
         {{- end }}
         {{- end }}
 
-        <h1>{{ $profileTitle | markdownify }}</h1>
-        {{- with $profileSubtitle }}<span class="clean-subtitle">{{ . | markdownify }}</span>{{- end }}
-
-        <div class="clean-tags" aria-label="focus areas">
-            <span>{{ if $isZh }}具身智能{{ else }}Embodied AI{{ end }}</span>
-            <span>VLA</span>
-            <span>{{ if $isZh }}世界模型{{ else }}World Models{{ end }}</span>
-            <span>AI Agent</span>
+        <div class="clean-hero__text">
+            <h1>{{ $profileTitle | markdownify }}</h1>
+            <p class="clean-brief">{{ if $isZh }}中山大学 · 网络空间安全学院 · 大三 · 具身智能 & AI Agent{{ else }}Sun Yat-sen University · Cyberspace Security · Junior · Embodied AI & AI Agent{{ end }}</p>
+            <div class="clean-social-row">
+                {{- partial "social_icons.html" -}}
+                <span class="clean-sep">|</span>
+                <a href="{{ if $isZh }}/work/{{ else }}/en/work/{{ end }}">{{ if $isZh }}作品{{ else }}Projects{{ end }}</a>
+                <a href="{{ if $isZh }}/about/{{ else }}/en/about/{{ end }}">{{ if $isZh }}关于{{ else }}About{{ end }}</a>
+            </div>
         </div>
-
-        {{- partial "social_icons.html" -}}
-
-        <div class="clean-actions">
-            <a href="{{ if $isZh }}/work/{{ else }}/en/work/{{ end }}">{{ if $isZh }}作品 / Projects{{ else }}Projects{{ end }}</a>
-            <a href="{{ if $isZh }}/about/{{ else }}/en/about/{{ end }}">{{ if $isZh }}关于 / About{{ else }}About{{ end }}</a>
-        </div>
-
-        {{- with .buttons }}
-        <div class="buttons">
-            {{- range . }}
-            <a class="button" href="{{ trim .url " " }}" rel="noopener" title="{{ .name }}">
-                <span class="button-inner">
-                    {{ .name }}
-                    {{- if (findRE "://" .url) }}&nbsp;
-                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
-                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="14" width="14">
-                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
-                        <path d="M15 3h6v6"></path>
-                        <path d="M10 14L21 3"></path>
-                    </svg>
-                    {{- end }}
-                </span>
-            </a>
-            {{- end }}
-        </div>
-        {{- end }}
     </div>
     {{- end}}
 </div>

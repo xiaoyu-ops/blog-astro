@@ -1,6 +1,6 @@
 /*
-  Xiaoyu personal site — clean academic refresh.
-  Goal: remove the previous decorative look; keep PaperMod calm, readable, and credible.
+  Xiaoyu personal site — clean, minimal, text-first.
+  No cards, no shadows, no decorative surfaces.
 */
 
 :root {
@@ -9,9 +9,9 @@
     --xy-surface-solid: #fffdf8;
     --xy-ink: #171b19;
     --xy-muted: #6b746f;
-    --xy-border: rgba(30, 36, 32, 0.12);
+    --xy-border: rgba(30, 36, 32, 0.10);
     --xy-accent: #0f766e;
-    --xy-accent-soft: rgba(15, 118, 110, 0.10);
+    --xy-accent-soft: rgba(15, 118, 110, 0.08);
     --xy-shadow: 0 18px 50px rgba(28, 34, 31, 0.08);
 }
 
@@ -21,16 +21,14 @@
     --xy-surface-solid: #151917;
     --xy-ink: #edf3ef;
     --xy-muted: #a3aca7;
-    --xy-border: rgba(237, 243, 239, 0.12);
+    --xy-border: rgba(237, 243, 239, 0.10);
     --xy-accent: #5eead4;
-    --xy-accent-soft: rgba(94, 234, 212, 0.10);
+    --xy-accent-soft: rgba(94, 234, 212, 0.08);
     --xy-shadow: 0 18px 50px rgba(0, 0, 0, 0.26);
 }
 
 body {
-    background:
-        radial-gradient(circle at 50% -20%, var(--xy-accent-soft), transparent 34rem),
-        var(--xy-bg);
+    background: var(--xy-bg);
     color: var(--xy-ink);
 }
 
@@ -100,151 +98,117 @@ body {
     opacity: 0.45;
 }
 
-/* Homepage */
+/* ── Homepage — flat, text-first ── */
+
 .profile.clean-profile {
     min-height: unset;
-    padding-top: clamp(32px, 7vw, 76px);
+    padding-top: clamp(40px, 8vw, 80px);
 }
 
 .profile_inner.clean-hero {
-    width: min(760px, 100%);
+    width: min(720px, 100%);
     margin: 0 auto;
-    text-align: center;
-}
-
-.clean-hero__topline {
-    margin-bottom: 18px;
-    color: var(--xy-accent);
-    font-size: 0.76rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    text-align: left;
 }
 
 .clean-avatar {
-    width: 112px;
-    height: 112px;
+    width: 72px;
+    height: 72px;
     object-fit: cover;
-    margin: 0 auto 22px;
-    border-radius: 18px;
+    border-radius: 14px;
     border: 1px solid var(--xy-border);
-    padding: 0;
-    background: transparent;
-    box-shadow: none;
+    flex-shrink: 0;
+    margin-top: 6px;
+}
+
+.clean-hero__text {
+    flex: 1;
+    min-width: 0;
 }
 
 .profile_inner.clean-hero h1 {
-    margin: 0;
+    margin: 0 0 6px;
     color: var(--xy-ink);
-    font-size: clamp(2.35rem, 6vw, 4.45rem);
-    line-height: 1.03;
-    letter-spacing: -0.075em;
-    text-wrap: balance;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    line-height: 1.15;
+    letter-spacing: -0.05em;
+    font-weight: 720;
 }
 
-.clean-subtitle {
-    display: block;
-    max-width: 560px;
-    margin: 16px auto 0;
+.clean-brief {
+    margin: 0 0 14px;
     color: var(--xy-muted);
-    font-size: clamp(1.02rem, 2vw, 1.22rem);
-    line-height: 1.7;
-    letter-spacing: -0.018em;
+    font-size: 0.94rem;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
 }
 
-.clean-tags {
+.clean-social-row {
     display: flex;
+    align-items: center;
+    gap: 12px;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 0;
-    margin: 20px auto 8px;
-    color: var(--xy-muted);
-    font-size: 0.88rem;
+    margin-top: 2px;
 }
 
-.clean-tags span {
+.clean-social-row .social-icons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.clean-social-row .social-icons a {
+    color: var(--xy-muted);
+    transition: color 160ms ease;
+}
+
+.clean-social-row .social-icons a:hover {
+    color: var(--xy-accent);
+}
+
+.clean-sep {
+    color: var(--xy-border);
+    font-size: 0.9rem;
+    user-select: none;
+}
+
+.clean-social-row a {
+    color: var(--xy-muted);
+    font-size: 0.92rem;
+    font-weight: 560;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+    transition: border-color 160ms ease, color 160ms ease;
+}
+
+.clean-social-row a:hover {
+    color: var(--xy-accent);
+    border-bottom-color: var(--xy-accent);
+}
+
+/* ── Bio section — flat, no card ── */
+
+.profile-bio.clean-bio {
+    width: min(720px, calc(100% - 24px));
+    margin: 40px auto 0;
     padding: 0;
     border: 0;
     border-radius: 0;
     background: transparent;
-    color: var(--xy-muted);
-    font-size: 0.88rem;
-    line-height: 1.6;
-}
-
-.clean-tags span + span::before {
-    content: "·";
-    margin: 0 9px;
-    color: color-mix(in srgb, var(--xy-muted) 52%, transparent);
-}
-
-.social-icons {
-    margin-top: 18px;
-}
-
-.social-icons a {
-    transition: color 160ms ease, transform 160ms ease;
-}
-
-.social-icons a:hover {
-    color: var(--xy-accent);
-    transform: translateY(-1px);
-}
-
-.clean-actions {
-    display: flex;
-    justify-content: center;
-    gap: 18px;
-    flex-wrap: wrap;
-    margin-top: 22px;
-}
-
-.clean-actions a {
-    display: inline-flex;
-    align-items: center;
-    min-height: auto;
-    padding: 0 0 3px;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    color: var(--xy-ink);
-    font-size: 0.96rem;
-    font-weight: 620;
-    text-decoration: none;
-    border-bottom: 1px solid color-mix(in srgb, var(--xy-border) 80%, transparent);
     box-shadow: none;
-    transition: border-color 160ms ease, color 160ms ease;
-}
-
-.clean-actions a:first-child {
-    border-color: color-mix(in srgb, var(--xy-accent) 38%, var(--xy-border));
-    background: transparent;
-    color: var(--xy-accent);
-}
-
-.clean-actions a:hover {
-    transform: none;
-    border-color: var(--xy-accent);
-    box-shadow: none;
-    color: var(--xy-accent);
-}
-
-.profile-bio.clean-bio {
-    width: min(760px, calc(100% - 24px));
-    margin: 34px auto 0;
-    padding: clamp(22px, 4vw, 34px);
-    border: 1px solid var(--xy-border);
-    border-radius: 22px;
-    background: var(--xy-surface);
-    box-shadow: var(--xy-shadow);
     text-align: left;
 }
 
 .profile-bio.clean-bio p {
     color: color-mix(in srgb, var(--xy-ink) 86%, var(--xy-muted));
-    font-size: clamp(1rem, 2vw, 1.08rem);
+    font-size: clamp(0.98rem, 2vw, 1.05rem);
     line-height: 1.9;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.008em;
+    margin-bottom: 0.9rem;
 }
 
 .profile-bio.clean-bio p:first-child {
@@ -257,26 +221,27 @@ body {
 
 .profile-bio.clean-bio strong {
     color: var(--xy-ink);
-    font-weight: 720;
+    font-weight: 700;
 }
 
 .profile-bio.clean-bio em {
     color: var(--xy-muted);
 }
 
+/* ── Post entries — lighter card ── */
+
 .post-entry,
 .first-entry {
     border: 1px solid var(--xy-border);
-    border-radius: 18px;
+    border-radius: 12px;
     background: var(--xy-surface);
-    transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    transition: transform 160ms ease, border-color 160ms ease;
 }
 
 .post-entry:hover,
 .first-entry:hover {
-    transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--xy-accent) 32%, var(--xy-border));
-    box-shadow: 0 14px 34px rgba(20, 26, 23, 0.07);
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--xy-accent) 28%, var(--xy-border));
 }
 
 .entry-header h2,
@@ -284,23 +249,33 @@ body {
     letter-spacing: -0.035em;
 }
 
-@media (max-width: 760px) {
+/* ── Mobile ── */
+
+@media (max-width: 640px) {
     .profile.clean-profile {
         padding-top: 28px;
     }
 
+    .profile_inner.clean-hero {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
     .clean-avatar {
-        width: 96px;
-        height: 96px;
-        margin-bottom: 18px;
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        margin-top: 0;
     }
 
     .profile_inner.clean-hero h1 {
-        letter-spacing: -0.055em;
+        font-size: 1.6rem;
+        letter-spacing: -0.04em;
     }
 
     .profile-bio.clean-bio {
-        border-radius: 18px;
+        margin-top: 28px;
     }
 }
 
