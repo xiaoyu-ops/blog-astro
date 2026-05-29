@@ -22,6 +22,7 @@ defaultContentLanguageInSubdir = false
       profileModeTitle = "吴卓阳"
       profileModeSubtitle = "构建能与物理世界交互的 AI"
       menuBlog = "博客"
+      menuMusings = "零碎"
       menuAbout = "关于"
       menuWork = "作品"
       menuFuture = "未来规划"
@@ -37,6 +38,7 @@ defaultContentLanguageInSubdir = false
       profileModeTitle = "Zhuoyang Wu (Xiaoyu)"
       profileModeSubtitle = "Building AI that interacts with the physical world."
       menuBlog = "Blog"
+      menuMusings = "Musings"
       menuAbout = "About"
       menuWork = "Work"
       menuFuture = "What's Next"
@@ -82,20 +84,25 @@ defaultContentLanguageInSubdir = false
     url = "/posts/"
     weight = 1
   [[languages.zh.menu.main]]
+    identifier = "musings"
+    name = "零碎"
+    url = "/musings/"
+    weight = 2
+  [[languages.zh.menu.main]]
     identifier = "about"
     name = "关于"
     url = "/about/"
-    weight = 1
+    weight = 3
   [[languages.zh.menu.main]]
     identifier = "work"
     name = "作品"
     url = "/work/"
-    weight = 2
+    weight = 4
   [[languages.zh.menu.main]]
     identifier = "future"
     name = "未来规划"
     url = "/future/"
-    weight = 3
+    weight = 5
 
 # 英文菜单
 [languages.en.menu]
@@ -105,20 +112,25 @@ defaultContentLanguageInSubdir = false
     url = "/posts/"
     weight = 1
   [[languages.en.menu.main]]
+    identifier = "musings"
+    name = "Musings"
+    url = "/musings/"
+    weight = 2
+  [[languages.en.menu.main]]
     identifier = "about"
     name = "About"
     url = "/about/"
-    weight = 1
+    weight = 3
   [[languages.en.menu.main]]
     identifier = "work"
     name = "Work"
     url = "/work/"
-    weight = 2
+    weight = 4
   [[languages.en.menu.main]]
     identifier = "future"
     name = "What's Next"
     url = "/future/"
-    weight = 3
+    weight = 5
 
 [markup]
   [markup.goldmark]
