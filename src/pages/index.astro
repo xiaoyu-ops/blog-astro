@@ -1,0 +1,176 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+---
+
+<Layout title="Zhuoyang Wu" description="吴卓阳 — 具身智能、AI Agent、数据系统。中山大学本科生。">
+  <Header />
+
+  <!-- Hero -->
+  <section class="min-h-[90vh] flex flex-col justify-center px-4 max-w-3xl mx-auto pt-14">
+    <div class="fade-up flex items-center gap-3 mb-4">
+      <img
+        src="/avatar.jpg"
+        alt="Zhuoyang Wu"
+        class="w-14 h-14 rounded-full object-cover ring-1 ring-[hsl(var(--border))]"
+        width="56"
+        height="56"
+      />
+      <div>
+        <h1 class="text-lg font-medium tracking-tight">吴卓阳</h1>
+        <p class="text-xs text-[hsl(var(--muted-foreground))] font-mono mt-0.5">
+          Zhuoyang Wu
+        </p>
+      </div>
+    </div>
+    <p class="fade-up fade-delay-1 text-[hsl(var(--muted-foreground))] max-w-lg leading-relaxed text-sm mt-3">
+      中山大学网络空间安全学院大三本科生。专注<strong class="text-[hsl(var(--foreground))] font-medium">具身智能</strong>（VLA 模型与世界模型），
+      探索机器人如何感知物理世界并自主决策。
+    </p>
+    <div class="fade-up fade-delay-2 mt-4 flex flex-wrap gap-1.5">
+      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Go</span>
+      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Python</span>
+      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">C++</span>
+      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">PyTorch</span>
+      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">ROS</span>
+      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">LangGraph</span>
+      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">PostgreSQL</span>
+      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Redis</span>
+      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Docker</span>
+    </div>
+    <div class="fade-up fade-delay-3 mt-4 flex items-center gap-4 text-xs font-mono text-[hsl(var(--muted-foreground))]">
+      <a href="https://github.com/xiaoyu-ops" class="hover:text-[hsl(var(--foreground))] transition-colors" target="_blank">
+        GitHub
+      </a>
+      <span class="opacity-30">·</span>
+      <a href="mailto:wuzhuoyang252@gmail.com" class="hover:text-[hsl(var(--foreground))] transition-colors">
+        Email
+      </a>
+      <span class="opacity-30">·</span>
+      <span>微信: woshiwudachong</span>
+    </div>
+    <div class="fade-up fade-delay-4 mt-6 pb-2 text-center">
+      <span class="text-xs text-[hsl(var(--muted-foreground))/40] font-mono animate-pulse">↓ scroll</span>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects" class="py-6 md:py-8 px-4 max-w-3xl mx-auto">
+    <div class="fade-up group mb-3">
+      <div class="flex items-center gap-2">
+        <div class="decorate-bar h-4"></div>
+        <h2 class="text-xs font-mono font-medium text-[hsl(var(--muted-foreground))] transition-colors duration-700 group-hover:text-[hsl(var(--foreground))]">Projects</h2>
+      </div>
+    </div>
+    <div class="space-y-1">
+      <a href="/projects/mmdedup" class="fade-up fade-delay-1 block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam" style="--beam-from: #60a5fa; --beam-to: #a78bfa;">
+        <div class="flex items-start justify-between gap-4 relative z-[1]">
+          <div class="min-w-0">
+            <h3 class="text-sm font-medium group-hover:underline underline-offset-4">MMdedup — 多模态去重管道</h3>
+            <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">面向多模态大语言模型训练数据集的高吞吐量数据清洗管道。存储减少 90%，吞吐量提升 3.6 倍。ICDE 审稿中。</p>
+            <div class="mt-2 flex flex-wrap gap-1">
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">Python</span>
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">数据系统</span>
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">LLM</span>
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">研究</span>
+            </div>
+          </div>
+        </div>
+      </a>
+      <a href="/projects/sangfor" class="fade-up fade-delay-2 block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam" style="--beam-from: #f97316; --beam-to: #facc15;">
+        <div class="flex items-start justify-between gap-4 relative z-[1]">
+          <div class="min-w-0">
+            <h3 class="text-sm font-medium group-hover:underline underline-offset-4">深信服 — Rare TTP 识别系统</h3>
+            <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">为自进化终端安全 Agent 构建双路径聚类管道，识别罕见攻击模式。准确率 >70%，生成 2000+ 训练样本。</p>
+            <div class="mt-2 flex flex-wrap gap-1">
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">Python</span>
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">聚类</span>
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">安全</span>
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">AI</span>
+            </div>
+          </div>
+        </div>
+      </a>
+      <a href="/projects/yu-agent" class="fade-up fade-delay-3 block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam" style="--beam-from: #34d399; --beam-to: #60a5fa;">
+        <div class="flex items-start justify-between gap-4 relative z-[1]">
+          <div class="min-w-0">
+            <h3 class="text-sm font-medium group-hover:underline underline-offset-4">yu_agent — 统一多模型 Agent 框架</h3>
+            <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">兼容 8+ LLM 提供商，4 种推理模式，4 层记忆架构。从零构建，不依赖 LangChain。</p>
+            <div class="mt-2 flex flex-wrap gap-1">
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">Python</span>
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">LLM</span>
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">Agent</span>
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">MCP</span>
+            </div>
+          </div>
+        </div>
+      </a>
+      <a href="/projects/junkfilter" class="fade-up fade-delay-4 block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam" style="--beam-from: #f472b6; --beam-to: #c084fc;">
+        <div class="flex items-start justify-between gap-4 relative z-[1]">
+          <div class="min-w-0">
+            <h3 class="text-sm font-medium group-hover:underline underline-offset-4">JunkFilter — 基于 Agent 的内容评估系统</h3>
+            <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">异构 Go + Python 分布式管道，73 个 RSS 源，三级去重 + LangGraph 评估。LLM 成本降低 30%。</p>
+            <div class="mt-2 flex flex-wrap gap-1">
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">Go</span>
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">Python</span>
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">LangGraph</span>
+              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">分布式</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Writing -->
+  <section id="posts" class="py-6 md:py-8 px-4 max-w-3xl mx-auto">
+    <div class="fade-up group mb-3">
+      <div class="flex items-center gap-2">
+        <div class="decorate-bar h-4"></div>
+        <h2 class="text-xs font-mono font-medium text-[hsl(var(--muted-foreground))] transition-colors duration-700 group-hover:text-[hsl(var(--foreground))]">Writing</h2>
+      </div>
+    </div>
+    <div class="space-y-1">
+      <a href="/blog/hello-world" class="fade-up fade-delay-1 block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group">
+        <div class="flex items-start justify-between gap-4">
+          <div class="min-w-0">
+            <h3 class="text-sm font-medium group-hover:underline underline-offset-4">你好，世界</h3>
+            <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">第一篇文章 — 关于我为什么开始写作。写作迫使表达变得精确。</p>
+          </div>
+          <span class="text-xs text-[hsl(var(--muted-foreground))] font-mono shrink-0 mt-0.5">2026-04-29</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="py-12 md:py-16 px-4 max-w-3xl mx-auto border-t border-[hsl(var(--border))]">
+    <div class="fade-up group mb-4">
+      <div class="flex items-center gap-2">
+        <div class="decorate-bar h-4"></div>
+        <h2 class="text-xs font-mono font-medium text-[hsl(var(--muted-foreground))] transition-colors duration-700 group-hover:text-[hsl(var(--foreground))]">About</h2>
+      </div>
+    </div>
+    <div class="fade-up fade-delay-1 space-y-4 text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+      <p>
+        中山大学<strong class="text-[hsl(var(--foreground))] font-medium">网络空间安全学院</strong>大三本科生（2027 届），
+        就读于深圳校区，GPA 3.66/5.0。拥有约一年半的科研经验，主要方向为数据系统和 AI 基础设施。
+      </p>
+      <p>
+        此前在<strong class="text-[hsl(var(--foreground))] font-medium">深信服科技</strong>实习，负责自进化项目的数据挖掘算法开发。
+        目前在探索<strong class="text-[hsl(var(--foreground))] font-medium">具身智能</strong>——VLA 模型与世界模型。
+      </p>
+      <p class="italic text-xs pt-4 border-t border-[hsl(var(--border))]">
+        "做一点真正有意义的工作，而非追求高薪的工作。"
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="max-w-3xl mx-auto px-4 pb-8 text-xs text-[hsl(var(--muted-foreground))/50] font-mono">
+    <div class="border-t border-[hsl(var(--border))] pt-4 flex justify-between">
+      <span>© 2026 Zhuoyang Wu</span>
+      <span>Built with Astro</span>
+    </div>
+  </footer>
+</Layout>

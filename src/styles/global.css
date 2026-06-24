@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+@theme {
+  --font-mono: "JetBrains Mono", "Roboto Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: system-ui, -apple-system, sans-serif;
+
+  --animate-fade-up: fade-up 0.5s ease-out both;
+  --animate-border-beam: border-beam calc(var(--beam-duration, 3) * 1s) infinite linear;
+  --animate-pulse-slow: pulse 3s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes border-beam {
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --border: 0 0% 89.8%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 94%;
+    --secondary-foreground: 0 0% 9%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --border: 0 0% 20%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: hsl(var(--foreground) / 0.1);
+  }
+}
+
+@layer components {
+  /* Fade-up reveal on scroll — triggered by IntersectionObserver via .fade-visible */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(6px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out, filter 0.5s ease-out;
+  }
+  .fade-up.fade-visible {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  .fade-delay-1 { transition-delay: 0.05s; }
+  .fade-delay-2 { transition-delay: 0.1s; }
+  .fade-delay-3 { transition-delay: 0.15s; }
+  .fade-delay-4 { transition-delay: 0.2s; }
+  .fade-delay-5 { transition-delay: 0.25s; }
+  .fade-delay-6 { transition-delay: 0.3s; }
+  .fade-delay-7 { transition-delay: 0.35s; }
+  .fade-delay-8 { transition-delay: 0.4s; }
+  .fade-delay-9 { transition-delay: 0.45s; }
+
+  /* Border beam — colored ray orbiting the card border */
+  .border-beam {
+    position: relative;
+    overflow: hidden;
+  }
+  .border-beam::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid transparent;
+    pointer-events: none;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s;
+    --beam-duration: 3;
+    background:
+      conic-gradient(from 0deg at 50% 50%, var(--beam-from, #60a5fa), var(--beam-to, #facc15), transparent 70%) border-box;
+    animation: var(--animate-border-beam);
+  }
+  .border-beam:hover::after {
+    opacity: 1;
+  }
+
+  /* Color slide-up fill on hover — like sunls24's ColorOne */
+  .color-slide {
+    position: relative;
+    overflow: hidden;
+  }
+  .color-slide::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(to top, hsl(var(--muted)), hsl(var(--muted)));
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+  .color-slide:hover::before {
+    transform: translateY(0);
+  }
+
+  /* Decorate bar — thin accent bar beside section titles */
+  .decorate-bar {
+    width: 4px;
+    border-radius: 2px;
+    background: hsl(var(--muted-foreground) / 0.3);
+    transition: background 0.5s;
+  }
+  .group:hover .decorate-bar {
+    background: hsl(var(--foreground) / 0.5);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Grid pattern SVG */
+.grid-pattern-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
