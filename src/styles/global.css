@@ -20,9 +20,15 @@
   }
 }
 
+@property --beam-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 @keyframes border-beam {
   100% {
-    offset-distance: 100%;
+    --beam-angle: 360deg;
   }
 }
 
@@ -125,8 +131,9 @@
     opacity: 0;
     transition: opacity 0.3s;
     --beam-duration: 3;
+    --beam-angle: 0deg;
     background:
-      conic-gradient(from 0deg at 50% 50%, var(--beam-from, #60a5fa), var(--beam-to, #facc15), transparent 70%) border-box;
+      conic-gradient(from var(--beam-angle) at 50% 50%, transparent 0deg, transparent 250deg, var(--beam-from, #60a5fa) 300deg, var(--beam-to, #facc15) 340deg, transparent 360deg) border-box;
     animation: var(--animate-border-beam);
   }
   .border-beam:hover::after {
@@ -161,6 +168,137 @@
   }
   .group:hover .decorate-bar {
     background: hsl(var(--foreground) / 0.5);
+  }
+
+  .project-content {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.9375rem;
+    line-height: 1.9;
+  }
+  .project-content > * + * {
+    margin-top: 1rem;
+  }
+  .project-content h2 {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground));
+    font-size: 1.125rem;
+    font-weight: 650;
+    line-height: 1.35;
+    letter-spacing: 0;
+  }
+  .project-content h2:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+  .project-content h3 {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: hsl(var(--foreground));
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.45;
+    letter-spacing: 0;
+  }
+  .project-content p {
+    margin: 0.85rem 0;
+  }
+  .project-content strong {
+    color: hsl(var(--foreground));
+    font-weight: 650;
+  }
+  .project-content a {
+    color: hsl(var(--foreground));
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: hsl(var(--muted-foreground) / 0.35);
+  }
+  .project-content a:hover {
+    text-decoration-color: hsl(var(--foreground));
+  }
+  .project-content ul,
+  .project-content ol {
+    margin: 1rem 0;
+    padding-left: 1.25rem;
+  }
+  .project-content li {
+    margin: 0.35rem 0;
+    padding-left: 0.2rem;
+  }
+  .project-content li::marker {
+    color: hsl(var(--muted-foreground) / 0.65);
+  }
+  .project-content code {
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.25rem;
+    background: hsl(var(--muted) / 0.7);
+    padding: 0.1rem 0.28rem;
+    color: hsl(var(--foreground));
+    font-family: var(--font-mono);
+    font-size: 0.78em;
+  }
+  .project-content pre {
+    margin: 1.25rem 0;
+    overflow-x: auto;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+    background: hsl(var(--muted) / 0.55);
+    padding: 1rem;
+    line-height: 1.7;
+  }
+  .project-content pre code {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+    color: hsl(var(--foreground));
+    font-size: 0.78rem;
+  }
+  .project-content img {
+    display: block;
+    max-width: 100%;
+    margin: 1.25rem auto;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+    background: hsl(var(--background));
+  }
+  .project-content img[src*="/images/architecture/"] {
+    width: 100%;
+    min-height: 20rem;
+    object-fit: contain;
+  }
+  .project-content table {
+    display: block;
+    width: 100%;
+    margin: 1.25rem 0;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+    line-height: 1.7;
+  }
+  .project-content th {
+    border-bottom: 1px solid hsl(var(--border));
+    padding: 0.55rem 0.7rem;
+    color: hsl(var(--foreground));
+    font-family: var(--font-mono);
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .project-content td {
+    border-bottom: 1px solid hsl(var(--border));
+    padding: 0.55rem 0.7rem;
+    vertical-align: top;
+  }
+  .project-content blockquote {
+    margin: 1.25rem 0;
+    border-left: 3px solid hsl(var(--border));
+    padding-left: 1rem;
+    color: hsl(var(--muted-foreground));
+    font-style: italic;
   }
 }
 

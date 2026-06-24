@@ -25,28 +25,21 @@ const { Content } = await render(project);
     <a href="/#projects" class="inline-flex items-center text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors mb-8">
       ← Back
     </a>
-    <h1 class="text-lg font-medium mb-2">{project.data.title}</h1>
-    <p class="text-sm text-[hsl(var(--muted-foreground))] mb-6">{project.data.description}</p>
+    <header class="mb-10 border-b border-[hsl(var(--border))] pb-8">
+      <h1 class="text-2xl md:text-3xl font-semibold tracking-tight mb-3">{project.data.title}</h1>
+      <p class="text-sm md:text-base leading-relaxed text-[hsl(var(--muted-foreground))] max-w-2xl">{project.data.description}</p>
+      {project.data.date && (
+        <p class="mt-4 text-xs font-mono text-[hsl(var(--muted-foreground))/70]">{project.data.date}</p>
+      )}
+    </header>
     {project.data.tags && project.data.tags.length > 0 && (
-      <div class="flex flex-wrap gap-1 mb-8">
+      <div class="flex flex-wrap gap-1.5 mb-10">
         {project.data.tags.map((tag: string) => (
-          <span class="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">{tag}</span>
+          <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">{tag}</span>
         ))}
       </div>
     )}
-    <article class="prose prose-sm prose-neutral dark:prose-invert max-w-none
-      prose-headings:font-medium prose-headings:tracking-tight
-      prose-h2:text-base prose-h2:mt-10 prose-h2:mb-4
-      prose-h3:text-sm prose-h3:mt-8 prose-h3:mb-3
-      prose-p:leading-relaxed prose-p:text-[hsl(var(--muted-foreground))]
-      prose-code:font-mono prose-code:text-xs
-      prose-pre:bg-[hsl(var(--muted))] prose-pre:border prose-pre:border-[hsl(var(--border))]
-      prose-img:rounded-lg
-      prose-a:underline prose-a:underline-offset-2 prose-a:decoration-[hsl(var(--muted-foreground))/30] hover:prose-a:decoration-[hsl(var(--foreground))]
-      prose-table:text-xs prose-table:overflow-x-auto
-      prose-th:font-mono prose-th:font-medium prose-th:px-3 prose-th:py-2
-      prose-td:px-3 prose-td:py-2 prose-td:border-t prose-td:border-[hsl(var(--border))]
-    ">
+    <article class="project-content">
       <Content />
     </article>
   </main>
