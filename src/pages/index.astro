@@ -168,9 +168,13 @@ import Header from "../components/Header.astro";
 
   <!-- Footer -->
   <footer class="max-w-3xl mx-auto px-4 pb-8 text-xs text-[hsl(var(--muted-foreground))/50] font-mono">
-    <div class="border-t border-[hsl(var(--border))] pt-4 flex justify-between">
+    <div class="border-t border-[hsl(var(--border))] pt-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
       <span>© 2026 Zhuoyang Wu</span>
-      <span>Built with Astro</span>
+      <span>
+        Views <span id="view-total">—</span>
+        <span class="opacity-40">·</span>
+        Today <span id="view-today">—</span>
+      </span>
     </div>
   </footer>
 </Layout>
