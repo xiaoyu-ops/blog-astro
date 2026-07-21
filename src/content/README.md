@@ -32,17 +32,18 @@ src/content/blog/images/YYYY-MM-DD-english-slug/
 把图片放进命令生成的图片目录，然后在文章里写：
 
 ```md
-![图片内容说明](./images/YYYY-MM-DD-english-slug/example.webp)
+![图片内容说明](./images/YYYY-MM-DD-english-slug/screenshot.png)
 
 *图 1：这里写图片说明；不需要图注时删掉这一行。*
 ```
 
-图片建议：
+截图直接使用：
 
-- 照片和截图优先使用 WebP；需要透明背景时使用 PNG。
-- 图片文件名使用简短英文，例如 `architecture.webp`。
+- 截图保持系统保存的 `.png` 后缀，不要只靠改文件名把它写成 `.webp`。
+- 把截图放进文章专属图片目录，文件名使用简短英文，例如 `score.png`。
 - `![方括号里的文字]` 要描述图片内容，方便无障碍阅读。
 - 图片会自动适配电脑和手机宽度，不需要手动写 HTML。
+- 发布命令会自动去掉误包住图片语法的反引号、检查文件是否存在，并根据图片真实格式纠正错误后缀和 Markdown 路径。
 
 本地预览：
 

@@ -2,6 +2,7 @@
 import { spawnSync } from "node:child_process";
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { preparePostImages } from "./post-images.mjs";
 
 const query = process.argv[2]?.replace(/\.(md|mdx)$/i, "");
 
@@ -34,12 +35,24 @@ if (matches.length > 1) {
 const post = matches[0];
 const postPath = path.join(postsDir, post.name);
 let source = await readFile(postPath, "utf8");
-const originalSource = source;
 
 if (/^description:\s*["']?TODO/m.test(source)) {
   console.error("Replace the TODO description before publishing.");
   process.exit(1);
 }
+
+try {
+  const prepared = await preparePostImages(source, postPath);
+  if (prepared.source !== source) {
+    source = prepared.source;
+    await writeFile(postPath, source, "utf8");
+  }
+} catch (error) {
+  console.error(error.message);
+  process.exit(1);
+}
+
+const draftSource = source;
 
 const wasDraft = /^draft:\s*true\s*$/m.test(source);
 
@@ -57,7 +70,7 @@ const result = spawnSync(pnpm, ["build"], { cwd: root, stdio: "inherit" });
 
 if (result.status !== 0) {
   if (wasDraft) {
-    await writeFile(postPath, originalSource, "utf8");
+    await writeFile(postPath, draftSource, "utf8");
     console.error("Build failed, so the post was restored to draft mode.");
   }
   console.error("Build failed. Fix the error before pushing.");

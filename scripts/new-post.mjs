@@ -104,7 +104,7 @@ console.log(`Created ${path.relative(process.cwd(), postPath)}`);
 console.log(`Images  ${path.relative(process.cwd(), imagesDir)}/`);
 console.log("");
 console.log("Add an image in Markdown:");
-console.log(`![图片说明](./images/${postId}/example.webp)`);
+console.log(`![图片说明](./images/${postId}/screenshot.png)`);
 console.log("");
 console.log(`Preview: pnpm dev, then open /blog/${postId}`);
 if (draft) {

@@ -10,6 +10,7 @@
     "post:new": "node scripts/new-post.mjs",
     "post:publish": "node scripts/publish-post.mjs",
     "new:post": "node scripts/new-post.mjs",
+    "test": "node --test scripts/*.test.mjs",
     "build": "astro build",
     "preview": "astro preview"
   },
