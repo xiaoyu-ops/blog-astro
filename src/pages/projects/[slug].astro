@@ -4,12 +4,12 @@ import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
 
 export async function getStaticPaths() {
-  const projects = await getCollection("projects");
+  const projects = (await getCollection("projects")).filter((p) => !p.data.draft);
   return projects.map((p) => ({ params: { slug: p.id } }));
 }
 
 const { slug } = Astro.params;
-const projects = await getCollection("projects");
+const projects = (await getCollection("projects")).filter((p) => !p.data.draft);
 const project = projects.find((p) => p.id === slug);
 
 if (!project) {

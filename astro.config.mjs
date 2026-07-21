@@ -5,6 +5,9 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://blog.xiaoyu666.cyou',
+  image: {
+    layout: 'constrained',
+  },
   integrations: [mdx(), sitemap()],
   vite: {
     plugins: [tailwindcss()],

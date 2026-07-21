@@ -4,12 +4,12 @@ import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blog");
+  const posts = (await getCollection("blog")).filter((p) => import.meta.env.DEV || !p.data.draft);
   return posts.map((p) => ({ params: { slug: p.id } }));
 }
 
 const { slug } = Astro.params;
-const posts = await getCollection("blog");
+const posts = (await getCollection("blog")).filter((p) => import.meta.env.DEV || !p.data.draft);
 const post = posts.find((p) => p.id === slug);
 
 if (!post) {
@@ -19,7 +19,7 @@ if (!post) {
 const { Content } = await render(post);
 ---
 
-<Layout title={`${post.data.title} — Zhuoyang Wu`} description={post.data.description}>
+<Layout title={`${post.data.title} — Zhuoyang Wu`} description={post.data.description} type="article" publishedTime={post.data.date}>
   <Header />
   <main class="max-w-3xl mx-auto px-4 pt-20 pb-16">
     <a href="/#posts" class="inline-flex items-center text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors mb-8">
@@ -29,7 +29,7 @@ const { Content } = await render(post);
     <p class="text-xs text-[hsl(var(--muted-foreground))] font-mono mb-6">
       {post.data.date}
     </p>
-    <article class="prose prose-sm prose-neutral dark:prose-invert max-w-none
+    <article class="blog-content prose prose-sm prose-neutral dark:prose-invert max-w-none
       prose-headings:font-medium prose-headings:tracking-tight
       prose-p:leading-relaxed prose-p:text-[hsl(var(--muted-foreground))]
       prose-code:font-mono prose-code:text-xs

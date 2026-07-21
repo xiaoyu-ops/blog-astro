@@ -2,6 +2,7 @@
 title: "深信服科技 — AI 算法实习生"
 description: "为自进化终端安全 Agent 构建双路径聚类管道，识别罕见攻击模式（Rare TTP）。识别准确率超 70%，生成 2000+ 高价值训练样本。"
 date: "2026-02-01"
+order: 2
 tags:
   - Python
   - 聚类

@@ -1,27 +1,64 @@
 ---
 import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: "website" | "article";
+  publishedTime?: string;
+}
+
+const defaultDescription = "吴卓阳 — 具身智能、AI Agent、数据系统。中山大学本科生。";
+const site = Astro.site ?? new URL("https://blog.xiaoyu666.cyou");
+const title = Astro.props.title ?? "Zhuoyang Wu";
+const description = Astro.props.description ?? defaultDescription;
+const type = Astro.props.type ?? "website";
+const canonicalUrl = new URL(Astro.url.pathname, site).toString();
+const imageUrl = new URL(Astro.props.image ?? "/avatar.jpg", site).toString();
 ---
 
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={Astro.props.description || "吴卓阳 — 具身智能、AI Agent、数据系统。中山大学本科生。"} />
-    <title>{Astro.props.title || "Zhuoyang Wu"}</title>
-    <link rel="icon" type="image/png" href="/favicon.png" />
-  </head>
-  <body class="min-h-screen antialiased">
     <script is:inline>
+      document.documentElement.classList.add('js');
       (function() {
-        const stored = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (stored === 'dark' || (!stored && prefersDark)) {
-          document.documentElement.classList.add('dark');
+        try {
+          const stored = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (stored === 'dark' || (!stored && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (error) {
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+          }
         }
       })();
     </script>
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:site_name" content="Zhuoyang Wu" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:locale" content="zh_CN" />
+    {Astro.props.publishedTime && (
+      <meta property="article:published_time" content={Astro.props.publishedTime} />
+    )}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <title>{title}</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+  </head>
+  <body class="min-h-screen antialiased">
     <!-- Grid pattern background -->
     <svg aria-hidden="true" class="grid-pattern-bg fill-gray-400/30 stroke-gray-400/30 [mask-image:radial-gradient(circle_at_center,rgba(0,0,0,0.6),transparent)]">
       <defs>
@@ -37,6 +74,15 @@ import "../styles/global.css";
     <!-- Intersection Observer for fade-up animations -->
     <script is:inline>
       (function() {
+        const revealElements = () => {
+          document.querySelectorAll('.fade-up').forEach(el => el.classList.add('fade-visible'));
+        };
+
+        if (!('IntersectionObserver' in window)) {
+          revealElements();
+          return;
+        }
+
         const observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -47,31 +93,6 @@ import "../styles/global.css";
         }, { threshold: 0.1, rootMargin: '-20px 0px -20px 0px' });
 
         document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-      })();
-    </script>
-
-    <!-- Lightweight page-view counter. Owner visits are excluded server-side by cookie. -->
-    <script is:inline>
-      (function() {
-        const totalEl = document.getElementById('view-total');
-        const todayEl = document.getElementById('view-today');
-
-        function render(data) {
-          if (!data) return;
-          if (totalEl) totalEl.textContent = Number(data.total || 0).toLocaleString();
-          if (todayEl) todayEl.textContent = Number(data.today || 0).toLocaleString();
-        }
-
-        fetch('/api/views/track', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'same-origin',
-          keepalive: true,
-          body: JSON.stringify({ path: location.pathname })
-        })
-          .then((res) => res.ok ? res.json() : null)
-          .then(render)
-          .catch(function() {});
       })();
     </script>
   </body>

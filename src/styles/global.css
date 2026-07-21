@@ -93,14 +93,19 @@
 }
 
 @layer components {
-  /* Fade-up reveal on scroll — triggered by IntersectionObserver via .fade-visible */
+  /* Fade-up reveal on scroll, enabled only after JavaScript marks the page as interactive. */
   .fade-up {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  .js .fade-up {
     opacity: 0;
     transform: translateY(20px);
     filter: blur(6px);
     transition: opacity 0.5s ease-out, transform 0.5s ease-out, filter 0.5s ease-out;
   }
-  .fade-up.fade-visible {
+  .js .fade-up.fade-visible {
     opacity: 1;
     transform: translateY(0);
     filter: blur(0);
@@ -169,6 +174,37 @@
   }
   .group:hover .decorate-bar {
     background: hsl(var(--foreground) / 0.5);
+  }
+
+  .blog-content img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 46rem;
+    margin: 1.75rem auto;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+    background: hsl(var(--background));
+    object-fit: contain;
+  }
+  .blog-content p:has(> img:only-child) {
+    margin-top: 1.75rem;
+    margin-bottom: 1.75rem;
+  }
+  .blog-content p:has(> img:only-child) > img {
+    margin: 0;
+  }
+  .blog-content p:has(> img:only-child) + p:has(> em:only-child) {
+    margin-top: -1.25rem;
+    color: hsl(var(--muted-foreground));
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-style: normal;
+    line-height: 1.6;
+    text-align: center;
+  }
+  .blog-content p:has(> img:only-child) + p:has(> em:only-child) > em {
+    font-style: normal;
   }
 
   .project-content {

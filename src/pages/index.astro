@@ -3,8 +3,27 @@ import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import { getCollection } from "astro:content";
 
-const posts = await getCollection("blog");
-posts.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
+const posts = (await getCollection("blog")).filter((post) => import.meta.env.DEV || !post.data.draft);
+posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+const projects = (await getCollection("projects")).filter((project) => !project.data.draft);
+projects.sort((a, b) => {
+  const orderA = a.data.order ?? Number.MAX_SAFE_INTEGER;
+  const orderB = b.data.order ?? Number.MAX_SAFE_INTEGER;
+
+  if (orderA !== orderB) {
+    return orderA - orderB;
+  }
+
+  return new Date(b.data.date ?? 0).getTime() - new Date(a.data.date ?? 0).getTime();
+});
+
+const projectBeams = [
+  ["#60a5fa", "#a78bfa"],
+  ["#f97316", "#facc15"],
+  ["#34d399", "#60a5fa"],
+  ["#f472b6", "#c084fc"],
+];
 ---
 
 <Layout title="Zhuoyang Wu" description="吴卓阳 — 具身智能、AI Agent、数据系统。中山大学本科生。">
@@ -14,7 +33,7 @@ posts.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
   <section class="flex flex-col px-4 max-w-3xl mx-auto pt-24 md:pt-28 pb-8">
     <div class="fade-up flex items-center gap-3 mb-4">
       <img
-        src="/avatar.jpg"
+        src="/avatar-128.jpg"
         alt="Zhuoyang Wu"
         class="w-14 h-14 rounded-full object-cover ring-1 ring-[hsl(var(--border))]"
         width="56"
@@ -43,7 +62,7 @@ posts.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
       <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Docker</span>
     </div>
     <div class="fade-up fade-delay-3 mt-4 flex items-center gap-4 text-xs font-mono text-[hsl(var(--muted-foreground))]">
-      <a href="https://github.com/xiaoyu-ops" class="hover:text-[hsl(var(--foreground))] transition-colors" target="_blank">
+      <a href="https://github.com/xiaoyu-ops" class="hover:text-[hsl(var(--foreground))] transition-colors" target="_blank" rel="noopener noreferrer">
         GitHub
       </a>
       <span class="opacity-30">·</span>
@@ -91,62 +110,27 @@ posts.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
       </div>
     </div>
     <div class="space-y-1">
-      <a href="/projects/mmdedup" class="fade-up fade-delay-1 block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam" style="--beam-from: #60a5fa; --beam-to: #a78bfa;">
-        <div class="flex items-start justify-between gap-4 relative z-[1]">
-          <div class="min-w-0">
-            <h3 class="text-sm font-medium group-hover:underline underline-offset-4">MMdedup — 多模态去重管道</h3>
-            <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">面向多模态大语言模型训练数据集的高吞吐量数据清洗管道。存储减少 90%，吞吐量提升 3.6 倍。ICDE 审稿中。</p>
-            <div class="mt-2 flex flex-wrap gap-1">
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">Python</span>
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">数据系统</span>
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">LLM</span>
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">研究</span>
+      {projects.map((project, i) => {
+        const [beamFrom, beamTo] = projectBeams[i % projectBeams.length];
+
+        return (
+          <a href={`/projects/${project.id}`} class={`fade-up fade-delay-${Math.min(i + 1, 4)} block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam`} style={`--beam-from: ${beamFrom}; --beam-to: ${beamTo};`}>
+            <div class="flex items-start justify-between gap-4 relative z-[1]">
+              <div class="min-w-0">
+                <h3 class="text-sm font-medium group-hover:underline underline-offset-4">{project.data.title}</h3>
+                <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">{project.data.description}</p>
+                {project.data.tags && project.data.tags.length > 0 && (
+                  <div class="mt-2 flex flex-wrap gap-1">
+                    {project.data.tags.map((tag: string) => (
+                      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">{tag}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </div>
-      </a>
-      <a href="/projects/sangfor" class="fade-up fade-delay-2 block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam" style="--beam-from: #f97316; --beam-to: #facc15;">
-        <div class="flex items-start justify-between gap-4 relative z-[1]">
-          <div class="min-w-0">
-            <h3 class="text-sm font-medium group-hover:underline underline-offset-4">深信服 — Rare TTP 识别系统</h3>
-            <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">为自进化终端安全 Agent 构建双路径聚类管道，识别罕见攻击模式。准确率 >70%，生成 2000+ 训练样本。</p>
-            <div class="mt-2 flex flex-wrap gap-1">
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">Python</span>
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">聚类</span>
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">安全</span>
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">AI</span>
-            </div>
-          </div>
-        </div>
-      </a>
-      <a href="/projects/yu-agent" class="fade-up fade-delay-3 block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam" style="--beam-from: #34d399; --beam-to: #60a5fa;">
-        <div class="flex items-start justify-between gap-4 relative z-[1]">
-          <div class="min-w-0">
-            <h3 class="text-sm font-medium group-hover:underline underline-offset-4">yu_agent — 统一多模型 Agent 框架</h3>
-            <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">兼容 8+ LLM 提供商，4 种推理模式，4 层记忆架构。从零构建，不依赖 LangChain。</p>
-            <div class="mt-2 flex flex-wrap gap-1">
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">Python</span>
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">LLM</span>
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">Agent</span>
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">MCP</span>
-            </div>
-          </div>
-        </div>
-      </a>
-      <a href="/projects/junkfilter" class="fade-up fade-delay-4 block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam" style="--beam-from: #f472b6; --beam-to: #c084fc;">
-        <div class="flex items-start justify-between gap-4 relative z-[1]">
-          <div class="min-w-0">
-            <h3 class="text-sm font-medium group-hover:underline underline-offset-4">JunkFilter — 基于 Agent 的内容评估系统</h3>
-            <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">异构 Go + Python 分布式管道，73 个 RSS 源，三级去重 + LangGraph 评估。LLM 成本降低 30%。</p>
-            <div class="mt-2 flex flex-wrap gap-1">
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">Go</span>
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">Python</span>
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">LangGraph</span>
-              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">分布式</span>
-            </div>
-          </div>
-        </div>
-      </a>
+          </a>
+        );
+      })}
     </div>
   </section>
 
@@ -163,7 +147,14 @@ posts.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
         <a href={`/blog/${post.id}`} class={`fade-up fade-delay-${Math.min(i + 1, 4)} block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group`}>
           <div class="flex items-start justify-between gap-4">
             <div class="min-w-0">
-              <h3 class="text-sm font-medium group-hover:underline underline-offset-4">{post.data.title}</h3>
+              <h3 class="flex items-center gap-2 text-sm font-medium group-hover:underline underline-offset-4">
+                {post.data.title}
+                {post.data.draft && (
+                  <span class="rounded border border-[hsl(var(--border))] px-1.5 py-0.5 text-[0.625rem] font-mono font-normal text-[hsl(var(--muted-foreground))] no-underline">
+                    Draft
+                  </span>
+                )}
+              </h3>
               <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">{post.data.description}</p>
             </div>
             <span class="text-xs text-[hsl(var(--muted-foreground))] font-mono shrink-0 mt-0.5">{post.data.date}</span>
@@ -175,17 +166,8 @@ posts.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
 
   <!-- Footer -->
   <footer class="max-w-3xl mx-auto px-4 pb-8 text-xs text-[hsl(var(--muted-foreground))/50] font-mono">
-    <div class="border-t border-[hsl(var(--border))] pt-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+    <div class="border-t border-[hsl(var(--border))] pt-4">
       <span>© 2026 Zhuoyang Wu</span>
-      <span>
-        Views <span id="view-total">—</span>
-        <span class="opacity-40">·</span>
-        Today <span id="view-today">—</span>
-      </span>
-    </div>
-    <!-- Visitor Map -->
-    <div class="mt-4 flex justify-center">
-      <script id="_waubmap">var _wau = _wau || []; _wau.push(["map", "blogxiaoyu66", "bmap", "250", "125", "night", "cross-pink"]);</script><script async src="//waust.at/m.js"></script>
     </div>
   </footer>
 </Layout>

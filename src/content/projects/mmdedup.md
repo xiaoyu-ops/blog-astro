@@ -2,6 +2,7 @@
 title: "MMdedup — 多模态去重管道"
 description: "面向多模态大语言模型训练数据集的高吞吐量数据清洗管道。存储减少 90%，吞吐量比 SemDeDup 提升 3.6 倍。正在投稿中。"
 date: "2025-06-01"
+order: 1
 tags:
   - Python
   - 数据系统

@@ -2,6 +2,7 @@
 title: "yu_agent — 统一多模型 Agent 框架"
 description: "对大语言模型 Agent 架构的个人探索 —— 兼容 OpenAI，支持 8+ 提供商，具备四种推理模式和多层级记忆系统。"
 date: "2025-01-01"
+order: 3
 tags:
   - Python
   - 大语言模型
