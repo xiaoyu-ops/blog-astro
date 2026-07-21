@@ -166,8 +166,17 @@ const projectBeams = [
 
   <!-- Footer -->
   <footer class="max-w-3xl mx-auto px-4 pb-8 text-xs text-[hsl(var(--muted-foreground))/50] font-mono">
-    <div class="border-t border-[hsl(var(--border))] pt-4">
+    <div class="border-t border-[hsl(var(--border))] pt-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
       <span>© 2026 Zhuoyang Wu</span>
+      <span>
+        Views <span id="view-total">—</span>
+        <span class="opacity-40">·</span>
+        Today <span id="view-today">—</span>
+      </span>
+    </div>
+    <!-- Keep in sync with scripts/homepage-analytics.test.mjs. -->
+    <div class="mt-4 flex justify-center">
+      <script id="_waubmap">var _wau = _wau || []; _wau.push(["map", "blogxiaoyu66", "bmap", "250", "125", "night", "cross-pink"]);</script><script async src="https://waust.at/m.js"></script>
     </div>
   </footer>
 </Layout>

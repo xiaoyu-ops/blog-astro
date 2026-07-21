@@ -95,5 +95,30 @@ const imageUrl = new URL(Astro.props.image ?? "/avatar.jpg", site).toString();
         document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
       })();
     </script>
+
+    <!-- Keep in sync with scripts/homepage-analytics.test.mjs. -->
+    <script is:inline>
+      (function() {
+        const totalEl = document.getElementById('view-total');
+        const todayEl = document.getElementById('view-today');
+
+        function render(data) {
+          if (!data) return;
+          if (totalEl) totalEl.textContent = Number(data.total || 0).toLocaleString();
+          if (todayEl) todayEl.textContent = Number(data.today || 0).toLocaleString();
+        }
+
+        fetch('/api/views/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          keepalive: true,
+          body: JSON.stringify({ path: location.pathname })
+        })
+          .then((res) => res.ok ? res.json() : null)
+          .then(render)
+          .catch(function() {});
+      })();
+    </script>
   </body>
 </html>
