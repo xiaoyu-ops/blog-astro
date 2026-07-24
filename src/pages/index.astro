@@ -31,19 +31,36 @@ const projectBeams = [
 
   <!-- Hero -->
   <section class="flex flex-col px-4 max-w-3xl mx-auto pt-24 md:pt-28 pb-8 overflow-x-clip">
-    <div class="fade-up flex items-center gap-3 mb-4">
-      <img
-        src="/avatar-128.jpg"
-        alt="Zhuoyang Wu"
-        class="w-14 h-14 rounded-full object-cover ring-1 ring-[hsl(var(--border))]"
-        width="56"
-        height="56"
-      />
-      <div>
-        <h1 class="text-lg font-medium tracking-tight">吴卓阳</h1>
-        <p class="text-xs text-[hsl(var(--muted-foreground))] font-mono mt-0.5">
-          Zhuoyang Wu
-        </p>
+    <div class="fade-up flex items-start justify-between gap-4 mb-4">
+      <div class="flex items-center gap-3">
+        <img
+          src="/avatar-128.jpg"
+          alt="Zhuoyang Wu"
+          class="w-14 h-14 rounded-full object-cover ring-1 ring-[hsl(var(--border))]"
+          width="56"
+          height="56"
+        />
+        <div>
+          <h1 class="text-lg font-medium tracking-tight">吴卓阳</h1>
+          <p class="text-xs text-[hsl(var(--muted-foreground))] font-mono mt-0.5">
+            Zhuoyang Wu
+          </p>
+        </div>
+      </div>
+      <div class="hero-sticker" data-hero-sticker>
+        <span class="hero-sticker-quote" aria-hidden="true">
+          做一点<br />有意义的工作
+        </span>
+        <img
+          class="hero-sticker-fallback"
+          src="/images/automail-sticker.png"
+          alt="机械义肢主题的 Q 版人物贴纸"
+          width="768"
+          height="768"
+          decoding="async"
+        />
+        <div class="hero-sticker-stage" data-hero-sticker-stage aria-hidden="true"></div>
+        <span class="hero-sticker-hint" aria-hidden="true">拖动边缘</span>
       </div>
     </div>
     <p class="fade-up fade-delay-1 text-[hsl(var(--muted-foreground))] leading-relaxed text-sm mt-3">
@@ -72,23 +89,8 @@ const projectBeams = [
       <span class="opacity-30">·</span>
       <span>微信: woshiwudachong</span>
     </div>
-    <div class="hero-scroll-sticker fade-up fade-delay-4 mt-3">
-      <span class="hero-scroll-label text-xs text-[hsl(var(--muted-foreground))/40] font-mono animate-pulse">↓ scroll</span>
-      <div class="hero-sticker" data-hero-sticker>
-        <span class="hero-sticker-quote" aria-hidden="true">
-          做一点<br />有意义的工作
-        </span>
-        <img
-          class="hero-sticker-fallback"
-          src="/images/automail-sticker.png"
-          alt="机械义肢主题的 Q 版人物贴纸"
-          width="768"
-          height="768"
-          decoding="async"
-        />
-        <div class="hero-sticker-stage" data-hero-sticker-stage aria-hidden="true"></div>
-        <span class="hero-sticker-hint" aria-hidden="true">拖动边缘</span>
-      </div>
+    <div class="fade-up fade-delay-4 mt-8 text-center">
+      <span class="text-xs text-[hsl(var(--muted-foreground))/40] font-mono animate-pulse">↓ scroll</span>
     </div>
   </section>
 
@@ -197,28 +199,12 @@ const projectBeams = [
 </Layout>
 
 <style>
-  .hero-scroll-sticker {
-    position: relative;
-    display: grid;
-    width: min(calc(100% - 2rem), 25rem);
-    min-height: clamp(8.5rem, 25vw, 11.5rem);
-    margin-inline: auto;
-    place-items: center;
-  }
-
-  .hero-scroll-label {
-    position: relative;
-    z-index: 4;
-  }
-
   .hero-sticker {
-    position: absolute;
-    top: 50%;
-    left: calc(50% + clamp(4.5rem, 12vw, 7rem));
-    width: clamp(13rem, 38vw, 18rem);
-    height: clamp(8.5rem, 25vw, 11.5rem);
+    position: relative;
+    width: clamp(10rem, 27vw, 11.5rem);
+    aspect-ratio: 1;
+    flex: 0 0 auto;
     isolation: isolate;
-    transform: translate(-50%, -50%);
   }
 
   .hero-sticker-quote {
@@ -274,7 +260,7 @@ const projectBeams = [
   .hero-sticker-hint {
     position: absolute;
     left: 50%;
-    bottom: 0.5rem;
+    bottom: 0;
     z-index: 3;
     color: hsl(var(--muted-foreground) / 0.46);
     font-family: var(--font-mono);
