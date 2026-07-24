@@ -4,19 +4,23 @@
 
 ## 1. 创建文章
 
-在项目根目录运行：
-
-```bash
-pnpm new:post "文章标题" english-slug --description "一句话摘要" --category notes
-```
-
-例如：
+在项目根目录运行。随手写使用 `notes`：
 
 ```bash
 pnpm new:post "秋招复盘" autumn-recruit-review --description "秋招准备、面试复盘和后续计划。" --category notes
 ```
 
-`--category notes` 用于随手写，`--category technical` 用于技术写作；省略时默认为 `notes`。
+技术文章使用 `technical`：
+
+```bash
+pnpm new:post "用 Astro 构建个人博客" astro-blog --description "记录博客的架构、内容管理与部署流程。" --category technical
+```
+
+首页 Writing 区域会根据 `category` 将文章放进 `Notes` 或 `Technical` 标签页，每个标签页固定显示三篇，超过后可在区域内滚动查看。
+
+- 省略 `--category` 时默认为 `notes`。
+- 默认创建草稿，方便先在本地预览。
+- 命令末尾添加 `--publish` 可直接创建非草稿文章；此时必须填写 `--description`。
 
 命令会同时创建：
 

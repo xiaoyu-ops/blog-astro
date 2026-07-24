@@ -19,6 +19,9 @@ test("keeps homepage writing categories, local history scroll, and contact icons
   assert.equal(JSON.parse(packageJson).scripts["new:post"], "node scripts/new-post.mjs");
   assert.match(newPostScript, /Usage: pnpm new:post/);
   assert.match(contentReadme, /pnpm new:post/);
+  assert.match(contentReadme, /--category notes/);
+  assert.match(contentReadme, /--category technical/);
+  assert.match(contentReadme, /--publish/);
 
   assert.match(homepage, /role="tablist"/);
   assert.match(homepage, /data-writing-tab=\{category\.id\}/);
