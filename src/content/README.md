@@ -7,13 +7,13 @@
 在项目根目录运行：
 
 ```bash
-pnpm post:new "文章标题" english-slug --description "一句话摘要" --category notes
+pnpm new:post "文章标题" english-slug --description "一句话摘要" --category notes
 ```
 
 例如：
 
 ```bash
-pnpm post:new "秋招复盘" autumn-recruit-review --description "秋招准备、面试复盘和后续计划。" --category notes
+pnpm new:post "秋招复盘" autumn-recruit-review --description "秋招准备、面试复盘和后续计划。" --category notes
 ```
 
 `--category notes` 用于随手写，`--category technical` 用于技术写作；省略时默认为 `notes`。

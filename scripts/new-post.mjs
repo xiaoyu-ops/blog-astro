@@ -7,7 +7,7 @@ const args = process.argv.slice(2);
 const titleArg = args.shift();
 
 if (!titleArg) {
-  console.error('Usage: pnpm post:new "Post title" [slug] [--description "One sentence"] [--category notes|technical] [--publish]');
+  console.error('Usage: pnpm new:post "Post title" [slug] [--description "One sentence"] [--category notes|technical] [--publish]');
   process.exit(1);
 }
 

@@ -5,15 +5,20 @@ import test from "node:test";
 const root = new URL("../", import.meta.url);
 
 test("keeps homepage writing categories, local history scroll, and contact icons wired up", async () => {
-  const [homepage, contentConfig, newPostScript] = await Promise.all([
+  const [homepage, contentConfig, newPostScript, packageJson, contentReadme] = await Promise.all([
     readFile(new URL("src/pages/index.astro", root), "utf8"),
     readFile(new URL("src/content.config.ts", root), "utf8"),
     readFile(new URL("scripts/new-post.mjs", root), "utf8"),
+    readFile(new URL("package.json", root), "utf8"),
+    readFile(new URL("src/content/README.md", root), "utf8"),
   ]);
 
   assert.match(contentConfig, /z\.enum\(\["notes", "technical"\]\)\.default\("notes"\)/);
   assert.match(newPostScript, /--category notes\|technical/);
   assert.match(newPostScript, /category: "\$\{category\}"/);
+  assert.equal(JSON.parse(packageJson).scripts["new:post"], "node scripts/new-post.mjs");
+  assert.match(newPostScript, /Usage: pnpm new:post/);
+  assert.match(contentReadme, /pnpm new:post/);
 
   assert.match(homepage, /role="tablist"/);
   assert.match(homepage, /data-writing-tab=\{category\.id\}/);
