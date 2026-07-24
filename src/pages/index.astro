@@ -30,20 +30,37 @@ const projectBeams = [
   <Header />
 
   <!-- Hero -->
-  <section class="flex flex-col px-4 max-w-3xl mx-auto pt-24 md:pt-28 pb-8">
-    <div class="fade-up flex items-center gap-3 mb-4">
-      <img
-        src="/avatar-128.jpg"
-        alt="Zhuoyang Wu"
-        class="w-14 h-14 rounded-full object-cover ring-1 ring-[hsl(var(--border))]"
-        width="56"
-        height="56"
-      />
-      <div>
-        <h1 class="text-lg font-medium tracking-tight">吴卓阳</h1>
-        <p class="text-xs text-[hsl(var(--muted-foreground))] font-mono mt-0.5">
-          Zhuoyang Wu
-        </p>
+  <section class="flex flex-col px-4 max-w-3xl mx-auto pt-24 md:pt-28 pb-8 overflow-x-clip">
+    <div class="fade-up flex items-center justify-between gap-4 mb-4">
+      <div class="flex items-center gap-3">
+        <img
+          src="/avatar-128.jpg"
+          alt="Zhuoyang Wu"
+          class="w-14 h-14 rounded-full object-cover ring-1 ring-[hsl(var(--border))]"
+          width="56"
+          height="56"
+        />
+        <div>
+          <h1 class="text-lg font-medium tracking-tight">吴卓阳</h1>
+          <p class="text-xs text-[hsl(var(--muted-foreground))] font-mono mt-0.5">
+            Zhuoyang Wu
+          </p>
+        </div>
+      </div>
+      <div class="hero-sticker" data-hero-sticker>
+        <span class="hero-sticker-quote" aria-hidden="true">
+          做一点<br />有意义的工作
+        </span>
+        <img
+          class="hero-sticker-fallback"
+          src="/images/automail-sticker.png"
+          alt="机械义肢主题的 Q 版人物贴纸"
+          width="768"
+          height="768"
+          decoding="async"
+        />
+        <div class="hero-sticker-stage" data-hero-sticker-stage aria-hidden="true"></div>
+        <span class="hero-sticker-hint" aria-hidden="true">拖动边缘</span>
       </div>
     </div>
     <p class="fade-up fade-delay-1 text-[hsl(var(--muted-foreground))] leading-relaxed text-sm mt-3">
@@ -180,3 +197,213 @@ const projectBeams = [
     </div>
   </footer>
 </Layout>
+
+<style>
+  .hero-sticker {
+    position: relative;
+    width: clamp(5.75rem, 24vw, 7.75rem);
+    aspect-ratio: 1;
+    flex: 0 0 auto;
+    margin-right: 0.5rem;
+    isolation: isolate;
+  }
+
+  .hero-sticker-quote {
+    position: absolute;
+    top: 50%;
+    left: 5rem;
+    z-index: 0;
+    display: grid;
+    place-items: center;
+    width: 3.75rem;
+    height: 3.75rem;
+    color: hsl(var(--muted-foreground));
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    line-height: 1.55;
+    text-align: center;
+    text-wrap: nowrap;
+    opacity: var(--hero-sticker-quote-opacity, 0);
+    transform: translate(-50%, -50%);
+    transition: opacity 120ms ease;
+  }
+
+  .hero-sticker-fallback {
+    position: absolute;
+    top: 50%;
+    left: 5rem;
+    z-index: 1;
+    width: 3.75rem;
+    height: 3.75rem;
+    object-fit: contain;
+    filter: drop-shadow(0 0.45rem 0.55rem hsl(var(--foreground) / 0.13));
+    transform: translate(-50%, -50%) rotate(-3deg);
+    transition: opacity 180ms ease;
+  }
+
+  .hero-sticker-stage {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  .hero-sticker-stage :global(sticker-forge) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-sticker-hint {
+    position: absolute;
+    left: 5rem;
+    bottom: -0.25rem;
+    z-index: 3;
+    color: hsl(var(--muted-foreground) / 0.46);
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    letter-spacing: 0.04em;
+    opacity: 0;
+    transform: translate(-50%, 0.2rem);
+    transition: opacity 180ms ease, transform 180ms ease;
+    white-space: nowrap;
+  }
+
+  .hero-sticker.is-ready .hero-sticker-fallback {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hero-sticker.is-ready .hero-sticker-stage {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .hero-sticker.is-ready .hero-sticker-hint {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-sticker-fallback {
+      transform: translate(-50%, -50%);
+      transition: none;
+    }
+
+    .hero-sticker-hint {
+      display: none;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .hero-sticker-stage :global(sticker-forge) {
+      transform: scale(1.28);
+      transform-origin: center;
+    }
+  }
+</style>
+
+<script>
+  interface StickerElement extends HTMLElement {
+    setOptions(options: Record<string, unknown>): void;
+    setSource(source: Record<string, unknown>): Promise<void>;
+    setRenderScale(scale: number): void;
+  }
+
+  const heroSticker = document.querySelector<HTMLElement>("[data-hero-sticker]");
+  const heroStickerStage = document.querySelector<HTMLElement>("[data-hero-sticker-stage]");
+
+  if (heroSticker && heroStickerStage) {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const navigatorWithConnection = navigator as Navigator & {
+      connection?: { saveData?: boolean };
+    };
+    const canUseWebGL = "WebGLRenderingContext" in window;
+
+    if (!reducedMotion && !navigatorWithConnection.connection?.saveData && canUseWebGL) {
+      let loading = false;
+
+      const loadSticker = async () => {
+        if (loading || heroSticker.classList.contains("is-ready")) return;
+        loading = true;
+
+        try {
+          await import("../vendor/sticker-forge.es.js");
+          await customElements.whenDefined("sticker-forge");
+
+          const sticker = document.createElement("sticker-forge") as StickerElement;
+          sticker.style.cssText = "display:block;width:100%;height:100%";
+          sticker.setOptions({
+            outline: { width: 0, color: "#ffffff" },
+            shadow: { opacity: 0.18, blur: 18, distance: 10, angle: 42 },
+            peel: {
+              radius: 0.15,
+              stiffness: 0.78,
+              maxAngle: 3.4,
+              grabWidth: 28,
+              release: "reset",
+            },
+            sound: { enabled: false, volume: 0 },
+            back: { color: "#f5f3ef", gloss: 0.45, roughness: 0.55 },
+            tilt: -3,
+          });
+
+          heroStickerStage.append(sticker);
+          await sticker.setSource({
+            type: "image",
+            src: "/images/automail-sticker.png",
+            name: "automail-sticker.png",
+          });
+          sticker.setRenderScale(1.25);
+
+          const stickerCanvas = sticker.shadowRoot?.querySelector("canvas");
+          if (stickerCanvas) {
+            stickerCanvas.tabIndex = -1;
+            stickerCanvas.style.outline = "none";
+          }
+
+          sticker.addEventListener("peelchange", (event) => {
+            const progress = (event as CustomEvent<{ progress?: number }>).detail?.progress ?? 0;
+            const quoteOpacity = Math.max(0, Math.min(1, (progress - 0.12) / 0.35));
+            heroSticker.style.setProperty("--hero-sticker-quote-opacity", quoteOpacity.toString());
+          });
+          sticker.addEventListener("peelend", () => {
+            window.setTimeout(() => {
+              heroSticker.style.setProperty("--hero-sticker-quote-opacity", "0");
+            }, 280);
+          });
+
+          heroSticker.classList.add("is-ready");
+        } catch (error) {
+          console.warn("Interactive sticker unavailable; keeping the static image.", error);
+        }
+      };
+
+      const scheduleSticker = () => {
+        if ("requestIdleCallback" in window) {
+          window.requestIdleCallback(() => void loadSticker(), { timeout: 1800 });
+        } else {
+          window.setTimeout(() => void loadSticker(), 600);
+        }
+      };
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            observer.disconnect();
+            scheduleSticker();
+          }
+        },
+        { rootMargin: "160px" },
+      );
+
+      observer.observe(heroSticker);
+      heroSticker.addEventListener("pointerenter", () => void loadSticker(), { once: true });
+      heroSticker.addEventListener("touchstart", () => void loadSticker(), { once: true, passive: true });
+    }
+  }
+</script>
