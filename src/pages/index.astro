@@ -31,36 +31,19 @@ const projectBeams = [
 
   <!-- Hero -->
   <section class="flex flex-col px-4 max-w-3xl mx-auto pt-24 md:pt-28 pb-8 overflow-x-clip">
-    <div class="fade-up flex items-center justify-between gap-4 mb-4">
-      <div class="flex items-center gap-3">
-        <img
-          src="/avatar-128.jpg"
-          alt="Zhuoyang Wu"
-          class="w-14 h-14 rounded-full object-cover ring-1 ring-[hsl(var(--border))]"
-          width="56"
-          height="56"
-        />
-        <div>
-          <h1 class="text-lg font-medium tracking-tight">吴卓阳</h1>
-          <p class="text-xs text-[hsl(var(--muted-foreground))] font-mono mt-0.5">
-            Zhuoyang Wu
-          </p>
-        </div>
-      </div>
-      <div class="hero-sticker" data-hero-sticker>
-        <span class="hero-sticker-quote" aria-hidden="true">
-          做一点<br />有意义的工作
-        </span>
-        <img
-          class="hero-sticker-fallback"
-          src="/images/automail-sticker.png"
-          alt="机械义肢主题的 Q 版人物贴纸"
-          width="768"
-          height="768"
-          decoding="async"
-        />
-        <div class="hero-sticker-stage" data-hero-sticker-stage aria-hidden="true"></div>
-        <span class="hero-sticker-hint" aria-hidden="true">拖动边缘</span>
+    <div class="fade-up flex items-center gap-3 mb-4">
+      <img
+        src="/avatar-128.jpg"
+        alt="Zhuoyang Wu"
+        class="w-14 h-14 rounded-full object-cover ring-1 ring-[hsl(var(--border))]"
+        width="56"
+        height="56"
+      />
+      <div>
+        <h1 class="text-lg font-medium tracking-tight">吴卓阳</h1>
+        <p class="text-xs text-[hsl(var(--muted-foreground))] font-mono mt-0.5">
+          Zhuoyang Wu
+        </p>
       </div>
     </div>
     <p class="fade-up fade-delay-1 text-[hsl(var(--muted-foreground))] leading-relaxed text-sm mt-3">
@@ -89,7 +72,24 @@ const projectBeams = [
       <span class="opacity-30">·</span>
       <span>微信: woshiwudachong</span>
     </div>
-    <div class="fade-up fade-delay-4 mt-8 text-center">
+    <div class="fade-up fade-delay-4 mt-3">
+      <div class="hero-sticker" data-hero-sticker>
+        <span class="hero-sticker-quote" aria-hidden="true">
+          做一点<br />有意义的工作
+        </span>
+        <img
+          class="hero-sticker-fallback"
+          src="/images/automail-sticker.png"
+          alt="机械义肢主题的 Q 版人物贴纸"
+          width="768"
+          height="768"
+          decoding="async"
+        />
+        <div class="hero-sticker-stage" data-hero-sticker-stage aria-hidden="true"></div>
+        <span class="hero-sticker-hint" aria-hidden="true">拖动边缘</span>
+      </div>
+    </div>
+    <div class="fade-up fade-delay-4 mt-1 text-center">
       <span class="text-xs text-[hsl(var(--muted-foreground))/40] font-mono animate-pulse">↓ scroll</span>
     </div>
   </section>
@@ -201,22 +201,21 @@ const projectBeams = [
 <style>
   .hero-sticker {
     position: relative;
-    width: clamp(5.75rem, 24vw, 7.75rem);
-    aspect-ratio: 1;
-    flex: 0 0 auto;
-    margin-right: 0.5rem;
+    width: clamp(11rem, 32vw, 14rem);
+    height: clamp(7.25rem, 20vw, 8.75rem);
+    margin-inline: auto;
     isolation: isolate;
   }
 
   .hero-sticker-quote {
     position: absolute;
     top: 50%;
-    left: 5rem;
+    left: 50%;
     z-index: 0;
     display: grid;
     place-items: center;
-    width: 3.75rem;
-    height: 3.75rem;
+    width: 5.75rem;
+    height: 5.75rem;
     color: hsl(var(--muted-foreground));
     font-family: var(--font-mono);
     font-size: 0.5rem;
@@ -231,10 +230,10 @@ const projectBeams = [
   .hero-sticker-fallback {
     position: absolute;
     top: 50%;
-    left: 5rem;
+    left: 50%;
     z-index: 1;
-    width: 3.75rem;
-    height: 3.75rem;
+    width: 5.75rem;
+    height: 5.75rem;
     object-fit: contain;
     filter: drop-shadow(0 0.45rem 0.55rem hsl(var(--foreground) / 0.13));
     transform: translate(-50%, -50%) rotate(-3deg);
@@ -260,8 +259,8 @@ const projectBeams = [
 
   .hero-sticker-hint {
     position: absolute;
-    left: 5rem;
-    bottom: -0.25rem;
+    left: 50%;
+    bottom: 0;
     z-index: 3;
     color: hsl(var(--muted-foreground) / 0.46);
     font-family: var(--font-mono);
@@ -301,7 +300,7 @@ const projectBeams = [
 
   @media (min-width: 640px) {
     .hero-sticker-stage :global(sticker-forge) {
-      transform: scale(1.28);
+      transform: scale(1.18);
       transform-origin: center;
     }
   }
