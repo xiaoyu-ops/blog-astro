@@ -72,7 +72,8 @@ const projectBeams = [
       <span class="opacity-30">·</span>
       <span>微信: woshiwudachong</span>
     </div>
-    <div class="fade-up fade-delay-4 mt-3">
+    <div class="hero-scroll-sticker fade-up fade-delay-4 mt-3">
+      <span class="hero-scroll-label text-xs text-[hsl(var(--muted-foreground))/40] font-mono animate-pulse">↓ scroll</span>
       <div class="hero-sticker" data-hero-sticker>
         <span class="hero-sticker-quote" aria-hidden="true">
           做一点<br />有意义的工作
@@ -88,9 +89,6 @@ const projectBeams = [
         <div class="hero-sticker-stage" data-hero-sticker-stage aria-hidden="true"></div>
         <span class="hero-sticker-hint" aria-hidden="true">拖动边缘</span>
       </div>
-    </div>
-    <div class="fade-up fade-delay-4 mt-1 text-center">
-      <span class="text-xs text-[hsl(var(--muted-foreground))/40] font-mono animate-pulse">↓ scroll</span>
     </div>
   </section>
 
@@ -199,12 +197,26 @@ const projectBeams = [
 </Layout>
 
 <style>
-  .hero-sticker {
+  .hero-scroll-sticker {
     position: relative;
-    width: clamp(11rem, 32vw, 14rem);
-    height: clamp(7.25rem, 20vw, 8.75rem);
-    margin-inline: auto;
+    display: grid;
+    min-height: clamp(8.5rem, 25vw, 11.5rem);
+    place-items: center;
+  }
+
+  .hero-scroll-label {
+    position: relative;
+    z-index: 4;
+  }
+
+  .hero-sticker {
+    position: absolute;
+    top: 50%;
+    left: calc(50% + clamp(4.5rem, 12vw, 7rem));
+    width: clamp(13rem, 38vw, 18rem);
+    height: clamp(8.5rem, 25vw, 11.5rem);
     isolation: isolate;
+    transform: translate(-50%, -50%);
   }
 
   .hero-sticker-quote {
@@ -214,8 +226,8 @@ const projectBeams = [
     z-index: 0;
     display: grid;
     place-items: center;
-    width: 5.75rem;
-    height: 5.75rem;
+    width: 7rem;
+    height: 7rem;
     color: hsl(var(--muted-foreground));
     font-family: var(--font-mono);
     font-size: 0.5rem;
@@ -232,8 +244,8 @@ const projectBeams = [
     top: 50%;
     left: 50%;
     z-index: 1;
-    width: 5.75rem;
-    height: 5.75rem;
+    width: 7rem;
+    height: 7rem;
     object-fit: contain;
     filter: drop-shadow(0 0.45rem 0.55rem hsl(var(--foreground) / 0.13));
     transform: translate(-50%, -50%) rotate(-3deg);
@@ -260,7 +272,7 @@ const projectBeams = [
   .hero-sticker-hint {
     position: absolute;
     left: 50%;
-    bottom: 0;
+    bottom: 0.5rem;
     z-index: 3;
     color: hsl(var(--muted-foreground) / 0.46);
     font-family: var(--font-mono);
