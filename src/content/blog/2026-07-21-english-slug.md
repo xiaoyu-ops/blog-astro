@@ -2,6 +2,7 @@
 title: "随手小记-0721"
 description: "7月21日对前半个月的阶段性总结"
 date: "2026-07-21"
+category: "notes"
 draft: false
 tags: []
 ---

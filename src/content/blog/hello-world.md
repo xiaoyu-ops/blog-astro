@@ -2,6 +2,7 @@
 title: "为何懒惰而又好胜-致自己"
 description: "第一篇文章 — 关于我为什么开始写作。"
 date: "2026-07-01"
+category: "notes"
 tags:
   - meta
 ---

@@ -7,7 +7,7 @@ const args = process.argv.slice(2);
 const titleArg = args.shift();
 
 if (!titleArg) {
-  console.error('Usage: pnpm post:new "Post title" [slug] [--description "One sentence"] [--publish]');
+  console.error('Usage: pnpm post:new "Post title" [slug] [--description "One sentence"] [--category notes|technical] [--publish]');
   process.exit(1);
 }
 
@@ -19,6 +19,7 @@ if (args[0] && !args[0].startsWith("--")) {
 let description = "TODO: 补充一句话摘要";
 let hasDescription = false;
 let draft = true;
+let category = "notes";
 
 for (let i = 0; i < args.length; i += 1) {
   const arg = args[i];
@@ -32,6 +33,17 @@ for (let i = 0; i < args.length; i += 1) {
 
   if (arg === "--publish") {
     draft = false;
+    continue;
+  }
+
+  if (arg === "--category") {
+    category = args[i + 1]?.trim();
+    i += 1;
+
+    if (!["notes", "technical"].includes(category)) {
+      console.error('Category must be "notes" or "technical".');
+      process.exit(1);
+    }
     continue;
   }
 
@@ -88,6 +100,7 @@ const content = `---
 title: ${JSON.stringify(title)}
 description: ${JSON.stringify(description)}
 date: "${today}"
+category: "${category}"
 draft: ${draft}
 tags: []
 ---

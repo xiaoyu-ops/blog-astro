@@ -6,6 +6,21 @@ import { getCollection } from "astro:content";
 const posts = (await getCollection("blog")).filter((post) => import.meta.env.DEV || !post.data.draft);
 posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
+const writingCategories = [
+  {
+    id: "notes",
+    label: "Notes",
+    empty: "还没有随手写。",
+    posts: posts.filter((post) => post.data.category === "notes"),
+  },
+  {
+    id: "technical",
+    label: "Technical",
+    empty: "技术文章正在整理中。",
+    posts: posts.filter((post) => post.data.category === "technical"),
+  },
+] as const;
+
 const projects = (await getCollection("projects")).filter((project) => !project.data.draft);
 projects.sort((a, b) => {
   const orderA = a.data.order ?? Number.MAX_SAFE_INTEGER;
@@ -78,16 +93,28 @@ const projectBeams = [
       <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Redis</span>
       <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Docker</span>
     </div>
-    <div class="fade-up fade-delay-3 mt-4 flex items-center gap-4 text-xs font-mono text-[hsl(var(--muted-foreground))]">
-      <a href="https://github.com/xiaoyu-ops" class="hover:text-[hsl(var(--foreground))] transition-colors" target="_blank" rel="noopener noreferrer">
+    <div class="fade-up fade-delay-3 mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-mono text-[hsl(var(--muted-foreground))]">
+      <a href="https://github.com/xiaoyu-ops" class="inline-flex items-center gap-1.5 hover:text-[hsl(var(--foreground))] transition-colors" target="_blank" rel="noopener noreferrer">
+        <svg class="h-3.5 w-3.5 shrink-0" data-contact-icon="github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3.28-.36 6.72-1.61 6.72-7.25A5.65 5.65 0 0 0 19.22 3.3 5.27 5.27 0 0 0 19.13.3S17.95-.07 15 1.78a13.38 13.38 0 0 0-7 0C5.05-.07 3.87.3 3.87.3a5.27 5.27 0 0 0-.09 3A5.65 5.65 0 0 0 2.28 7.3c0 5.6 3.44 6.85 6.72 7.25A4.8 4.8 0 0 0 8 18v4" />
+          <path d="M8 19c-3 .92-3-1.92-4-2" />
+        </svg>
         GitHub
       </a>
-      <span class="opacity-30">·</span>
-      <a href="mailto:wuzhuoyang252@gmail.com" class="hover:text-[hsl(var(--foreground))] transition-colors">
+      <a href="mailto:wuzhuoyang252@gmail.com" class="inline-flex items-center gap-1.5 hover:text-[hsl(var(--foreground))] transition-colors">
+        <svg class="h-3.5 w-3.5 shrink-0" data-contact-icon="email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect width="20" height="16" x="2" y="4" rx="2" />
+          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+        </svg>
         Email
       </a>
-      <span class="opacity-30">·</span>
-      <span>微信: woshiwudachong</span>
+      <span class="inline-flex items-center gap-1.5">
+        <svg class="h-3.5 w-3.5 shrink-0" data-contact-icon="wechat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15a4 4 0 0 1-4 4H8l-4 3v-3.5A7 7 0 1 1 8 5h7a6 6 0 0 1 6 10Z" />
+          <path d="M8 12h.01M12 12h.01M16 12h.01" />
+        </svg>
+        微信: woshiwudachong
+      </span>
     </div>
     <div class="fade-up fade-delay-4 mt-8 text-center">
       <span class="text-xs text-[hsl(var(--muted-foreground))/40] font-mono animate-pulse">↓ scroll</span>
@@ -153,31 +180,68 @@ const projectBeams = [
 
   <!-- Writing -->
   <section id="posts" class="py-6 md:py-8 px-4 max-w-3xl mx-auto">
-    <div class="fade-up group mb-3">
+    <div class="fade-up group mb-3 flex items-end justify-between gap-4">
       <div class="flex items-center gap-2">
         <div class="decorate-bar h-4"></div>
         <h2 class="text-xs font-mono font-medium text-[hsl(var(--muted-foreground))] transition-colors duration-700 group-hover:text-[hsl(var(--foreground))]">Writing</h2>
       </div>
+      <div class="writing-tabs flex items-center gap-3 font-mono text-xs" role="tablist" aria-label="Writing categories">
+        {writingCategories.map((category) => (
+          <button
+            id={`writing-tab-${category.id}`}
+            class:list={["writing-tab", { "is-active": category.id === "notes" }]}
+            type="button"
+            role="tab"
+            aria-selected={category.id === "notes" ? "true" : "false"}
+            aria-controls={`writing-panel-${category.id}`}
+            tabindex={category.id === "notes" ? "0" : "-1"}
+            data-writing-tab={category.id}
+          >
+            {category.label}
+            <span class="writing-tab-count">{category.posts.length}</span>
+          </button>
+        ))}
+      </div>
     </div>
-    <div class="space-y-1">
-      {posts.map((post, i) => (
-        <a href={`/blog/${post.id}`} class={`fade-up fade-delay-${Math.min(i + 1, 4)} block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group`}>
-          <div class="flex items-start justify-between gap-4">
-            <div class="min-w-0">
-              <h3 class="flex items-center gap-2 text-sm font-medium group-hover:underline underline-offset-4">
-                {post.data.title}
-                {post.data.draft && (
-                  <span class="rounded border border-[hsl(var(--border))] px-1.5 py-0.5 text-[0.625rem] font-mono font-normal text-[hsl(var(--muted-foreground))] no-underline">
-                    Draft
-                  </span>
-                )}
-              </h3>
-              <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">{post.data.description}</p>
-            </div>
-            <span class="text-xs text-[hsl(var(--muted-foreground))] font-mono shrink-0 mt-0.5">{post.data.date}</span>
-          </div>
-        </a>
+    <div class="writing-window-shell fade-up fade-delay-1 relative">
+      {writingCategories.map((category) => (
+        <div
+          id={`writing-panel-${category.id}`}
+          class="writing-window"
+          role="tabpanel"
+          aria-labelledby={`writing-tab-${category.id}`}
+          aria-label={`${category.label} writing`}
+          tabindex={category.id === "notes" ? "0" : "-1"}
+          data-writing-panel={category.id}
+          hidden={category.id !== "notes"}
+        >
+          {category.posts.length > 0 ? (
+            category.posts.map((post) => (
+              <a href={`/blog/${post.id}`} class="writing-entry block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] transition-colors duration-200 group">
+                <div class="flex h-full items-center justify-between gap-4">
+                  <div class="min-w-0">
+                    <h3 class="flex min-w-0 items-center gap-2 text-sm font-medium group-hover:underline underline-offset-4">
+                      <span class="truncate">{post.data.title}</span>
+                      {post.data.draft && (
+                        <span class="rounded border border-[hsl(var(--border))] px-1.5 py-0.5 text-[0.625rem] font-mono font-normal text-[hsl(var(--muted-foreground))] no-underline">
+                          Draft
+                        </span>
+                      )}
+                    </h3>
+                    <p class="writing-description mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-200">{post.data.description}</p>
+                  </div>
+                  <span class="text-xs text-[hsl(var(--muted-foreground))] font-mono shrink-0">{post.data.date}</span>
+                </div>
+              </a>
+            ))
+          ) : (
+            <p class="writing-empty">{category.empty}</p>
+          )}
+        </div>
       ))}
+      <div class="writing-scroll-cue" data-writing-scroll-cue hidden aria-hidden="true">
+        ↓ Older writing
+      </div>
     </div>
   </section>
 
@@ -199,6 +263,89 @@ const projectBeams = [
 </Layout>
 
 <style>
+  .writing-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: 2rem;
+    padding-inline: 0.125rem;
+    border-bottom: 1px solid transparent;
+    color: hsl(var(--muted-foreground) / 0.58);
+    transition: border-color 180ms ease, color 180ms ease;
+  }
+
+  .writing-tab:hover {
+    color: hsl(var(--foreground));
+  }
+
+  .writing-tab.is-active {
+    border-color: hsl(var(--foreground) / 0.72);
+    color: hsl(var(--foreground));
+  }
+
+  .writing-tab:focus-visible,
+  .writing-window:focus-visible {
+    outline: 1px solid hsl(var(--foreground) / 0.55);
+    outline-offset: 3px;
+  }
+
+  .writing-tab-count {
+    color: hsl(var(--muted-foreground) / 0.46);
+    font-size: 0.625rem;
+  }
+
+  .writing-window {
+    height: 15rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: auto;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.24) transparent;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+  }
+
+  .writing-window::-webkit-scrollbar {
+    width: 0.3rem;
+  }
+
+  .writing-window::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: hsl(var(--muted-foreground) / 0.24);
+  }
+
+  .writing-entry {
+    height: 5rem;
+  }
+
+  .writing-description {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .writing-empty {
+    display: grid;
+    height: 100%;
+    place-items: center;
+    color: hsl(var(--muted-foreground) / 0.54);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  .writing-scroll-cue {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.25rem;
+    z-index: 2;
+    padding: 1.75rem 0.25rem 0.1rem 1.5rem;
+    background: linear-gradient(to bottom, transparent, hsl(var(--background)) 58%);
+    color: hsl(var(--muted-foreground) / 0.56);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    pointer-events: none;
+  }
+
   .hero-sticker {
     position: relative;
     width: clamp(10rem, 27vw, 11.5rem);
@@ -405,4 +552,74 @@ const projectBeams = [
       heroSticker.addEventListener("touchstart", () => void loadSticker(), { once: true, passive: true });
     }
   }
+</script>
+
+<script>
+  const writingTabs = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-writing-tab]"));
+  const writingPanels = Array.from(document.querySelectorAll<HTMLElement>("[data-writing-panel]"));
+  const writingScrollCue = document.querySelector<HTMLElement>("[data-writing-scroll-cue]");
+
+  const updateWritingScrollCue = (panel: HTMLElement) => {
+    if (!writingScrollCue) return;
+
+    const hasOlderWriting = panel.scrollHeight > panel.clientHeight + 1;
+    const isAtBottom = panel.scrollTop + panel.clientHeight >= panel.scrollHeight - 2;
+    writingScrollCue.hidden = !hasOlderWriting || isAtBottom;
+  };
+
+  const activateWritingCategory = (category: string, focusTab = false) => {
+    const activeTab = writingTabs.find((tab) => tab.dataset.writingTab === category);
+    const activePanel = writingPanels.find((panel) => panel.dataset.writingPanel === category);
+
+    if (!activeTab || !activePanel) return;
+
+    writingTabs.forEach((tab) => {
+      const isActive = tab === activeTab;
+      tab.classList.toggle("is-active", isActive);
+      tab.setAttribute("aria-selected", isActive ? "true" : "false");
+      tab.tabIndex = isActive ? 0 : -1;
+    });
+
+    writingPanels.forEach((panel) => {
+      const isActive = panel === activePanel;
+      panel.hidden = !isActive;
+      panel.tabIndex = isActive ? 0 : -1;
+    });
+
+    activePanel.scrollTop = 0;
+    updateWritingScrollCue(activePanel);
+    if (focusTab) activeTab.focus();
+  };
+
+  writingTabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => {
+      if (tab.dataset.writingTab) activateWritingCategory(tab.dataset.writingTab);
+    });
+
+    tab.addEventListener("keydown", (event) => {
+      let nextIndex = index;
+
+      if (event.key === "ArrowRight") nextIndex = (index + 1) % writingTabs.length;
+      else if (event.key === "ArrowLeft") nextIndex = (index - 1 + writingTabs.length) % writingTabs.length;
+      else if (event.key === "Home") nextIndex = 0;
+      else if (event.key === "End") nextIndex = writingTabs.length - 1;
+      else return;
+
+      event.preventDefault();
+      const nextCategory = writingTabs[nextIndex]?.dataset.writingTab;
+      if (nextCategory) activateWritingCategory(nextCategory, true);
+    });
+  });
+
+  writingPanels.forEach((panel) => {
+    panel.addEventListener("scroll", () => updateWritingScrollCue(panel), { passive: true });
+  });
+
+  const initialWritingPanel = writingPanels.find((panel) => !panel.hidden);
+  if (initialWritingPanel) updateWritingScrollCue(initialWritingPanel);
+
+  window.addEventListener("resize", () => {
+    const activePanel = writingPanels.find((panel) => !panel.hidden);
+    if (activePanel) updateWritingScrollCue(activePanel);
+  });
 </script>
