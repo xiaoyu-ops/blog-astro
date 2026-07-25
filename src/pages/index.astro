@@ -216,24 +216,28 @@ const projectBeams = [
           hidden={category.id !== "notes"}
         >
           {category.posts.length > 0 ? (
-            category.posts.map((post) => (
-              <a href={`/blog/${post.id}`} class="writing-entry block -mx-4 px-4 py-2.5 group">
-                <div class="flex h-full items-center justify-between gap-4">
-                  <div class="min-w-0">
-                    <h3 class="flex min-w-0 items-center gap-2 text-sm font-medium group-hover:underline underline-offset-4">
-                      <span class="truncate">{post.data.title}</span>
-                      {post.data.draft && (
-                        <span class="rounded border border-[hsl(var(--border))] px-1.5 py-0.5 text-[0.625rem] font-mono font-normal text-[hsl(var(--muted-foreground))] no-underline">
-                          Draft
-                        </span>
-                      )}
-                    </h3>
-                    <p class="writing-description mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-200">{post.data.description}</p>
+            category.posts.map((post, i) => {
+              const [beamFrom, beamTo] = projectBeams[i % projectBeams.length];
+
+              return (
+                <a href={`/blog/${post.id}`} class="writing-entry block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam" style={`--beam-from: ${beamFrom}; --beam-to: ${beamTo};`}>
+                  <div class="flex h-full items-center justify-between gap-4 relative z-[1]">
+                    <div class="min-w-0">
+                      <h3 class="flex min-w-0 items-center gap-2 text-sm font-medium group-hover:underline underline-offset-4">
+                        <span class="truncate">{post.data.title}</span>
+                        {post.data.draft && (
+                          <span class="rounded border border-[hsl(var(--border))] px-1.5 py-0.5 text-[0.625rem] font-mono font-normal text-[hsl(var(--muted-foreground))] no-underline">
+                            Draft
+                          </span>
+                        )}
+                      </h3>
+                      <p class="writing-description mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">{post.data.description}</p>
+                    </div>
+                    <span class="text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300 font-mono shrink-0">{post.data.date}</span>
                   </div>
-                  <span class="text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-200 font-mono shrink-0">{post.data.date}</span>
-                </div>
-              </a>
-            ))
+                </a>
+              );
+            })
           ) : (
             <p class="writing-empty">{category.empty}</p>
           )}

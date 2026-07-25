@@ -29,8 +29,11 @@ test("keeps homepage writing categories, local history scroll, and contact icons
   assert.match(homepage, /height: 15rem/);
   assert.match(homepage, /panel\.scrollHeight > panel\.clientHeight/);
   assert.match(homepage, /event\.key === "ArrowRight"/);
-  assert.doesNotMatch(homepage, /writing-entry[^"]*hover:bg/);
-  assert.doesNotMatch(homepage, /writing-entry[^"]*hover:border/);
+  assert.match(homepage, /writing-entry[^"]*border-beam/);
+  assert.match(homepage, /writing-entry[^"]*hover:bg/);
+  assert.match(homepage, /writing-entry[^"]*hover:border/);
+  assert.match(homepage, /writing-entry[^"]*hover:-translate-y-0\.5/);
+  assert.match(homepage, /--beam-from: \$\{beamFrom\}; --beam-to: \$\{beamTo\}/);
   assert.match(homepage, /\.writing-entry:focus-visible/);
 
   assert.match(homepage, /data-contact-icon="github"/);
