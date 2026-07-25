@@ -542,7 +542,7 @@ const projectBeams = [
               releaseResetTimer = undefined;
               const currentState = sticker.getState();
 
-              if (currentState.ready && (currentState.dragging || currentState.progress > 0.01)) {
+              if (currentState.ready) {
                 sticker.reset();
                 heroSticker.style.setProperty("--hero-sticker-quote-opacity", "0");
               }

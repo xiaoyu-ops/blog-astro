@@ -31,5 +31,7 @@ test("keeps the homepage sticker progressive and self-contained", async () => {
   assert.match(homepage, /sticker\.getState\(\)/);
   assert.match(homepage, /sticker\.reset\(\)/);
   assert.match(homepage, /"pointercancel", "touchend", "touchcancel"/);
+  assert.match(homepage, /if \(currentState\.ready\) \{\s*sticker\.reset\(\)/);
+  assert.doesNotMatch(homepage, /currentState\.progress > 0\.01/);
   assert.match(notices, /Copyright \(c\) 2026 CatsJuice/);
 });
