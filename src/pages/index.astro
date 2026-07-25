@@ -470,6 +470,8 @@ const projectBeams = [
     setOptions(options: Record<string, unknown>): void;
     setSource(source: Record<string, unknown>): Promise<void>;
     setRenderScale(scale: number): void;
+    getState(): { ready: boolean; dragging: boolean; progress: number };
+    reset(): void;
   }
 
   const heroSticker = document.querySelector<HTMLElement>("[data-hero-sticker]");
@@ -524,16 +526,46 @@ const projectBeams = [
             stickerCanvas.style.outline = "none";
           }
 
+          let releaseResetTimer: number | undefined;
+          const clearReleaseReset = () => {
+            if (releaseResetTimer === undefined) return;
+            window.clearTimeout(releaseResetTimer);
+            releaseResetTimer = undefined;
+          };
+          const scheduleReleaseReset = () => {
+            clearReleaseReset();
+
+            const state = sticker.getState();
+            if (!state.ready || (!state.dragging && state.progress <= 0.01)) return;
+
+            releaseResetTimer = window.setTimeout(() => {
+              releaseResetTimer = undefined;
+              const currentState = sticker.getState();
+
+              if (currentState.ready && (currentState.dragging || currentState.progress > 0.01)) {
+                sticker.reset();
+                heroSticker.style.setProperty("--hero-sticker-quote-opacity", "0");
+              }
+            }, 900);
+          };
+
+          sticker.addEventListener("peelstart", clearReleaseReset);
           sticker.addEventListener("peelchange", (event) => {
             const progress = (event as CustomEvent<{ progress?: number }>).detail?.progress ?? 0;
             const quoteOpacity = Math.max(0, Math.min(1, (progress - 0.12) / 0.35));
             heroSticker.style.setProperty("--hero-sticker-quote-opacity", quoteOpacity.toString());
           });
-          sticker.addEventListener("peelend", () => {
+          sticker.addEventListener("peelend", (event) => {
+            const willReset = (event as CustomEvent<{ willReset?: boolean }>).detail?.willReset ?? true;
+            if (willReset) scheduleReleaseReset();
+
             window.setTimeout(() => {
               heroSticker.style.setProperty("--hero-sticker-quote-opacity", "0");
             }, 280);
           });
+          for (const releaseEvent of ["pointerup", "pointercancel", "touchend", "touchcancel"]) {
+            window.addEventListener(releaseEvent, scheduleReleaseReset, { capture: true, passive: true });
+          }
 
           heroSticker.classList.add("is-ready");
         } catch (error) {

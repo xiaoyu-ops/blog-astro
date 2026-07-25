@@ -28,5 +28,8 @@ test("keeps the homepage sticker progressive and self-contained", async () => {
   assert.match(homepage, /prefers-reduced-motion: reduce/);
   assert.match(homepage, /connection\?\.saveData/);
   assert.match(homepage, /sound: \{ enabled: false, volume: 0 \}/);
+  assert.match(homepage, /sticker\.getState\(\)/);
+  assert.match(homepage, /sticker\.reset\(\)/);
+  assert.match(homepage, /"pointercancel", "touchend", "touchcancel"/);
   assert.match(notices, /Copyright \(c\) 2026 CatsJuice/);
 });
