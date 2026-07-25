@@ -27,6 +27,10 @@ test("keeps homepage writing categories, local history scroll, and contact icons
   assert.match(homepage, /data-writing-tab=\{category\.id\}/);
   assert.match(homepage, /data-writing-panel=\{category\.id\}/);
   assert.match(homepage, /height: 15rem/);
+  assert.match(homepage, /margin-inline: -1rem/);
+  assert.match(homepage, /padding-inline: 1rem/);
+  assert.match(homepage, /padding-block: 0\.25rem/);
+  assert.match(homepage, /height: calc\(\(15rem - 0\.5rem\) \/ 3\)/);
   assert.match(homepage, /panel\.scrollHeight > panel\.clientHeight/);
   assert.match(homepage, /event\.key === "ArrowRight"/);
   assert.match(homepage, /writing-entry[^"]*border-beam/);

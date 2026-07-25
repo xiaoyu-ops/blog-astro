@@ -300,6 +300,9 @@ const projectBeams = [
 
   .writing-window {
     height: 15rem;
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+    padding-block: 0.25rem;
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior-y: auto;
@@ -318,7 +321,7 @@ const projectBeams = [
   }
 
   .writing-entry {
-    height: 5rem;
+    height: calc((15rem - 0.5rem) / 3);
   }
 
   .writing-entry:focus-visible {
