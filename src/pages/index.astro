@@ -217,7 +217,7 @@ const projectBeams = [
         >
           {category.posts.length > 0 ? (
             category.posts.map((post) => (
-              <a href={`/blog/${post.id}`} class="writing-entry block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] transition-colors duration-200 group">
+              <a href={`/blog/${post.id}`} class="writing-entry block -mx-4 px-4 py-2.5 group">
                 <div class="flex h-full items-center justify-between gap-4">
                   <div class="min-w-0">
                     <h3 class="flex min-w-0 items-center gap-2 text-sm font-medium group-hover:underline underline-offset-4">
@@ -230,7 +230,7 @@ const projectBeams = [
                     </h3>
                     <p class="writing-description mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-200">{post.data.description}</p>
                   </div>
-                  <span class="text-xs text-[hsl(var(--muted-foreground))] font-mono shrink-0">{post.data.date}</span>
+                  <span class="text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-200 font-mono shrink-0">{post.data.date}</span>
                 </div>
               </a>
             ))
@@ -315,6 +315,11 @@ const projectBeams = [
 
   .writing-entry {
     height: 5rem;
+  }
+
+  .writing-entry:focus-visible {
+    outline: 1px solid hsl(var(--foreground) / 0.55);
+    outline-offset: -2px;
   }
 
   .writing-description {
