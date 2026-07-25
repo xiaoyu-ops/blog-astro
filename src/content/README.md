@@ -7,20 +7,29 @@
 在项目根目录运行。随手写使用 `notes`：
 
 ```bash
-pnpm new:post "秋招复盘" autumn-recruit-review --description "秋招准备、面试复盘和后续计划。" --category notes
+pnpm new:post "秋招复盘" autumn-recruit-review \
+  --title-en "Looking Back on Autumn Recruitment" \
+  --description "秋招准备、面试复盘和后续计划。" \
+  --description-en "Notes on preparation, interviews, and what comes next." \
+  --category notes
 ```
 
 技术文章使用 `technical`：
 
 ```bash
-pnpm new:post "用 Astro 构建个人博客" astro-blog --description "记录博客的架构、内容管理与部署流程。" --category technical
+pnpm new:post "用 Astro 构建个人博客" astro-blog \
+  --title-en "Building a Personal Blog with Astro" \
+  --description "记录博客的架构、内容管理与部署流程。" \
+  --description-en "A practical look at the blog's architecture, content workflow, and deployment." \
+  --category technical
 ```
 
 首页 Writing 区域会根据 `category` 将文章放进 `Notes` 或 `Technical` 标签页，每个标签页固定显示三篇，超过后可在区域内滚动查看。
 
 - 省略 `--category` 时默认为 `notes`。
 - 默认创建草稿，方便先在本地预览。
-- 命令末尾添加 `--publish` 可直接创建非草稿文章；此时必须填写 `--description`。
+- `--title-en` 和 `--description-en` 分别填写自然的英文标题与摘要；英文模式的首页会使用这两项。
+- 命令末尾添加 `--publish` 可直接创建非草稿文章；此时必须同时填写 `--description`、`--title-en` 和 `--description-en`。
 
 命令会同时创建：
 
@@ -69,7 +78,7 @@ pnpm post:publish YYYY-MM-DD-english-slug
 
 它会：
 
-1. 检查摘要不再是 `TODO`。
+1. 检查中英文标题与摘要不再是 `TODO`。
 2. 把 `draft: true` 改成 `draft: false`。
 3. 运行生产构建，检查文章、图片、首页和 sitemap。
 4. 构建失败时自动恢复为草稿；构建通过后打印 Git 提交命令。
@@ -108,11 +117,15 @@ src/content/projects/
 ```yaml
 ---
 title: "项目名称"
+titleEn: "Project Name"
 description: "一句话项目介绍"
+descriptionEn: "A concise, natural English introduction."
 date: "2026-07-21"
 draft: false
 order: 1
 tags:
+  - Astro
+tagsEn:
   - Astro
 ---
 ```
@@ -120,6 +133,7 @@ tags:
 - `draft: true`：本地可预览，生产环境不展示。
 - `order`：数字越小，首页 Projects 中越靠前。
 - `date`：`order` 相同时用于排序。
+- `titleEn`、`descriptionEn`、`tagsEn`：英文模式使用的项目标题、介绍和标签，顺序与中文标签保持一致。
 
 修改项目后同样先运行 `pnpm build`，再提交和推送。
 

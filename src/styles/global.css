@@ -80,6 +80,11 @@
     border-color: hsl(var(--border));
   }
 
+  html[data-lang="zh"] [data-lang="en"],
+  html[data-lang="en"] [data-lang="zh"] {
+    display: none !important;
+  }
+
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));

@@ -24,11 +24,14 @@ const projects = defineCollection({
   schema: z
     .object({
       title: z.string(),
+      titleEn: z.string().min(1).optional(),
       description: z.string().min(1),
+      descriptionEn: z.string().min(1).optional(),
       date: dateString.optional(),
       draft: z.boolean().optional(),
       order: z.number().optional(),
       tags: z.array(z.string()).optional(),
+      tagsEn: z.array(z.string()).optional(),
     })
     .superRefine(requireReadyDescription),
 });
@@ -38,7 +41,9 @@ const blog = defineCollection({
   schema: z
     .object({
       title: z.string(),
+      titleEn: z.string().min(1).optional(),
       description: z.string().min(1),
+      descriptionEn: z.string().min(1).optional(),
       date: dateString,
       category: z.enum(["notes", "technical"]).default("notes"),
       draft: z.boolean().optional(),

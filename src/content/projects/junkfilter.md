@@ -1,6 +1,8 @@
 ---
 title: "JunkFilter — 基于 Agent 的内容评估系统"
+titleEn: "JunkFilter — Agent-Powered Content Evaluation"
 description: "异构 Go + Python 分布式管道，用于 RSS 内容过滤，具备三级去重和 LangGraph 多 Agent 评估功能。LLM API 成本降低 30%。"
+descriptionEn: "A distributed Go and Python pipeline for filtering RSS feeds, combining three-stage deduplication with LangGraph-based multi-agent evaluation. It cut LLM API costs by 30%."
 date: "2025-03-01"
 order: 4
 tags:
@@ -8,6 +10,12 @@ tags:
   - Python
   - LangGraph
   - 分布式系统
+  - Tauri
+tagsEn:
+  - Go
+  - Python
+  - LangGraph
+  - Distributed Systems
   - Tauri
 ---
 

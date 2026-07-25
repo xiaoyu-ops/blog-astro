@@ -1,6 +1,8 @@
 ---
 title: "深信服科技 — AI 算法实习生"
+titleEn: "Sangfor Technologies — AI Algorithm Intern"
 description: "为自进化终端安全 Agent 构建双路径聚类管道，识别罕见攻击模式（Rare TTP）。识别准确率超 70%，生成 2000+ 高价值训练样本。"
+descriptionEn: "Built a dual-path clustering pipeline for a self-evolving endpoint security agent to surface rare attack patterns (Rare TTPs). It achieved over 70% precision and produced more than 2,000 high-value training samples."
 date: "2026-02-01"
 order: 2
 tags:
@@ -9,6 +11,12 @@ tags:
   - 安全
   - AI
   - 实习
+tagsEn:
+  - Python
+  - Clustering
+  - Cybersecurity
+  - AI
+  - Internship
 ---
 
 ## 职位

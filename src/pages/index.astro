@@ -9,14 +9,18 @@ posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).get
 const writingCategories = [
   {
     id: "notes",
-    label: "Notes",
-    empty: "还没有随手写。",
+    labelZh: "随手写",
+    labelEn: "Notes",
+    emptyZh: "还没有随手写。",
+    emptyEn: "No notes here yet.",
     posts: posts.filter((post) => post.data.category === "notes"),
   },
   {
     id: "technical",
-    label: "Technical",
-    empty: "技术文章正在整理中。",
+    labelZh: "技术",
+    labelEn: "Technical",
+    emptyZh: "技术文章正在整理中。",
+    emptyEn: "Technical posts are on the way.",
     posts: posts.filter((post) => post.data.category === "technical"),
   },
 ] as const;
@@ -56,31 +60,47 @@ const projectBeams = [
           height="56"
         />
         <div>
-          <h1 class="text-lg font-medium tracking-tight">吴卓阳</h1>
+          <h1 class="text-lg font-medium tracking-tight">
+            <span data-lang="zh">吴卓阳</span>
+            <span data-lang="en">Zhuoyang Wu</span>
+          </h1>
           <p class="text-xs text-[hsl(var(--muted-foreground))] font-mono mt-0.5">
-            Zhuoyang Wu
+            <span data-lang="zh">Zhuoyang Wu</span>
+            <span data-lang="en">SYSU · AI</span>
           </p>
         </div>
       </div>
       <div class="hero-sticker" data-hero-sticker>
-        <span class="hero-sticker-quote" aria-hidden="true">
+        <span class="hero-sticker-quote" data-lang="zh" aria-hidden="true">
           做一点<br />有意义的工作
+        </span>
+        <span class="hero-sticker-quote" data-lang="en" aria-hidden="true">
+          Do work<br />that matters
         </span>
         <img
           class="hero-sticker-fallback"
           src="/images/automail-sticker.png"
           alt="机械义肢主题的 Q 版人物贴纸"
+          data-language-alt-zh="机械义肢主题的 Q 版人物贴纸"
+          data-language-alt-en="A chibi character with a mechanical prosthetic arm"
           width="768"
           height="768"
           decoding="async"
         />
         <div class="hero-sticker-stage" data-hero-sticker-stage aria-hidden="true"></div>
-        <span class="hero-sticker-hint" aria-hidden="true">拖动边缘</span>
+        <span class="hero-sticker-hint" data-lang="zh" aria-hidden="true">拖动边缘</span>
+        <span class="hero-sticker-hint" data-lang="en" aria-hidden="true">drag the edge</span>
       </div>
     </div>
-    <p class="fade-up fade-delay-1 text-[hsl(var(--muted-foreground))] leading-relaxed text-sm mt-3">
+    <p data-lang="zh" class="fade-up fade-delay-1 text-[hsl(var(--muted-foreground))] leading-relaxed text-sm mt-3">
       中山大学网络空间安全学院大三本科生。专注<strong class="text-[hsl(var(--foreground))] font-medium">Ai Agent</strong>，并探索<strong class="text-[hsl(var(--foreground))] font-medium">具身智能</strong>（VLA 模型与世界模型），
       探索机器人如何感知物理世界并自主决策，目前还是玩机械臂阶段。
+    </p>
+    <p data-lang="en" class="fade-up fade-delay-1 text-[hsl(var(--muted-foreground))] leading-relaxed text-sm mt-3">
+      I'm a third-year undergraduate at Sun Yat-sen University's School of Cyber Science and Technology.
+      My work centers on <strong class="text-[hsl(var(--foreground))] font-medium">AI agents</strong>, with a growing interest in
+      <strong class="text-[hsl(var(--foreground))] font-medium">embodied intelligence</strong>, especially VLA models and world models.
+      Right now, that mostly means learning by building and experimenting with robot arms.
     </p>
     <div class="fade-up fade-delay-2 mt-4 flex flex-wrap gap-1.5">
       <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Go</span>
@@ -113,7 +133,8 @@ const projectBeams = [
           <path d="M21 15a4 4 0 0 1-4 4H8l-4 3v-3.5A7 7 0 1 1 8 5h7a6 6 0 0 1 6 10Z" />
           <path d="M8 12h.01M12 12h.01M16 12h.01" />
         </svg>
-        微信: woshiwudachong
+        <span data-lang="zh">微信: woshiwudachong</span>
+        <span data-lang="en">WeChat: woshiwudachong</span>
       </span>
     </div>
     <div class="fade-up fade-delay-4 mt-8 text-center">
@@ -126,10 +147,13 @@ const projectBeams = [
     <div class="fade-up group mb-4">
       <div class="flex items-center gap-2">
         <div class="decorate-bar h-4"></div>
-        <h2 class="text-xs font-mono font-medium text-[hsl(var(--muted-foreground))] transition-colors duration-700 group-hover:text-[hsl(var(--foreground))]">About</h2>
+        <h2 class="text-xs font-mono font-medium text-[hsl(var(--muted-foreground))] transition-colors duration-700 group-hover:text-[hsl(var(--foreground))]">
+          <span data-lang="zh">关于</span>
+          <span data-lang="en">About</span>
+        </h2>
       </div>
     </div>
-    <div class="fade-up fade-delay-1 space-y-4 text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+    <div data-lang="zh" class="fade-up fade-delay-1 space-y-4 text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
       <p>
         中山大学<strong class="text-[hsl(var(--foreground))] font-medium">网络空间安全学院</strong>大三本科生（2027 届），
         就读于深圳校区，GPA 3.66/5.0。拥有约一年半的科研经验，主要方向为大模型训练数据去重和 AI 基础设施。就在7月1号，我考完了大学期间最后一门考试，结束快乐！我的论文投到ICDE还在审稿，希望一切顺利，审稿人求放过。
@@ -143,6 +167,24 @@ const projectBeams = [
         "做一点有意义的工作"
       </p>
     </div>
+    <div data-lang="en" class="fade-up fade-delay-1 space-y-4 text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+      <p>
+        I'm a third-year student at <strong class="text-[hsl(var(--foreground))] font-medium">Sun Yat-sen University's School of Cyber Science and Technology</strong>,
+        based on the Shenzhen campus and graduating in 2027. My GPA is 3.66/5.0, and I've spent the past year and a half working on
+        training-data deduplication and AI infrastructure. I wrapped up my final exam of the academic year on July 1, and my ICDE submission
+        is still under review. Fingers crossed.
+      </p>
+      <p>
+        Before that, I interned at <strong class="text-[hsl(var(--foreground))] font-medium">Sangfor Technologies</strong>, where I developed
+        data-mining algorithms for a self-evolving system. It was a demanding project and a valuable lesson in turning research ideas into systems
+        that have to work. I'm now exploring <strong class="text-[hsl(var(--foreground))] font-medium">embodied intelligence</strong> through VLA
+        models and world models. I'm also building a paper-reading project around a simple belief: even as AI becomes more capable, people still need
+        to keep reading, form their own judgment, and remain the final link in the decision-making chain.
+      </p>
+      <p class="italic text-xs pt-4 border-t border-[hsl(var(--border))]">
+        "Do work that matters."
+      </p>
+    </div>
   </section>
 
   <!-- Projects -->
@@ -150,7 +192,10 @@ const projectBeams = [
     <div class="fade-up group mb-3">
       <div class="flex items-center gap-2">
         <div class="decorate-bar h-4"></div>
-        <h2 class="text-xs font-mono font-medium text-[hsl(var(--muted-foreground))] transition-colors duration-700 group-hover:text-[hsl(var(--foreground))]">Projects</h2>
+        <h2 class="text-xs font-mono font-medium text-[hsl(var(--muted-foreground))] transition-colors duration-700 group-hover:text-[hsl(var(--foreground))]">
+          <span data-lang="zh">项目</span>
+          <span data-lang="en">Projects</span>
+        </h2>
       </div>
     </div>
     <div class="space-y-1">
@@ -161,12 +206,21 @@ const projectBeams = [
           <a href={`/projects/${project.id}`} class={`fade-up fade-delay-${Math.min(i + 1, 4)} block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam`} style={`--beam-from: ${beamFrom}; --beam-to: ${beamTo};`}>
             <div class="flex items-start justify-between gap-4 relative z-[1]">
               <div class="min-w-0">
-                <h3 class="text-sm font-medium group-hover:underline underline-offset-4">{project.data.title}</h3>
-                <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">{project.data.description}</p>
+                <h3 class="text-sm font-medium group-hover:underline underline-offset-4">
+                  <span data-lang="zh">{project.data.title}</span>
+                  <span data-lang="en">{project.data.titleEn ?? project.data.title}</span>
+                </h3>
+                <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">
+                  <span data-lang="zh">{project.data.description}</span>
+                  <span data-lang="en">{project.data.descriptionEn ?? project.data.description}</span>
+                </p>
                 {project.data.tags && project.data.tags.length > 0 && (
                   <div class="mt-2 flex flex-wrap gap-1">
-                    {project.data.tags.map((tag: string) => (
-                      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">{tag}</span>
+                    {project.data.tags.map((tag: string, tagIndex: number) => (
+                      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">
+                        <span data-lang="zh">{tag}</span>
+                        <span data-lang="en">{project.data.tagsEn?.[tagIndex] ?? tag}</span>
+                      </span>
                     ))}
                   </div>
                 )}
@@ -183,9 +237,12 @@ const projectBeams = [
     <div class="fade-up group mb-3 flex items-end justify-between gap-4">
       <div class="flex items-center gap-2">
         <div class="decorate-bar h-4"></div>
-        <h2 class="text-xs font-mono font-medium text-[hsl(var(--muted-foreground))] transition-colors duration-700 group-hover:text-[hsl(var(--foreground))]">Writing</h2>
+        <h2 class="text-xs font-mono font-medium text-[hsl(var(--muted-foreground))] transition-colors duration-700 group-hover:text-[hsl(var(--foreground))]">
+          <span data-lang="zh">写作</span>
+          <span data-lang="en">Writing</span>
+        </h2>
       </div>
-      <div class="writing-tabs flex items-center gap-3 font-mono text-xs" role="tablist" aria-label="Writing categories">
+      <div class="writing-tabs flex items-center gap-3 font-mono text-xs" role="tablist" aria-label="写作分类 / Writing categories">
         {writingCategories.map((category) => (
           <button
             id={`writing-tab-${category.id}`}
@@ -197,7 +254,8 @@ const projectBeams = [
             tabindex={category.id === "notes" ? "0" : "-1"}
             data-writing-tab={category.id}
           >
-            {category.label}
+            <span data-lang="zh">{category.labelZh}</span>
+            <span data-lang="en">{category.labelEn}</span>
             <span class="writing-tab-count">{category.posts.length}</span>
           </button>
         ))}
@@ -210,7 +268,7 @@ const projectBeams = [
           class="writing-window"
           role="tabpanel"
           aria-labelledby={`writing-tab-${category.id}`}
-          aria-label={`${category.label} writing`}
+          aria-label={`${category.labelZh} / ${category.labelEn}`}
           tabindex={category.id === "notes" ? "0" : "-1"}
           data-writing-panel={category.id}
           hidden={category.id !== "notes"}
@@ -224,14 +282,20 @@ const projectBeams = [
                   <div class="flex h-full items-center justify-between gap-4 relative z-[1]">
                     <div class="min-w-0">
                       <h3 class="flex min-w-0 items-center gap-2 text-sm font-medium group-hover:underline underline-offset-4">
-                        <span class="truncate">{post.data.title}</span>
+                        <span class="truncate">
+                          <span data-lang="zh">{post.data.title}</span>
+                          <span data-lang="en">{post.data.titleEn ?? post.data.title}</span>
+                        </span>
                         {post.data.draft && (
                           <span class="rounded border border-[hsl(var(--border))] px-1.5 py-0.5 text-[0.625rem] font-mono font-normal text-[hsl(var(--muted-foreground))] no-underline">
                             Draft
                           </span>
                         )}
                       </h3>
-                      <p class="writing-description mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">{post.data.description}</p>
+                      <p class="writing-description mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">
+                        <span data-lang="zh">{post.data.description}</span>
+                        <span data-lang="en">{post.data.descriptionEn ?? post.data.description}</span>
+                      </p>
                     </div>
                     <span class="text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300 font-mono shrink-0">{post.data.date}</span>
                   </div>
@@ -239,12 +303,16 @@ const projectBeams = [
               );
             })
           ) : (
-            <p class="writing-empty">{category.empty}</p>
+            <p class="writing-empty">
+              <span data-lang="zh">{category.emptyZh}</span>
+              <span data-lang="en">{category.emptyEn}</span>
+            </p>
           )}
         </div>
       ))}
       <div class="writing-scroll-cue" data-writing-scroll-cue hidden aria-hidden="true">
-        ↓ Older writing
+        <span data-lang="zh">↓ 更早的文章</span>
+        <span data-lang="en">↓ Older writing</span>
       </div>
     </div>
   </section>
@@ -254,9 +322,11 @@ const projectBeams = [
     <div class="border-t border-[hsl(var(--border))] pt-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
       <span>© 2026 Zhuoyang Wu</span>
       <span>
-        Views <span id="view-total">—</span>
+        <span data-lang="zh">访问</span><span data-lang="en">Views</span>
+        <span id="view-total">—</span>
         <span class="opacity-40">·</span>
-        Today <span id="view-today">—</span>
+        <span data-lang="zh">今日</span><span data-lang="en">Today</span>
+        <span id="view-today">—</span>
       </span>
     </div>
     <!-- Keep in sync with scripts/homepage-analytics.test.mjs. -->

@@ -7,7 +7,7 @@ const args = process.argv.slice(2);
 const titleArg = args.shift();
 
 if (!titleArg) {
-  console.error('Usage: pnpm new:post "Post title" [slug] [--description "One sentence"] [--category notes|technical] [--publish]');
+  console.error('Usage: pnpm new:post "文章标题" [slug] [--title-en "English title"] [--description "一句话摘要"] [--description-en "One sentence"] [--category notes|technical] [--publish]');
   process.exit(1);
 }
 
@@ -18,15 +18,33 @@ if (args[0] && !args[0].startsWith("--")) {
 
 let description = "TODO: 补充一句话摘要";
 let hasDescription = false;
+let titleEn = "TODO: Add a natural English title";
+let hasTitleEn = false;
+let descriptionEn = "TODO: Add a natural English summary";
+let hasDescriptionEn = false;
 let draft = true;
 let category = "notes";
 
 for (let i = 0; i < args.length; i += 1) {
   const arg = args[i];
 
+  if (arg === "--title-en") {
+    titleEn = args[i + 1]?.trim();
+    hasTitleEn = true;
+    i += 1;
+    continue;
+  }
+
   if (arg === "--description") {
     description = args[i + 1]?.trim();
     hasDescription = true;
+    i += 1;
+    continue;
+  }
+
+  if (arg === "--description-en") {
+    descriptionEn = args[i + 1]?.trim();
+    hasDescriptionEn = true;
     i += 1;
     continue;
   }
@@ -61,8 +79,18 @@ if (!description) {
   process.exit(1);
 }
 
-if (!draft && !hasDescription) {
-  console.error('Published posts need --description "One sentence".');
+if (!titleEn) {
+  console.error("English title cannot be empty.");
+  process.exit(1);
+}
+
+if (!descriptionEn) {
+  console.error("English description cannot be empty.");
+  process.exit(1);
+}
+
+if (!draft && (!hasDescription || !hasTitleEn || !hasDescriptionEn)) {
+  console.error('Published posts need --description, --title-en, and --description-en.');
   process.exit(1);
 }
 
@@ -98,7 +126,9 @@ if (existsSync(postPath)) {
 
 const content = `---
 title: ${JSON.stringify(title)}
+titleEn: ${JSON.stringify(titleEn)}
 description: ${JSON.stringify(description)}
+descriptionEn: ${JSON.stringify(descriptionEn)}
 date: "${today}"
 category: "${category}"
 draft: ${draft}

@@ -1,11 +1,20 @@
 ---
 title: "yu_agent — 统一多模型 Agent 框架"
+titleEn: "yu_agent — A Unified Multi-Model Agent Framework"
 description: "对大语言模型 Agent 架构的个人探索 —— 兼容 OpenAI，支持 8+ 提供商，具备四种推理模式和多层级记忆系统。"
+descriptionEn: "A personal exploration of LLM agent architecture: OpenAI-compatible, with support for 8+ providers, four reasoning modes, and a layered memory system."
 date: "2025-01-01"
 order: 3
 tags:
   - Python
   - 大语言模型
+  - Agent
+  - Qdrant
+  - Neo4j
+  - MCP
+tagsEn:
+  - Python
+  - Large Language Models
   - Agent
   - Qdrant
   - Neo4j

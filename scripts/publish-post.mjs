@@ -41,6 +41,18 @@ if (/^description:\s*["']?TODO/m.test(source)) {
   process.exit(1);
 }
 
+const englishTitle = source.match(/^titleEn:\s*(.+)$/m)?.[1]?.trim();
+if (!englishTitle || /^["']?TODO/.test(englishTitle)) {
+  console.error("Add a natural English title before publishing.");
+  process.exit(1);
+}
+
+const englishDescription = source.match(/^descriptionEn:\s*(.+)$/m)?.[1]?.trim();
+if (!englishDescription || /^["']?TODO/.test(englishDescription)) {
+  console.error("Add a natural English description before publishing.");
+  process.exit(1);
+}
+
 try {
   const prepared = await preparePostImages(source, postPath);
   if (prepared.source !== source) {

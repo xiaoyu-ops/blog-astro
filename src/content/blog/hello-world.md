@@ -1,6 +1,8 @@
 ---
 title: "为何懒惰而又好胜-致自己"
+titleEn: "Ambitious, Yet Lazy — A Note to Myself"
 description: "第一篇文章 — 关于我为什么开始写作。"
+descriptionEn: "My first essay on why I want to start writing again."
 date: "2026-07-01"
 category: "notes"
 tags:

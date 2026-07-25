@@ -6,16 +6,41 @@ const path = url?.pathname || "/";
 <header class="fade-up fixed top-0 left-0 right-0 z-50 bg-[hsl(var(--background))]/80 backdrop-blur-sm">
   <nav class="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
     <a href="/" class="font-mono text-sm font-medium hover:opacity-70 transition-opacity">
-      吴卓阳
+      <span data-lang="zh">吴卓阳</span>
+      <span data-lang="en" class="sm:hidden">Z. Wu</span>
+      <span data-lang="en" class="hidden sm:inline">Zhuoyang Wu</span>
     </a>
-    <div class="flex items-center gap-4 text-sm text-[hsl(var(--muted-foreground))] font-mono">
-      <a href="/#about" class="hover:text-[hsl(var(--foreground))] transition-colors">About</a>
-      <a href="/#projects" class="hover:text-[hsl(var(--foreground))] transition-colors">Projects</a>
-      <a href="/#posts" class="hover:text-[hsl(var(--foreground))] transition-colors">Posts</a>
+    <div class="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-[hsl(var(--muted-foreground))] font-mono">
+      <a href="/#about" class="hover:text-[hsl(var(--foreground))] transition-colors">
+        <span data-lang="zh">关于</span>
+        <span data-lang="en">About</span>
+      </a>
+      <a href="/#projects" class="hover:text-[hsl(var(--foreground))] transition-colors">
+        <span data-lang="zh">项目</span>
+        <span data-lang="en">Projects</span>
+      </a>
+      <a href="/#posts" class="hover:text-[hsl(var(--foreground))] transition-colors">
+        <span data-lang="zh">写作</span>
+        <span data-lang="en">Writing</span>
+      </a>
+      <button
+        id="language-toggle"
+        type="button"
+        class="min-w-8 rounded-md border border-[hsl(var(--border))] px-1.5 py-1 text-[0.6875rem] leading-none hover:border-[hsl(var(--foreground))/30] hover:bg-[hsl(var(--muted))] hover:text-[hsl(var(--foreground))] transition-colors"
+        aria-label="切换到英文"
+        data-language-aria-zh="切换到英文"
+        data-language-aria-en="Switch to Chinese"
+      >
+        <span data-lang="zh">EN</span>
+        <span data-lang="en">中</span>
+      </button>
       <button
         id="theme-toggle"
+        type="button"
         class="p-1 rounded-md hover:bg-[hsl(var(--muted))] transition-colors"
-        aria-label="Toggle theme"
+        aria-label="切换深浅色主题"
+        data-language-aria-zh="切换深浅色主题"
+        data-language-aria-en="Toggle color theme"
       >
         <span class="block dark:hidden text-base">🌙</span>
         <span class="hidden dark:block text-base">☀️</span>
@@ -25,6 +50,49 @@ const path = url?.pathname || "/";
 </header>
 
 <script>
+  type SiteLanguage = "zh" | "en";
+
+  const languageToggle = document.getElementById("language-toggle");
+
+  const applyLanguage = (language: SiteLanguage) => {
+    document.documentElement.dataset.lang = language;
+    document.documentElement.lang = language === "zh" ? "zh-CN" : "en";
+
+    document
+      .querySelectorAll<HTMLElement>("[data-language-aria-zh][data-language-aria-en]")
+      .forEach((element) => {
+        const label =
+          language === "zh"
+            ? element.dataset.languageAriaZh
+            : element.dataset.languageAriaEn;
+        if (label) element.setAttribute("aria-label", label);
+      });
+
+    document
+      .querySelectorAll<HTMLImageElement>("[data-language-alt-zh][data-language-alt-en]")
+      .forEach((image) => {
+        const alt =
+          language === "zh"
+            ? image.dataset.languageAltZh
+            : image.dataset.languageAltEn;
+        if (alt) image.alt = alt;
+      });
+  };
+
+  applyLanguage(document.documentElement.dataset.lang === "en" ? "en" : "zh");
+
+  languageToggle?.addEventListener("click", () => {
+    const language: SiteLanguage =
+      document.documentElement.dataset.lang === "zh" ? "en" : "zh";
+    applyLanguage(language);
+
+    try {
+      localStorage.setItem("language", language);
+    } catch (error) {
+      // The switch still works for this page when storage is unavailable.
+    }
+  });
+
   document.getElementById('theme-toggle')?.addEventListener('click', () => {
     document.documentElement.classList.toggle('dark');
     localStorage.setItem('theme', 

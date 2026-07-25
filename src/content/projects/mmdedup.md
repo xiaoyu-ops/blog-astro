@@ -1,6 +1,8 @@
 ---
 title: "MMdedup — 多模态去重管道"
+titleEn: "MMdedup — Multimodal Deduplication Pipeline"
 description: "面向多模态大语言模型训练数据集的高吞吐量数据清洗管道。存储减少 90%，吞吐量比 SemDeDup 提升 3.6 倍。正在投稿中。"
+descriptionEn: "A high-throughput cleaning pipeline for multimodal LLM training data. It reduced storage use by 90% and delivered 3.6× the throughput of SemDeDup. The accompanying paper is currently under review."
 date: "2025-06-01"
 order: 1
 tags:
@@ -8,6 +10,11 @@ tags:
   - 数据系统
   - 大语言模型
   - 研究
+tagsEn:
+  - Python
+  - Data Systems
+  - Large Language Models
+  - Research
 ---
 
 ## 概述

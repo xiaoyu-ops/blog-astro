@@ -19,18 +19,31 @@ const imageUrl = new URL(Astro.props.image ?? "/avatar.jpg", site).toString();
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-lang="zh">
   <head>
     <script is:inline>
       document.documentElement.classList.add('js');
       (function() {
+        const browserLanguage = navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+
         try {
           const stored = localStorage.getItem('theme');
+          const storedLanguage = localStorage.getItem('language');
           const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const language = storedLanguage === 'zh' || storedLanguage === 'en'
+            ? storedLanguage
+            : browserLanguage;
+
+          document.documentElement.dataset.lang = language;
+          document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
+
           if (stored === 'dark' || (!stored && prefersDark)) {
             document.documentElement.classList.add('dark');
           }
         } catch (error) {
+          document.documentElement.dataset.lang = browserLanguage;
+          document.documentElement.lang = browserLanguage === 'zh' ? 'zh-CN' : 'en';
+
           if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.documentElement.classList.add('dark');
           }

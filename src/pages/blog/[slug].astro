@@ -23,11 +23,18 @@ const { Content } = await render(post);
   <Header />
   <main class="max-w-3xl mx-auto px-4 pt-20 pb-16">
     <a href="/#posts" class="inline-flex items-center text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors mb-8">
-      ← Back
+      <span data-lang="zh">← 返回写作</span>
+      <span data-lang="en">← Back to writing</span>
     </a>
-    <h1 class="text-lg font-medium mb-2">{post.data.title}</h1>
+    <h1 class="text-lg font-medium mb-2">
+      <span data-lang="zh">{post.data.title}</span>
+      <span data-lang="en">{post.data.titleEn ?? post.data.title}</span>
+    </h1>
     <p class="text-xs text-[hsl(var(--muted-foreground))] font-mono mb-6">
       {post.data.date}
+    </p>
+    <p data-lang="en" class="mb-6 rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] px-3 py-2 text-xs text-[hsl(var(--muted-foreground))]">
+      This essay is currently available in Chinese.
     </p>
     <article class="blog-content prose prose-sm prose-neutral dark:prose-invert max-w-none
       prose-headings:font-medium prose-headings:tracking-tight

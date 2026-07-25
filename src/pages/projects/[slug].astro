@@ -23,22 +23,35 @@ const { Content } = await render(project);
   <Header />
   <main class="max-w-3xl mx-auto px-4 pt-20 pb-16">
     <a href="/#projects" class="inline-flex items-center text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors mb-8">
-      ← Back
+      <span data-lang="zh">← 返回项目</span>
+      <span data-lang="en">← Back to projects</span>
     </a>
     <header class="mb-10 border-b border-[hsl(var(--border))] pb-8">
-      <h1 class="text-2xl md:text-3xl font-semibold tracking-tight mb-3">{project.data.title}</h1>
-      <p class="text-sm md:text-base leading-relaxed text-[hsl(var(--muted-foreground))] max-w-2xl">{project.data.description}</p>
+      <h1 class="text-2xl md:text-3xl font-semibold tracking-tight mb-3">
+        <span data-lang="zh">{project.data.title}</span>
+        <span data-lang="en">{project.data.titleEn ?? project.data.title}</span>
+      </h1>
+      <p class="text-sm md:text-base leading-relaxed text-[hsl(var(--muted-foreground))] max-w-2xl">
+        <span data-lang="zh">{project.data.description}</span>
+        <span data-lang="en">{project.data.descriptionEn ?? project.data.description}</span>
+      </p>
       {project.data.date && (
         <p class="mt-4 text-xs font-mono text-[hsl(var(--muted-foreground))/70]">{project.data.date}</p>
       )}
     </header>
     {project.data.tags && project.data.tags.length > 0 && (
       <div class="flex flex-wrap gap-1.5 mb-10">
-        {project.data.tags.map((tag: string) => (
-          <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">{tag}</span>
+        {project.data.tags.map((tag: string, tagIndex: number) => (
+          <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">
+            <span data-lang="zh">{tag}</span>
+            <span data-lang="en">{project.data.tagsEn?.[tagIndex] ?? tag}</span>
+          </span>
         ))}
       </div>
     )}
+    <p data-lang="en" class="mb-8 rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] px-3 py-2 text-xs text-[hsl(var(--muted-foreground))]">
+      This project write-up is currently available in Chinese.
+    </p>
     <article class="project-content">
       <Content />
     </article>
