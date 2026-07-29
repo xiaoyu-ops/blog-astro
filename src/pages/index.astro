@@ -987,6 +987,7 @@ const projectBeams = [
       if (!startedAt || !deadline || deadlineDay === null) return;
       const startedDay = toDayNumber(startedAt);
       const totalDays = Math.max(1, deadlineDay - startedDay);
+      const daysUntilStart = Math.max(0, startedDay - todayDay);
       const remainingDays = Math.max(0, deadlineDay - todayDay);
       const remaining = Math.max(0, Math.min(1, remainingDays / totalDays));
       const remainingPercent = Math.round(remaining * 100);
@@ -997,11 +998,19 @@ const projectBeams = [
       progress?.setAttribute("aria-valuenow", remainingPercent.toString());
       if (status) {
         status.replaceChildren();
-        appendLocalizedText(
-          status,
-          `剩余 ${remainingDays} 天`,
-          `${remainingDays} day${remainingDays === 1 ? "" : "s"} left`,
-        );
+        if (daysUntilStart > 0) {
+          appendLocalizedText(
+            status,
+            daysUntilStart === 1 ? "明天开始" : `${daysUntilStart} 天后开始`,
+            daysUntilStart === 1 ? "Starts tomorrow" : `Starts in ${daysUntilStart} days`,
+          );
+        } else {
+          appendLocalizedText(
+            status,
+            `剩余 ${remainingDays} 天`,
+            `${remainingDays} day${remainingDays === 1 ? "" : "s"} left`,
+          );
+        }
       }
     });
 

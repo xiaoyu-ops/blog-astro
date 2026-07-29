@@ -23,6 +23,8 @@ test("keeps the date-driven now and archive section wired up", async () => {
   assert.match(homepage, /data-now-progress/);
   assert.match(homepage, /data-now-archive-list/);
   assert.match(homepage, /todayDay >= deadlineDay/);
+  assert.match(homepage, /daysUntilStart === 1 \? "明天开始"/);
+  assert.match(homepage, /daysUntilStart === 1 \? "Starts tomorrow"/);
   assert.match(homepage, /linear-gradient\(90deg, hsl\(198 82% 48%\), hsl\(253 76% 63%\)\)/);
   assert.match(homepage, /animation: now-flow 1\.9s cubic-bezier\(0\.16, 1, 0\.3, 1\) infinite/);
   assert.match(homepage, /prefers-reduced-motion: reduce/);
