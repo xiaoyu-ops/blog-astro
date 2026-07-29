@@ -10,6 +10,11 @@
     "post:new": "node scripts/new-post.mjs",
     "post:publish": "node scripts/publish-post.mjs",
     "new:post": "node scripts/new-post.mjs",
+    "now:list": "node scripts/now.mjs list",
+    "now:add": "node scripts/now.mjs add",
+    "now:update": "node scripts/now.mjs update",
+    "now:complete": "node scripts/now.mjs complete",
+    "now:reopen": "node scripts/now.mjs reopen",
     "test": "node --test scripts/*.test.mjs",
     "build": "astro build",
     "preview": "astro preview"

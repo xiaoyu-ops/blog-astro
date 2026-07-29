@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import { getCollection } from "astro:content";
+import nowItems from "../data/now.json";
 
 const posts = (await getCollection("blog")).filter((post) => import.meta.env.DEV || !post.data.draft);
 posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
@@ -92,50 +93,134 @@ const projectBeams = [
         <span class="hero-sticker-hint" data-lang="en" aria-hidden="true">drag the edge</span>
       </div>
     </div>
-    <p data-lang="zh" class="fade-up fade-delay-1 text-[hsl(var(--muted-foreground))] leading-relaxed text-sm mt-3">
-      中山大学网络空间安全学院大三本科生。专注<strong class="text-[hsl(var(--foreground))] font-medium">Ai Agent</strong>，并探索<strong class="text-[hsl(var(--foreground))] font-medium">具身智能</strong>（VLA 模型与世界模型），
-      探索机器人如何感知物理世界并自主决策，目前还是玩机械臂阶段。
-    </p>
-    <p data-lang="en" class="fade-up fade-delay-1 text-[hsl(var(--muted-foreground))] leading-relaxed text-sm mt-3">
-      I'm a third-year undergraduate at Sun Yat-sen University's School of Cyber Science and Technology.
-      My work centers on <strong class="text-[hsl(var(--foreground))] font-medium">AI agents</strong>, with a growing interest in
-      <strong class="text-[hsl(var(--foreground))] font-medium">embodied intelligence</strong>, especially VLA models and world models.
-      Right now, that mostly means learning by building and experimenting with robot arms.
-    </p>
-    <div class="fade-up fade-delay-2 mt-4 flex flex-wrap gap-1.5">
-      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Go</span>
-      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Python</span>
-      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">C++</span>
-      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">PyTorch</span>
-      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">ROS</span>
-      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">LangGraph</span>
-      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">PostgreSQL</span>
-      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Redis</span>
-      <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Docker</span>
-    </div>
-    <div class="fade-up fade-delay-3 mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-mono text-[hsl(var(--muted-foreground))]">
-      <a href="https://github.com/xiaoyu-ops" class="inline-flex items-center gap-1.5 hover:text-[hsl(var(--foreground))] transition-colors" target="_blank" rel="noopener noreferrer">
-        <svg class="h-3.5 w-3.5 shrink-0" data-contact-icon="github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3.28-.36 6.72-1.61 6.72-7.25A5.65 5.65 0 0 0 19.22 3.3 5.27 5.27 0 0 0 19.13.3S17.95-.07 15 1.78a13.38 13.38 0 0 0-7 0C5.05-.07 3.87.3 3.87.3a5.27 5.27 0 0 0-.09 3A5.65 5.65 0 0 0 2.28 7.3c0 5.6 3.44 6.85 6.72 7.25A4.8 4.8 0 0 0 8 18v4" />
-          <path d="M8 19c-3 .92-3-1.92-4-2" />
-        </svg>
-        GitHub
-      </a>
-      <a href="mailto:wuzhuoyang252@gmail.com" class="inline-flex items-center gap-1.5 hover:text-[hsl(var(--foreground))] transition-colors">
-        <svg class="h-3.5 w-3.5 shrink-0" data-contact-icon="email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect width="20" height="16" x="2" y="4" rx="2" />
-          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-        </svg>
-        Email
-      </a>
-      <span class="inline-flex items-center gap-1.5">
-        <svg class="h-3.5 w-3.5 shrink-0" data-contact-icon="wechat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 15a4 4 0 0 1-4 4H8l-4 3v-3.5A7 7 0 1 1 8 5h7a6 6 0 0 1 6 10Z" />
-          <path d="M8 12h.01M12 12h.01M16 12h.01" />
-        </svg>
-        <span data-lang="zh">微信: woshiwudachong</span>
-        <span data-lang="en">WeChat: woshiwudachong</span>
-      </span>
+    <div class="hero-lower-grid">
+      <div class="hero-profile-copy">
+        <p data-lang="zh" class="fade-up fade-delay-1 text-[hsl(var(--muted-foreground))] leading-relaxed text-sm mt-3">
+          中山大学网络空间安全学院大三本科生。专注<strong class="text-[hsl(var(--foreground))] font-medium">Ai Agent</strong>，并探索<strong class="text-[hsl(var(--foreground))] font-medium">具身智能</strong>（VLA 模型与世界模型），
+          探索机器人如何感知物理世界并自主决策，目前还是玩机械臂阶段。
+        </p>
+        <p data-lang="en" class="fade-up fade-delay-1 text-[hsl(var(--muted-foreground))] leading-relaxed text-sm mt-3">
+          I'm a third-year undergraduate at Sun Yat-sen University's School of Cyber Science and Technology.
+          My work centers on <strong class="text-[hsl(var(--foreground))] font-medium">AI agents</strong>, with a growing interest in
+          <strong class="text-[hsl(var(--foreground))] font-medium">embodied intelligence</strong>, especially VLA models and world models.
+          Right now, that mostly means learning by building and experimenting with robot arms.
+        </p>
+        <div class="fade-up fade-delay-2 mt-4 flex flex-wrap gap-1.5">
+          <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Go</span>
+          <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Python</span>
+          <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">C++</span>
+          <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">PyTorch</span>
+          <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">ROS</span>
+          <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">LangGraph</span>
+          <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">PostgreSQL</span>
+          <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Redis</span>
+          <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))/30] transition-colors">Docker</span>
+        </div>
+        <div class="fade-up fade-delay-3 mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-mono text-[hsl(var(--muted-foreground))]">
+          <a href="https://github.com/xiaoyu-ops" class="inline-flex items-center gap-1.5 hover:text-[hsl(var(--foreground))] transition-colors" target="_blank" rel="noopener noreferrer">
+            <svg class="h-3.5 w-3.5 shrink-0" data-contact-icon="github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3.28-.36 6.72-1.61 6.72-7.25A5.65 5.65 0 0 0 19.22 3.3 5.27 5.27 0 0 0 19.13.3S17.95-.07 15 1.78a13.38 13.38 0 0 0-7 0C5.05-.07 3.87.3 3.87.3a5.27 5.27 0 0 0-.09 3A5.65 5.65 0 0 0 2.28 7.3c0 5.6 3.44 6.85 6.72 7.25A4.8 4.8 0 0 0 8 18v4" />
+              <path d="M8 19c-3 .92-3-1.92-4-2" />
+            </svg>
+            GitHub
+          </a>
+          <a href="mailto:wuzhuoyang252@gmail.com" class="inline-flex items-center gap-1.5 hover:text-[hsl(var(--foreground))] transition-colors">
+            <svg class="h-3.5 w-3.5 shrink-0" data-contact-icon="email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect width="20" height="16" x="2" y="4" rx="2" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+            Email
+          </a>
+          <span class="inline-flex items-center gap-1.5">
+            <svg class="h-3.5 w-3.5 shrink-0" data-contact-icon="wechat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15a4 4 0 0 1-4 4H8l-4 3v-3.5A7 7 0 1 1 8 5h7a6 6 0 0 1 6 10Z" />
+              <path d="M8 12h.01M12 12h.01M16 12h.01" />
+            </svg>
+            <span data-lang="zh">微信: woshiwudachong</span>
+            <span data-lang="en">WeChat: woshiwudachong</span>
+          </span>
+        </div>
+      </div>
+
+      <aside id="now" class="now-widget fade-up fade-delay-2" aria-labelledby="now-widget-title">
+        <div class="now-widget-header">
+          <div>
+            <span class="now-widget-kicker">NOW</span>
+            <h2 id="now-widget-title">
+              <span data-lang="zh">正在进行</span>
+              <span data-lang="en">In progress</span>
+            </h2>
+          </div>
+          <span class="now-live-indicator" title="Daily refresh">
+            <span aria-hidden="true"></span>
+            <span class="sr-only" data-lang="zh">每日更新</span>
+            <span class="sr-only" data-lang="en">Updated daily</span>
+          </span>
+        </div>
+
+        <div class="now-active-list" data-now-active-list>
+          {nowItems.map((item, index) => (
+            <article
+              class="now-item"
+              style={`--now-order: ${index}`}
+              data-now-item
+              data-title-zh={item.titleZh}
+              data-title-en={item.titleEn}
+              data-started-at={item.startedAt}
+              data-deadline={item.deadline ?? ""}
+              data-completed-at={item.completedAt ?? ""}
+              data-blog-url={item.blogUrl ?? ""}
+            >
+              <div class="now-item-heading">
+                <h3 title={`${item.titleZh} / ${item.titleEn}`}>
+                  <span data-lang="zh">{item.titleZh}</span>
+                  <span data-lang="en">{item.titleEn}</span>
+                </h3>
+                <span class="now-status" data-now-status>
+                  <span data-lang="zh">{item.deadline ? "计算中" : "待定"}</span>
+                  <span data-lang="en">{item.deadline ? "Calculating" : "TBD"}</span>
+                </span>
+              </div>
+              <div
+                class:list={["now-track", { "is-unscheduled": !item.deadline }]}
+                role="progressbar"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow={item.deadline ? "100" : undefined}
+                data-language-aria-zh={`${item.titleZh}的剩余时间`}
+                data-language-aria-en={`Time remaining for ${item.titleEn}`}
+                aria-label={`${item.titleZh}的剩余时间`}
+                data-now-progress
+              >
+                <span class="now-track-fill"></span>
+              </div>
+            </article>
+          ))}
+          <p class="now-empty" data-now-active-empty hidden>
+            <span data-lang="zh">这一阶段已完成。</span>
+            <span data-lang="en">This chapter is complete.</span>
+          </p>
+        </div>
+
+        <details class="now-archive" data-now-archive>
+          <summary>
+            <span>
+              <span data-lang="zh">已归档</span>
+              <span data-lang="en">Archived</span>
+            </span>
+            <span class="now-archive-count" data-now-archive-count>0</span>
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </summary>
+          <div class="now-archive-list" data-now-archive-list>
+            <p class="now-archive-empty" data-now-archive-empty>
+              <span data-lang="zh">完成的事情会收进这里。</span>
+              <span data-lang="en">Finished work will collect here.</span>
+            </p>
+          </div>
+        </details>
+      </aside>
     </div>
     <div class="fade-up fade-delay-4 mt-8 text-center">
       <span class="text-xs text-[hsl(var(--muted-foreground))/40] font-mono animate-pulse">↓ scroll</span>
@@ -337,6 +422,269 @@ const projectBeams = [
 </Layout>
 
 <style>
+  .hero-lower-grid {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 0.15rem;
+  }
+
+  .hero-profile-copy {
+    min-width: 0;
+  }
+
+  .now-widget {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.7rem;
+    background:
+      radial-gradient(circle at 100% 0%, hsl(253 76% 63% / 0.08), transparent 45%),
+      hsl(var(--background) / 0.82);
+    box-shadow: 0 0.7rem 2rem hsl(var(--foreground) / 0.035);
+    padding: 0.7rem 0.75rem 0.3rem;
+  }
+
+  .now-widget-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid hsl(var(--border) / 0.72);
+  }
+
+  .now-widget-kicker {
+    display: block;
+    color: hsl(213 74% 57%);
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    letter-spacing: 0.14em;
+    line-height: 1;
+  }
+
+  .now-widget h2 {
+    margin-top: 0.25rem;
+    color: hsl(var(--foreground));
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  .now-live-indicator {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .now-live-indicator > span[aria-hidden="true"] {
+    width: 0.38rem;
+    height: 0.38rem;
+    border-radius: 999px;
+    background: hsl(148 58% 46%);
+    box-shadow: 0 0 0 0.2rem hsl(148 58% 46% / 0.1);
+  }
+
+  .now-active-list {
+    min-width: 0;
+  }
+
+  .now-item {
+    padding-block: 0.58rem;
+    border-bottom: 1px solid hsl(var(--border) / 0.72);
+  }
+
+  .now-item:last-of-type {
+    border-bottom: 0;
+  }
+
+  .now-item-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.45rem;
+  }
+
+  .now-item h3 {
+    min-width: 0;
+    overflow: hidden;
+    color: hsl(var(--foreground));
+    font-size: 0.675rem;
+    font-weight: 560;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .now-status {
+    flex: 0 0 auto;
+    color: hsl(var(--muted-foreground));
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+  }
+
+  .now-track {
+    position: relative;
+    height: 0.24rem;
+    margin-top: 0.42rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: hsl(var(--border) / 0.65);
+  }
+
+  .now-track-fill {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, hsl(198 82% 48%), hsl(253 76% 63%));
+    box-shadow: 0 0 1rem hsl(213 86% 56% / 0.28);
+    transform: scaleX(var(--remaining, 1));
+    transform-origin: left center;
+    transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .now-track-fill::after {
+    position: absolute;
+    inset-block: 0;
+    width: 22%;
+    background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.9), transparent);
+    content: "";
+    filter: blur(1px);
+    animation: now-flow 1.9s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    animation-delay: calc(var(--now-order, 0) * -0.42s);
+  }
+
+  .now-track.is-unscheduled {
+    height: 1px;
+    margin-top: 0.55rem;
+    overflow: visible;
+    background: repeating-linear-gradient(
+      90deg,
+      hsl(var(--muted-foreground) / 0.36) 0 0.35rem,
+      transparent 0.35rem 0.6rem
+    );
+  }
+
+  .now-track.is-unscheduled .now-track-fill {
+    display: none;
+  }
+
+  .now-empty {
+    padding-block: 1.1rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.625rem;
+  }
+
+  .now-archive {
+    border-top: 1px solid hsl(var(--border) / 0.72);
+    padding-top: 0.2rem;
+  }
+
+  .now-archive summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    min-height: 1.85rem;
+    color: hsl(var(--muted-foreground));
+    font-family: var(--font-mono);
+    font-size: 0.575rem;
+    cursor: pointer;
+    list-style: none;
+    transition: color 180ms ease;
+  }
+
+  .now-archive summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .now-archive summary:hover {
+    color: hsl(var(--foreground));
+  }
+
+  .now-archive summary:focus-visible,
+  .now-archive-entry:focus-visible {
+    outline: 1px solid hsl(var(--foreground) / 0.55);
+    outline-offset: 3px;
+  }
+
+  .now-archive summary svg {
+    width: 0.85rem;
+    height: 0.85rem;
+    margin-left: 0.35rem;
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .now-archive[open] summary svg {
+    transform: rotate(180deg);
+  }
+
+  .now-archive-count {
+    display: grid;
+    min-width: 1rem;
+    height: 1rem;
+    place-items: center;
+    border: 1px solid hsl(var(--border));
+    border-radius: 999px;
+    color: hsl(var(--foreground));
+    font-size: 0.5rem;
+  }
+
+  .now-archive-list {
+    display: grid;
+    grid-template-rows: 1fr;
+    padding-top: 0.35rem;
+  }
+
+  .now-archive-empty {
+    padding-block: 0.55rem 0.75rem;
+    color: hsl(var(--muted-foreground) / 0.62);
+    font-size: 0.575rem;
+    line-height: 1.6;
+  }
+
+  .now-archive-entry {
+    display: block;
+    padding-block: 0.55rem;
+    border-top: 1px solid hsl(var(--border) / 0.72);
+    color: hsl(var(--muted-foreground));
+    transition: color 180ms ease;
+  }
+
+  a.now-archive-entry:hover {
+    color: hsl(var(--foreground));
+  }
+
+  .now-archive-entry strong {
+    display: block;
+    color: inherit;
+    font-size: 0.625rem;
+    font-weight: 560;
+    line-height: 1.45;
+  }
+
+  .now-archive-entry span:last-child {
+    display: block;
+    margin-top: 0.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+  }
+
+  @keyframes now-flow {
+    from { transform: translateX(-110%); }
+    to { transform: translateX(520%); }
+  }
+
+  @media (min-width: 700px) {
+    .hero-lower-grid {
+      grid-template-columns: minmax(0, 1fr) 12rem;
+      align-items: end;
+      gap: 1.35rem;
+    }
+  }
+
+  @media (max-width: 699px) {
+    .now-widget {
+      margin-top: 0.25rem;
+    }
+  }
+
   .writing-tab {
     display: inline-flex;
     align-items: center;
@@ -517,6 +865,15 @@ const projectBeams = [
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .now-track-fill {
+      transition: none;
+    }
+
+    .now-track-fill::after {
+      display: none;
+      animation: none;
+    }
+
     .hero-sticker-fallback {
       transform: translate(-50%, -50%);
       transition: none;
@@ -534,6 +891,144 @@ const projectBeams = [
     }
   }
 </style>
+
+<script>
+  const nowItemsElements = Array.from(document.querySelectorAll<HTMLElement>("[data-now-item]"));
+  const nowActiveEmpty = document.querySelector<HTMLElement>("[data-now-active-empty]");
+  const nowArchiveList = document.querySelector<HTMLElement>("[data-now-archive-list]");
+  const nowArchiveEmpty = document.querySelector<HTMLElement>("[data-now-archive-empty]");
+  const nowArchiveCount = document.querySelector<HTMLElement>("[data-now-archive-count]");
+  const archivedRows = new Map<HTMLElement, HTMLElement>();
+  const dayInMilliseconds = 86_400_000;
+
+  const toDayNumber = (value: string) => {
+    const [year, month, day] = value.split("-").map(Number);
+    return Math.floor(Date.UTC(year, month - 1, day) / dayInMilliseconds);
+  };
+
+  const localTodayNumber = () => {
+    const today = new Date();
+    return Math.floor(
+      Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / dayInMilliseconds,
+    );
+  };
+
+  const appendLocalizedText = (
+    parent: HTMLElement,
+    chinese: string,
+    english: string,
+  ) => {
+    const zh = document.createElement("span");
+    zh.dataset.lang = "zh";
+    zh.textContent = chinese;
+    const en = document.createElement("span");
+    en.dataset.lang = "en";
+    en.textContent = english;
+    parent.append(zh, en);
+  };
+
+  const getArchiveRow = (item: HTMLElement, finishedAt: string) => {
+    const existing = archivedRows.get(item);
+    if (existing) return existing;
+
+    const blogUrl = item.dataset.blogUrl;
+    const row = document.createElement(blogUrl ? "a" : "div");
+    row.className = "now-archive-entry";
+    if (row instanceof HTMLAnchorElement && blogUrl) {
+      row.href = blogUrl;
+      if (/^https?:\/\//.test(blogUrl)) {
+        row.target = "_blank";
+        row.rel = "noopener noreferrer";
+      }
+    }
+
+    const title = document.createElement("strong");
+    appendLocalizedText(
+      title,
+      item.dataset.titleZh ?? "",
+      item.dataset.titleEn ?? item.dataset.titleZh ?? "",
+    );
+    const date = document.createElement("span");
+    appendLocalizedText(
+      date,
+      `${finishedAt} 完成${blogUrl ? " · 阅读记录 ↗" : ""}`,
+      `Completed ${finishedAt}${blogUrl ? " · Read the post ↗" : ""}`,
+    );
+    row.append(title, date);
+    archivedRows.set(item, row);
+    return row;
+  };
+
+  const renderNowItems = () => {
+    const todayDay = localTodayNumber();
+    let activeCount = 0;
+    let archiveCount = 0;
+
+    nowItemsElements.forEach((item) => {
+      const startedAt = item.dataset.startedAt;
+      const deadline = item.dataset.deadline;
+      const completedAt = item.dataset.completedAt;
+      const deadlineDay = deadline ? toDayNumber(deadline) : null;
+      const isArchived = Boolean(completedAt) || (deadlineDay !== null && todayDay >= deadlineDay);
+      const previousArchiveRow = archivedRows.get(item);
+
+      if (isArchived) {
+        item.hidden = true;
+        const finishedAt = completedAt || deadline || "";
+        nowArchiveList?.append(getArchiveRow(item, finishedAt));
+        archiveCount += 1;
+        return;
+      }
+
+      previousArchiveRow?.remove();
+      item.hidden = false;
+      activeCount += 1;
+
+      if (!startedAt || !deadline || deadlineDay === null) return;
+      const startedDay = toDayNumber(startedAt);
+      const totalDays = Math.max(1, deadlineDay - startedDay);
+      const remainingDays = Math.max(0, deadlineDay - todayDay);
+      const remaining = Math.max(0, Math.min(1, remainingDays / totalDays));
+      const remainingPercent = Math.round(remaining * 100);
+      const progress = item.querySelector<HTMLElement>("[data-now-progress]");
+      const status = item.querySelector<HTMLElement>("[data-now-status]");
+
+      progress?.style.setProperty("--remaining", remaining.toString());
+      progress?.setAttribute("aria-valuenow", remainingPercent.toString());
+      if (status) {
+        status.replaceChildren();
+        appendLocalizedText(
+          status,
+          `剩余 ${remainingDays} 天`,
+          `${remainingDays} day${remainingDays === 1 ? "" : "s"} left`,
+        );
+      }
+    });
+
+    if (nowActiveEmpty) nowActiveEmpty.hidden = activeCount > 0;
+    if (nowArchiveEmpty) nowArchiveEmpty.hidden = archiveCount > 0;
+    if (nowArchiveCount) nowArchiveCount.textContent = archiveCount.toString();
+  };
+
+  const scheduleNextDailyRefresh = () => {
+    const now = new Date();
+    const nextMidnight = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1,
+      0,
+      0,
+      1,
+    );
+    window.setTimeout(() => {
+      renderNowItems();
+      scheduleNextDailyRefresh();
+    }, nextMidnight.getTime() - now.getTime());
+  };
+
+  renderNowItems();
+  scheduleNextDailyRefresh();
+</script>
 
 <script>
   interface StickerElement extends HTMLElement {

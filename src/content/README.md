@@ -1,6 +1,6 @@
 # 内容更新指南
 
-日常发 Blog 只记三步：创建、写作、发布。
+日常发 Blog 只记三步：创建、写作、发布。首页的“当前正在进行的事情”也通过本地命令维护，不需要修改首页代码。
 
 ## 1. 创建文章
 
@@ -137,9 +137,67 @@ tagsEn:
 
 修改项目后同样先运行 `pnpm build`，再提交和推送。
 
+## 更新“当前正在进行的事情”
+
+事项数据保存在：
+
+```text
+src/data/now.json
+```
+
+新增事项时，命令会把执行当天自动记录为开始日期：
+
+```bash
+pnpm now:add robot-arm-control \
+  --title "机械臂控制调试" \
+  --title-en "Debugging robot-arm control" \
+  --deadline 2026-09-30
+```
+
+如果事项实际开始得更早，可以显式传入 `--start YYYY-MM-DD`。开始日期一旦写入就不会因为修改标题、重新构建或重新部署而改变。
+
+更新截止日期或文案：
+
+```bash
+pnpm now:update robot-arm-build --deadline 2026-09-30
+pnpm now:update robot-arm-build --title "机械臂的搭建与调试" --title-en "Building and debugging the robot arm"
+```
+
+提前完成，并附上对应博客：
+
+```bash
+pnpm now:complete robot-arm-build \
+  --date 2026-09-18 \
+  --blog /blog/2026-09-18-robot-arm-build
+```
+
+- 未手动完成的事项会在截止日期到来时自动进入“已归档”。
+- `--date` 省略时，完成日期默认为执行命令当天。
+- 如果完成时博客还没写，可以先不加 `--blog`，之后用 `pnpm now:update <id> --blog <地址>` 补上。
+- 误标完成时，运行 `pnpm now:reopen <id>` 恢复为进行中。
+- 运行 `pnpm now:list` 可以查看全部事项、日期和状态。
+
+本地预览并检查：
+
+```bash
+pnpm dev
+pnpm test
+pnpm build
+```
+
+确认后提交数据、脚本和文档：
+
+```bash
+git add src/data/now.json scripts/now.mjs src/content/README.md
+git commit -m "update: current work"
+git push
+```
+
+首页会在访客打开页面时根据本地日期重新计算剩余时间；页面跨过午夜保持打开时也会自动刷新。无需每天重新构建或推送。
+
 ## 什么时候才需要改前端
 
-日常更新 Blog 或 Project 时不要修改：
+日常更新 Blog、Project 或当前事项时不要修改：
 
 ```text
 src/pages/index.astro
