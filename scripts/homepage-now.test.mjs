@@ -23,6 +23,9 @@ test("keeps the date-driven now and archive section wired up", async () => {
   assert.match(homepage, /data-now-progress/);
   assert.match(homepage, /data-now-archive-list/);
   assert.match(homepage, /todayDay >= deadlineDay/);
+  assert.match(homepage, /const elapsedDays = Math\.max\(0, Math\.min\(totalDays, todayDay - startedDay\)\)/);
+  assert.match(homepage, /const progressRatio = elapsedDays \/ totalDays/);
+  assert.match(homepage, /--progress/);
   assert.match(homepage, /daysUntilStart === 1 \? "明天开始"/);
   assert.match(homepage, /daysUntilStart === 1 \? "Starts tomorrow"/);
   assert.match(homepage, /linear-gradient\(90deg, hsl\(198 82% 48%\), hsl\(253 76% 63%\)\)/);
