@@ -1,5 +1,11 @@
 {
   "buildCommand": "pnpm build",
   "outputDirectory": "dist",
-  "installCommand": "pnpm install --frozen-lockfile"
+  "installCommand": "pnpm install --frozen-lockfile",
+  "rewrites": [
+    {
+      "source": "/api/lab2/status",
+      "destination": "https://lab2-public-status.wuzhuoyang252.workers.dev/api/lab2/status"
+    }
+  ]
 }
