@@ -98,6 +98,17 @@ const signedRequest = (
   });
 };
 
+const viewRequest = (address: string, userAgent = "test-browser") =>
+  new Request("https://example.com/api/views/track", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-forwarded-for": address,
+      "user-agent": userAgent,
+    },
+    body: JSON.stringify({ path: "/" }),
+  });
+
 test("accepts every valid report fixture", async () => {
   for (const name of ["live-running", "live-idle", "missing-gpu", "no-progress"]) {
     const { env } = createEnvironment();
@@ -285,4 +296,57 @@ test("guard rate limits the seventh distinct write in one minute", async () => {
     }),
   );
   assert.equal(limited.status, 429);
+});
+
+test("tracks unique daily visitors without storing raw identifiers", async () => {
+  const { env, guard } = createEnvironment();
+  const now = new Date("2026-07-30T16:00:00.000Z");
+
+  const first = await handleRequest(viewRequest("203.0.113.10"), env, now);
+  assert.equal(first.status, 200);
+  assert.deepEqual(await first.json(), {
+    total: 85,
+    today: 1,
+    date: "2026-07-31",
+    counted: true,
+  });
+
+  const duplicate = await handleRequest(viewRequest("203.0.113.10"), env, now);
+  assert.deepEqual(await duplicate.json(), {
+    total: 85,
+    today: 1,
+    date: "2026-07-31",
+    counted: false,
+  });
+
+  const second = await handleRequest(viewRequest("203.0.113.11"), env, now);
+  assert.deepEqual(await second.json(), {
+    total: 86,
+    today: 2,
+    date: "2026-07-31",
+    counted: true,
+  });
+
+  const stored = await (
+    guard as unknown as { state: { storage: MemoryStorage } }
+  ).state?.storage?.get?.("views");
+  assert.equal(JSON.stringify(stored).includes("203.0.113"), false);
+});
+
+test("rejects malformed view tracking requests", async () => {
+  const { env } = createEnvironment();
+  const invalid = new Request("https://example.com/api/views/track", {
+    method: "POST",
+    body: JSON.stringify({ path: "not-a-path" }),
+  });
+  assert.equal((await handleRequest(invalid, env)).status, 400);
+  assert.equal(
+    (
+      await handleRequest(
+        new Request("https://example.com/api/views/track"),
+        env,
+      )
+    ).status,
+    405,
+  );
 });

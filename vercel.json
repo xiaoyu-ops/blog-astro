@@ -6,6 +6,10 @@
     {
       "source": "/api/lab2/status",
       "destination": "https://lab2-public-status.wuzhuoyang252.workers.dev/api/lab2/status"
+    },
+    {
+      "source": "/api/views/track",
+      "destination": "https://lab2-public-status.wuzhuoyang252.workers.dev/api/views/track"
     }
   ]
 }

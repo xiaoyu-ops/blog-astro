@@ -16,6 +16,7 @@ const RATE_WINDOW_SECONDS = 60;
 const RATE_LIMIT = 6;
 const LATEST_KEY = "lab2:latest";
 const HEARTBEATS_KEY = "lab2:heartbeats";
+const VIEWS_BASELINE_TOTAL = 84;
 const validator = new Validator(schema as never, "2020-12");
 
 const json = (value: unknown, status = 200, headers: HeadersInit = {}) =>
@@ -152,6 +153,71 @@ const guardRequest = async (
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ timestamp, signature }),
+  });
+};
+
+const shanghaiDate = (now: Date) =>
+  new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(now);
+
+const visitorHash = async (request: Request) => {
+  const forwardedFor = request.headers
+    .get("x-forwarded-for")
+    ?.split(",")[0]
+    ?.trim();
+  const address =
+    forwardedFor || request.headers.get("cf-connecting-ip") || "unknown";
+  const userAgent = request.headers.get("user-agent") || "unknown";
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(`${address}\n${userAgent}`),
+  );
+  return Array.from(new Uint8Array(digest), (value) =>
+    value.toString(16).padStart(2, "0"),
+  ).join("");
+};
+
+const handleViewPost = async (
+  request: Request,
+  env: WorkerEnv,
+  now: Date,
+) => {
+  const rawBody = await request.text();
+  if (new TextEncoder().encode(rawBody).byteLength > 1024) {
+    return errorResponse(413, "payload_too_large");
+  }
+
+  let input: unknown;
+  try {
+    input = JSON.parse(rawBody);
+  } catch {
+    return errorResponse(400, "invalid_json");
+  }
+  const path =
+    input && typeof input === "object" && "path" in input
+      ? (input as { path?: unknown }).path
+      : null;
+  if (
+    typeof path !== "string" ||
+    !path.startsWith("/") ||
+    path.length > 512
+  ) {
+    return errorResponse(400, "invalid_path");
+  }
+
+  const id = env.LAB2_GUARD.idFromName("views");
+  const stub = env.LAB2_GUARD.get(id);
+  return stub.fetch("https://guard.internal/views", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      date: shanghaiDate(now),
+      visitor: await visitorHash(request),
+    }),
   });
 };
 
@@ -308,6 +374,10 @@ export const handleRequest = async (
   now = new Date(),
 ) => {
   const url = new URL(request.url);
+  if (url.pathname === "/api/views/track") {
+    if (request.method === "POST") return handleViewPost(request, env, now);
+    return errorResponse(405, "method_not_allowed");
+  }
   if (url.pathname !== "/api/lab2/status") {
     return errorResponse(404, "not_found");
   }
@@ -330,8 +400,62 @@ export class LabStatusGuard {
     this.state = state;
   }
 
+  private async trackView(request: Request) {
+    const input = (await request.json()) as {
+      date?: string;
+      visitor?: string;
+    };
+    if (
+      !/^\d{4}-\d{2}-\d{2}$/.test(input.date ?? "") ||
+      !/^[a-f0-9]{64}$/.test(input.visitor ?? "")
+    ) {
+      return errorResponse(400, "invalid_view_request");
+    }
+
+    const stored =
+      (await this.state.storage.get<{
+        total: number;
+        date: string;
+        today: number;
+        visitors: string[];
+      }>("views")) ?? {
+        total: VIEWS_BASELINE_TOTAL,
+        date: input.date!,
+        today: 0,
+        visitors: [],
+      };
+
+    if (stored.date !== input.date) {
+      stored.date = input.date!;
+      stored.today = 0;
+      stored.visitors = [];
+    }
+
+    const counted = !stored.visitors.includes(input.visitor!);
+    if (counted) {
+      stored.total += 1;
+      stored.today += 1;
+      stored.visitors.push(input.visitor!);
+    }
+    await this.state.storage.put("views", stored);
+
+    return json(
+      {
+        total: stored.total,
+        today: stored.today,
+        date: stored.date,
+        counted,
+      },
+      200,
+      { "cache-control": "no-store" },
+    );
+  }
+
   async fetch(request: Request) {
     if (request.method !== "POST") return errorResponse(405, "method_not_allowed");
+    if (new URL(request.url).pathname === "/views") {
+      return this.trackView(request);
+    }
 
     const input = (await request.json()) as {
       timestamp?: number;
