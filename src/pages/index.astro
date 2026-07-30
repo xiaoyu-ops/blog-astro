@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
+import LabStatusRow from "../components/LabStatusRow.astro";
 import { getCollection } from "astro:content";
 import nowItems from "../data/now.json";
 
@@ -158,48 +159,60 @@ const projectBeams = [
           </span>
         </div>
 
-        <div class="now-active-list" data-now-active-list>
-          {nowItems.map((item, index) => (
-            <article
-              class="now-item"
-              style={`--now-order: ${index}`}
-              data-now-item
-              data-title-zh={item.titleZh}
-              data-title-en={item.titleEn}
-              data-started-at={item.startedAt}
-              data-deadline={item.deadline ?? ""}
-              data-completed-at={item.completedAt ?? ""}
-              data-blog-url={item.blogUrl ?? ""}
-            >
-              <div class="now-item-heading">
-                <h3 title={`${item.titleZh} / ${item.titleEn}`}>
-                  <span data-lang="zh">{item.titleZh}</span>
-                  <span data-lang="en">{item.titleEn}</span>
-                </h3>
-                <span class="now-status" data-now-status>
-                  <span data-lang="zh">{item.deadline ? "计算中" : "待定"}</span>
-                  <span data-lang="en">{item.deadline ? "Calculating" : "TBD"}</span>
-                </span>
-              </div>
-              <div
-                class:list={["now-track", { "is-unscheduled": !item.deadline }]}
-                role="progressbar"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow={item.deadline ? "100" : undefined}
-                data-language-aria-zh={`${item.titleZh}的时间进度`}
-                data-language-aria-en={`Timeline progress for ${item.titleEn}`}
-                aria-label={`${item.titleZh}的时间进度`}
-                data-now-progress
+        <div class="now-scroll-shell" data-now-scroll-shell>
+          <div
+            class="now-active-list"
+            data-now-active-list
+            data-now-scroll
+            role="region"
+            tabindex="0"
+            aria-label="正在进行的事项，可上下滚动"
+            data-language-aria-zh="正在进行的事项，可上下滚动"
+            data-language-aria-en="Current work, scroll vertically"
+          >
+            <LabStatusRow />
+            {nowItems.map((item, index) => (
+              <article
+                class="now-item"
+                style={`--now-order: ${index}`}
+                data-now-item
+                data-title-zh={item.titleZh}
+                data-title-en={item.titleEn}
+                data-started-at={item.startedAt}
+                data-deadline={item.deadline ?? ""}
+                data-completed-at={item.completedAt ?? ""}
+                data-blog-url={item.blogUrl ?? ""}
               >
-                <span class="now-track-fill"></span>
-              </div>
-            </article>
-          ))}
-          <p class="now-empty" data-now-active-empty hidden>
-            <span data-lang="zh">这一阶段已完成。</span>
-            <span data-lang="en">This chapter is complete.</span>
-          </p>
+                <div class="now-item-heading">
+                  <h3 title={`${item.titleZh} / ${item.titleEn}`}>
+                    <span data-lang="zh">{item.titleZh}</span>
+                    <span data-lang="en">{item.titleEn}</span>
+                  </h3>
+                  <span class="now-status" data-now-status>
+                    <span data-lang="zh">{item.deadline ? "计算中" : "待定"}</span>
+                    <span data-lang="en">{item.deadline ? "Calculating" : "TBD"}</span>
+                  </span>
+                </div>
+                <div
+                  class:list={["now-track", { "is-unscheduled": !item.deadline }]}
+                  role="progressbar"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow={item.deadline ? "100" : undefined}
+                  data-language-aria-zh={`${item.titleZh}的时间进度`}
+                  data-language-aria-en={`Timeline progress for ${item.titleEn}`}
+                  aria-label={`${item.titleZh}的时间进度`}
+                  data-now-progress
+                >
+                  <span class="now-track-fill"></span>
+                </div>
+              </article>
+            ))}
+            <p class="now-empty" data-now-active-empty hidden>
+              <span data-lang="zh">这一阶段已完成。</span>
+              <span data-lang="en">This chapter is complete.</span>
+            </p>
+          </div>
         </div>
 
         <details class="now-archive" data-now-archive>
@@ -482,8 +495,62 @@ const projectBeams = [
     box-shadow: 0 0 0 0.2rem hsl(148 58% 46% / 0.1);
   }
 
-  .now-active-list {
+  .now-scroll-shell {
+    position: relative;
     min-width: 0;
+  }
+
+  .now-scroll-shell::before,
+  .now-scroll-shell::after {
+    position: absolute;
+    right: 0.2rem;
+    left: 0;
+    z-index: 2;
+    height: 1rem;
+    content: "";
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  .now-scroll-shell::before {
+    top: 0;
+    background: linear-gradient(to bottom, hsl(var(--background) / 0.96), transparent);
+  }
+
+  .now-scroll-shell::after {
+    bottom: 0;
+    background: linear-gradient(to top, hsl(var(--background) / 0.96), transparent);
+  }
+
+  .now-scroll-shell[data-overflow="true"][data-at-start="false"]::before,
+  .now-scroll-shell[data-overflow="true"][data-at-end="false"]::after {
+    opacity: 1;
+  }
+
+  .now-active-list {
+    max-height: 10.75rem;
+    min-width: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.24) transparent;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+  }
+
+  .now-active-list::-webkit-scrollbar {
+    width: 0.28rem;
+  }
+
+  .now-active-list::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: hsl(var(--muted-foreground) / 0.24);
+  }
+
+  .now-active-list:focus-visible {
+    outline: 1px solid hsl(var(--foreground) / 0.5);
+    outline-offset: -2px;
   }
 
   .now-item {
@@ -683,6 +750,10 @@ const projectBeams = [
     .now-widget {
       margin-top: 0.25rem;
     }
+
+    .now-active-list {
+      max-height: 12rem;
+    }
   }
 
   .writing-tab {
@@ -865,6 +936,11 @@ const projectBeams = [
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .now-scroll-shell::before,
+    .now-scroll-shell::after {
+      transition: none;
+    }
+
     .now-track-fill {
       transition: none;
     }
@@ -893,6 +969,26 @@ const projectBeams = [
 </style>
 
 <script>
+  const nowScroll = document.querySelector<HTMLElement>("[data-now-scroll]");
+  const nowScrollShell = document.querySelector<HTMLElement>("[data-now-scroll-shell]");
+
+  const updateNowScrollCues = () => {
+    if (!nowScroll || !nowScrollShell) return;
+    const overflow = nowScroll.scrollHeight > nowScroll.clientHeight + 1;
+    nowScrollShell.dataset.overflow = overflow.toString();
+    nowScrollShell.dataset.atStart = (nowScroll.scrollTop <= 1).toString();
+    nowScrollShell.dataset.atEnd = (
+      nowScroll.scrollTop + nowScroll.clientHeight >= nowScroll.scrollHeight - 1
+    ).toString();
+  };
+
+  nowScroll?.addEventListener("scroll", updateNowScrollCues, { passive: true });
+  window.addEventListener("resize", updateNowScrollCues);
+  if (nowScroll && "ResizeObserver" in window) {
+    new ResizeObserver(updateNowScrollCues).observe(nowScroll);
+  }
+  updateNowScrollCues();
+
   const nowItemsElements = Array.from(document.querySelectorAll<HTMLElement>("[data-now-item]"));
   const nowActiveEmpty = document.querySelector<HTMLElement>("[data-now-active-empty]");
   const nowArchiveList = document.querySelector<HTMLElement>("[data-now-archive-list]");

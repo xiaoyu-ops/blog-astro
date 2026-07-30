@@ -1,0 +1,49 @@
+---
+import Header from "../components/Header.astro";
+import LabStatusDetails from "../components/LabStatusDetails.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="LAB-2 Status · Zhuoyang Wu"
+  description="LAB-2 与 MMdedup-v2 的公开只读运行状态。"
+>
+  <Header />
+  <main class="lab-status-page max-w-3xl mx-auto px-4 pt-24 pb-16">
+    <a class="lab-status-page__back" href="/#now">
+      <span aria-hidden="true">←</span>
+      <span data-lang="zh">返回主页</span>
+      <span data-lang="en">Back home</span>
+    </a>
+    <LabStatusDetails />
+  </main>
+</Layout>
+
+<style>
+  .lab-status-page__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+    color: hsl(var(--muted-foreground));
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    transition: color 180ms ease, transform 180ms ease;
+  }
+
+  .lab-status-page__back:hover {
+    color: hsl(var(--foreground));
+    transform: translateX(-0.12rem);
+  }
+
+  .lab-status-page__back:focus-visible {
+    outline: 1px solid hsl(var(--foreground) / 0.55);
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lab-status-page__back {
+      transition: none;
+    }
+  }
+</style>

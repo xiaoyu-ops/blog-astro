@@ -1,9 +1,9 @@
 # LAB-2 实验状态组件实施规格
 
-> 用途：交给个人主页项目直接实施。  
-> 目标站点：`https://blog.xiaoyu666.cyou/`  
-> 目标仓库：`/Users/wuzhuoyang/code/blog-astro`  
-> 数据来源：LAB-2 上的 MMdedup-v2 实验状态  
+> 用途：交给个人主页项目直接实施。
+> 目标站点：`https://blog.xiaoyu666.cyou/`
+> 目标仓库：`/Users/wuzhuoyang/code/blog-astro`
+> 数据来源：LAB-2 上的 MMdedup-v2 实验状态
 > 状态：待实现
 
 ## 1. 要解决的问题

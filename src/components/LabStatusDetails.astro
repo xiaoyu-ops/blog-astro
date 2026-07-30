@@ -1,0 +1,550 @@
+---
+const heartbeatCells = Array.from({ length: 60 });
+---
+
+<section class="lab-detail" data-lab-status-root data-state="unknown" aria-live="polite">
+  <div class="lab-detail__hero">
+    <div>
+      <p class="lab-detail__eyebrow">PUBLIC STATUS · LAB-2</p>
+      <div class="lab-detail__titleline">
+        <span class="lab-detail__dot" aria-hidden="true"></span>
+        <h1>
+          <span data-lang="zh">服务器状态</span>
+          <span data-lang="en">Server status</span>
+        </h1>
+        <span class="lab-detail__state">
+          <span data-lang="zh" data-lab-state-zh>连接中</span>
+          <span data-lang="en" data-lab-state-en>CONNECTING</span>
+        </span>
+      </div>
+      <p class="lab-detail__updated">
+        <span data-lang="zh" data-lab-updated-zh>等待首次上报</span>
+        <span data-lang="en" data-lab-updated-en>Waiting for the first report</span>
+      </p>
+    </div>
+    <span class="lab-detail__privacy">
+      <span data-lang="zh">只读 · 公开摘要</span>
+      <span data-lang="en">Read-only · public summary</span>
+    </span>
+  </div>
+
+  <section class="lab-detail__experiment" aria-labelledby="lab-experiment-title">
+    <p class="lab-detail__section-label" id="lab-experiment-title">
+      <span data-lang="zh">当前实验</span>
+      <span data-lang="en">Current experiment</span>
+    </p>
+    <h2>
+      <span data-lang="zh" data-lab-task-zh>正在读取状态</span>
+      <span data-lang="en" data-lab-task-en>Reading status</span>
+    </h2>
+    <p>
+      <span data-lang="zh" data-lab-phase-zh>MMdedup-v2</span>
+      <span data-lang="en" data-lab-phase-en>MMdedup-v2</span>
+    </p>
+    <div class="lab-detail__experiment-meta">
+      <span>
+        <span data-lang="zh" data-lab-run-state-zh>状态未知</span>
+        <span data-lang="en" data-lab-run-state-en>Status unknown</span>
+      </span>
+      <span aria-hidden="true">·</span>
+      <span>
+        <span data-lang="zh" data-lab-duration-zh>时长未知</span>
+        <span data-lang="en" data-lab-duration-en>Duration unknown</span>
+      </span>
+    </div>
+    <div class="lab-detail__progress" data-lab-progress hidden>
+      <div class="lab-detail__progress-copy">
+        <span>
+          <span data-lang="zh">权威进度</span>
+          <span data-lang="en">Authoritative progress</span>
+        </span>
+        <strong data-lab-progress-copy>—</strong>
+      </div>
+      <div
+        class="lab-detail__progress-track"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+        data-lab-progress-track
+      >
+        <span data-lab-progress-fill></span>
+      </div>
+    </div>
+  </section>
+
+  <div class="lab-detail__metrics" aria-label="LAB-2 metrics">
+    <article class="lab-metric lab-metric--wide">
+      <span class="lab-metric__label">
+        <span data-lang="zh">服务器</span>
+        <span data-lang="en">Server</span>
+      </span>
+      <strong>
+        <span data-lang="zh" data-lab-server-value-zh>未知</span>
+        <span data-lang="en" data-lab-server-value-en>Unknown</span>
+      </strong>
+      <small>LAB-2</small>
+    </article>
+    <article class="lab-metric lab-metric--wide">
+      <span class="lab-metric__label">
+        <span data-lang="zh">实验</span>
+        <span data-lang="en">Experiment</span>
+      </span>
+      <strong>
+        <span data-lang="zh" data-lab-experiment-value-zh>未知</span>
+        <span data-lang="en" data-lab-experiment-value-en>Unknown</span>
+      </strong>
+      <small>MMdedup-v2</small>
+    </article>
+    <article class="lab-metric">
+      <span class="lab-metric__label">CPU</span>
+      <strong>
+        <span data-lang="zh" data-lab-cpu-value-zh>—</span>
+        <span data-lang="en" data-lab-cpu-value-en>—</span>
+      </strong>
+      <small>
+        <span data-lang="zh">使用率</span>
+        <span data-lang="en">Utilization</span>
+      </small>
+    </article>
+    <article class="lab-metric">
+      <span class="lab-metric__label">GPU</span>
+      <strong>
+        <span data-lang="zh" data-lab-gpu-value-zh>—</span>
+        <span data-lang="en" data-lab-gpu-value-en>—</span>
+      </strong>
+      <small>
+        <span data-lang="zh">使用率 · 显存</span>
+        <span data-lang="en">Utilization · VRAM</span>
+      </small>
+    </article>
+    <article class="lab-metric">
+      <span class="lab-metric__label">
+        <span data-lang="zh">内存</span>
+        <span data-lang="en">Memory</span>
+      </span>
+      <strong>
+        <span data-lang="zh" data-lab-memory-value-zh>—</span>
+        <span data-lang="en" data-lab-memory-value-en>—</span>
+      </strong>
+      <small>
+        <span data-lang="zh">已用 / 总计</span>
+        <span data-lang="en">Used / total</span>
+      </small>
+    </article>
+    <article class="lab-metric">
+      <span class="lab-metric__label">
+        <span data-lang="zh">磁盘</span>
+        <span data-lang="en">Disk</span>
+      </span>
+      <strong>
+        <span data-lang="zh" data-lab-disk-value-zh>—</span>
+        <span data-lang="en" data-lab-disk-value-en>—</span>
+      </strong>
+      <small>
+        <span data-lang="zh">已用 · 可用空间</span>
+        <span data-lang="en">Used · free space</span>
+      </small>
+    </article>
+  </div>
+
+  <section class="lab-detail__heartbeat" aria-labelledby="lab-heartbeat-title">
+    <div class="lab-detail__section-heading">
+      <div>
+        <p class="lab-detail__section-label" id="lab-heartbeat-title">
+          <span data-lang="zh">心跳轨道</span>
+          <span data-lang="en">Heartbeat track</span>
+        </p>
+        <p>
+          <span data-lang="zh">最近 60 分钟，每格代表一分钟</span>
+          <span data-lang="en">Last 60 minutes, one minute per cell</span>
+        </p>
+      </div>
+      <span class="lab-detail__legend">
+        <i aria-hidden="true"></i>
+        <span data-lang="zh">收到上报</span>
+        <span data-lang="en">Reported</span>
+      </span>
+    </div>
+    <div
+      class="lab-heartbeat-grid"
+      data-lab-heartbeats
+      role="img"
+      aria-label="最近 60 分钟的上报状态"
+      data-language-aria-zh="最近 60 分钟的上报状态"
+      data-language-aria-en="Reporting status for the last 60 minutes"
+    >
+      {heartbeatCells.map(() => <span aria-hidden="true"></span>)}
+    </div>
+  </section>
+
+  <section class="lab-detail__health" aria-labelledby="lab-health-title">
+    <p class="lab-detail__section-label" id="lab-health-title">
+      <span data-lang="zh">运行健康</span>
+      <span data-lang="en">Runtime health</span>
+    </p>
+    <dl>
+      <div>
+        <dt>
+          <span data-lang="zh">服务重启</span>
+          <span data-lang="en">Service restarts</span>
+        </dt>
+        <dd>
+          <span data-lang="zh" data-lab-restart-value-zh>未记录</span>
+          <span data-lang="en" data-lab-restart-value-en>Not reported</span>
+        </dd>
+      </div>
+      <div>
+        <dt>OOM</dt>
+        <dd>
+          <span data-lang="zh" data-lab-oom-value-zh>未记录</span>
+          <span data-lang="en" data-lab-oom-value-en>Not reported</span>
+        </dd>
+      </div>
+      <div>
+        <dt>NaN</dt>
+        <dd>
+          <span data-lang="zh" data-lab-nan-value-zh>未记录</span>
+          <span data-lang="en" data-lab-nan-value-en>Not reported</span>
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <p class="lab-detail__note">
+    <span data-lang="zh">此页面只展示由 LAB-2 只读采集器上报的公开白名单字段；未知值保持为空，不读取日志、路径或数据样本。</span>
+    <span data-lang="en">This page only shows allowlisted fields reported by the read-only LAB-2 collector. Unknown values stay unknown; logs, paths, and data samples are not read.</span>
+  </p>
+</section>
+
+<script>
+  import "../lib/lab-status-client";
+</script>
+
+<style>
+  .lab-detail {
+    --lab-state-color: hsl(var(--muted-foreground) / 0.58);
+    display: grid;
+    gap: 1rem;
+  }
+
+  .lab-detail[data-state="fresh"] { --lab-state-color: hsl(151 52% 43%); }
+  .lab-detail[data-state="stale"] { --lab-state-color: hsl(38 78% 48%); }
+  .lab-detail[data-state="offline"] { --lab-state-color: hsl(4 58% 55%); }
+
+  .lab-detail__hero {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1rem 0 1.25rem;
+    border-bottom: 1px solid hsl(var(--border));
+  }
+
+  .lab-detail__eyebrow,
+  .lab-detail__section-label,
+  .lab-metric__label {
+    color: hsl(var(--muted-foreground));
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .lab-detail__titleline {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 0.45rem;
+  }
+
+  .lab-detail__titleline h1 {
+    font-size: clamp(1.45rem, 5vw, 2rem);
+    font-weight: 620;
+    letter-spacing: -0.025em;
+  }
+
+  .lab-detail__dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: var(--lab-state-color);
+    box-shadow: 0 0 0 0.24rem color-mix(in srgb, var(--lab-state-color) 12%, transparent);
+  }
+
+  .lab-detail__state,
+  .lab-detail__privacy {
+    border: 1px solid color-mix(in srgb, var(--lab-state-color) 32%, hsl(var(--border)));
+    border-radius: 999px;
+    color: var(--lab-state-color);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 650;
+    letter-spacing: 0.05em;
+  }
+
+  .lab-detail__state {
+    padding: 0.24rem 0.48rem;
+  }
+
+  .lab-detail__privacy {
+    padding: 0.35rem 0.55rem;
+    color: hsl(var(--muted-foreground));
+    white-space: nowrap;
+  }
+
+  .lab-detail__updated,
+  .lab-detail__section-heading p,
+  .lab-detail__experiment p,
+  .lab-detail__note {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.75rem;
+    line-height: 1.65;
+  }
+
+  .lab-detail__updated {
+    margin-top: 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+  }
+
+  .lab-detail__experiment {
+    padding: 1rem 1.1rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.8rem;
+    background:
+      linear-gradient(120deg, color-mix(in srgb, var(--lab-state-color) 7%, transparent), transparent 48%),
+      hsl(var(--background) / 0.82);
+  }
+
+  .lab-detail__experiment h2 {
+    margin-top: 0.55rem;
+    font-size: 1rem;
+    font-weight: 610;
+    line-height: 1.4;
+  }
+
+  .lab-detail__experiment p:last-child {
+    margin-top: 0.25rem;
+    font-family: var(--font-mono);
+  }
+
+  .lab-detail__experiment-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.6rem;
+    color: hsl(var(--muted-foreground));
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+  }
+
+  .lab-detail__progress {
+    margin-top: 0.8rem;
+  }
+
+  .lab-detail__progress-copy {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    color: hsl(var(--muted-foreground));
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+  }
+
+  .lab-detail__progress-copy strong {
+    color: hsl(var(--foreground));
+    font-weight: 560;
+  }
+
+  .lab-detail__progress-track {
+    height: 0.25rem;
+    margin-top: 0.35rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: hsl(var(--border) / 0.72);
+  }
+
+  .lab-detail__progress-track > span {
+    display: block;
+    width: var(--lab-progress, 0%);
+    height: 100%;
+    border-radius: inherit;
+    background: var(--lab-state-color);
+    transition: width 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .lab-detail__metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .lab-metric {
+    min-width: 0;
+    padding: 0.85rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.7rem;
+    background: hsl(var(--background) / 0.76);
+  }
+
+  .lab-metric--wide {
+    grid-column: span 2;
+  }
+
+  .lab-metric strong,
+  .lab-metric small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .lab-metric strong {
+    margin-top: 0.65rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 580;
+  }
+
+  .lab-metric small {
+    margin-top: 0.25rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.625rem;
+  }
+
+  .lab-detail__heartbeat,
+  .lab-detail__health {
+    padding: 1rem 1.1rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.8rem;
+    background: hsl(var(--background) / 0.76);
+  }
+
+  .lab-detail__section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .lab-detail__section-heading > div > p:last-child {
+    margin-top: 0.2rem;
+  }
+
+  .lab-detail__legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: hsl(var(--muted-foreground));
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    white-space: nowrap;
+  }
+
+  .lab-detail__legend i {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 2px;
+    background: var(--lab-state-color);
+  }
+
+  .lab-heartbeat-grid {
+    display: grid;
+    grid-template-columns: repeat(30, minmax(0, 1fr));
+    gap: 0.18rem;
+    margin-top: 0.9rem;
+  }
+
+  .lab-heartbeat-grid > span {
+    height: 0.72rem;
+    border-radius: 2px;
+    background: hsl(var(--border) / 0.65);
+    transition: background-color 180ms ease, transform 180ms ease;
+  }
+
+  .lab-heartbeat-grid > span.is-reported {
+    background: var(--lab-state-color);
+  }
+
+  .lab-detail__health dl {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.8rem;
+    margin-top: 0.8rem;
+  }
+
+  .lab-detail__health dl > div {
+    padding-top: 0.6rem;
+    border-top: 1px solid hsl(var(--border));
+  }
+
+  .lab-detail__health dt {
+    color: hsl(var(--muted-foreground));
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+  }
+
+  .lab-detail__health dd {
+    margin-top: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 580;
+  }
+
+  .lab-detail__note {
+    padding: 0.1rem 0.2rem;
+    font-size: 0.6875rem;
+  }
+
+  .lab-detail.has-new-data .lab-detail__dot {
+    animation: lab-detail-data-arrived 680ms ease-out;
+  }
+
+  @keyframes lab-detail-data-arrived {
+    0% { box-shadow: 0 0 0 0 var(--lab-state-color); }
+    65% { box-shadow: 0 0 0 0.65rem color-mix(in srgb, var(--lab-state-color) 0%, transparent); }
+    100% { box-shadow: 0 0 0 0.24rem color-mix(in srgb, var(--lab-state-color) 12%, transparent); }
+  }
+
+  @media (max-width: 640px) {
+    .lab-detail__hero {
+      gap: 0.75rem;
+    }
+
+    .lab-detail__privacy {
+      display: none;
+    }
+
+    .lab-detail__metrics {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lab-metric--wide {
+      grid-column: span 1;
+    }
+
+    .lab-heartbeat-grid {
+      grid-template-columns: repeat(20, minmax(0, 1fr));
+    }
+
+    .lab-detail__health dl {
+      grid-template-columns: 1fr;
+      gap: 0.35rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lab-detail.has-new-data .lab-detail__dot {
+      animation: none;
+    }
+
+    .lab-heartbeat-grid > span {
+      transition: none;
+    }
+
+    .lab-detail__progress-track > span {
+      transition: none;
+    }
+  }
+</style>

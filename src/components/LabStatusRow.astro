@@ -1,0 +1,203 @@
+<a
+  class="lab-status-row"
+  href="/lab-status/"
+  data-lab-status-root
+  data-state="unknown"
+  aria-label="查看 LAB-2 服务器状态"
+  data-language-aria-zh="查看 LAB-2 服务器状态"
+  data-language-aria-en="View LAB-2 server status"
+>
+  <span class="lab-status-row__content">
+    <span class="lab-status-row__topline">
+      <span class="lab-status-row__identity">
+        <span class="lab-status-row__dot" aria-hidden="true"></span>
+        <strong>LAB-2</strong>
+      </span>
+      <span class="lab-status-row__state">
+        <span data-lang="zh" data-lab-state-zh>连接中</span>
+        <span data-lang="en" data-lab-state-en>CONNECTING</span>
+      </span>
+    </span>
+    <span class="lab-status-row__task">
+      <span data-lang="zh" data-lab-task-zh>正在读取状态</span>
+      <span data-lang="en" data-lab-task-en>Reading status</span>
+    </span>
+    <span class="lab-status-row__meta">
+      <span class="lab-status-row__phase">
+        <span data-lang="zh" data-lab-phase-zh>MMdedup-v2</span>
+        <span data-lang="en" data-lab-phase-en>MMdedup-v2</span>
+      </span>
+      <span aria-hidden="true">·</span>
+      <span>
+        <span data-lang="zh" data-lab-summary-zh>CPU — · GPU 未知</span>
+        <span data-lang="en" data-lab-summary-en>CPU — · GPU unknown</span>
+      </span>
+    </span>
+  </span>
+  <span class="lab-status-row__aside">
+    <span class="lab-status-row__updated">
+      <span data-lang="zh" data-lab-updated-zh>等待上报</span>
+      <span data-lang="en" data-lab-updated-en>Waiting</span>
+    </span>
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="m6 3 5 5-5 5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </span>
+</a>
+
+<script>
+  import "../lib/lab-status-client";
+</script>
+
+<style>
+  .lab-status-row {
+    --lab-state-color: hsl(var(--muted-foreground) / 0.58);
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.55rem;
+    width: 100%;
+    min-height: 4.65rem;
+    padding: 0.65rem 0 0.62rem;
+    border-bottom: 1px solid hsl(var(--border) / 0.72);
+    color: inherit;
+    overflow: hidden;
+    transition: background-color 180ms ease;
+  }
+
+  .lab-status-row:hover {
+    background: hsl(var(--muted) / 0.52);
+  }
+
+  .lab-status-row:focus-visible {
+    outline: 1px solid hsl(var(--foreground) / 0.58);
+    outline-offset: -2px;
+  }
+
+  .lab-status-row[data-state="fresh"] {
+    --lab-state-color: hsl(151 52% 43%);
+  }
+
+  .lab-status-row[data-state="stale"] {
+    --lab-state-color: hsl(38 78% 48%);
+  }
+
+  .lab-status-row[data-state="offline"] {
+    --lab-state-color: hsl(4 58% 55%);
+  }
+
+  .lab-status-row__content {
+    min-width: 0;
+  }
+
+  .lab-status-row__topline,
+  .lab-status-row__identity,
+  .lab-status-row__meta,
+  .lab-status-row__aside {
+    display: flex;
+    align-items: center;
+  }
+
+  .lab-status-row__topline {
+    justify-content: space-between;
+    gap: 0.55rem;
+  }
+
+  .lab-status-row__identity {
+    gap: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  .lab-status-row__dot {
+    width: 0.38rem;
+    height: 0.38rem;
+    border-radius: 999px;
+    background: var(--lab-state-color);
+    box-shadow: 0 0 0 0.18rem color-mix(in srgb, var(--lab-state-color) 12%, transparent);
+  }
+
+  .lab-status-row__state {
+    color: var(--lab-state-color);
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .lab-status-row__task {
+    display: block;
+    margin-top: 0.35rem;
+    overflow: hidden;
+    color: hsl(var(--foreground));
+    font-size: 0.675rem;
+    font-weight: 580;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .lab-status-row__meta {
+    gap: 0.28rem;
+    margin-top: 0.22rem;
+    overflow: hidden;
+    color: hsl(var(--muted-foreground));
+    font-family: var(--font-mono);
+    font-size: 0.475rem;
+    white-space: nowrap;
+  }
+
+  .lab-status-row__phase,
+  .lab-status-row__meta > span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .lab-status-row__aside {
+    align-self: stretch;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    color: hsl(var(--muted-foreground) / 0.72);
+  }
+
+  .lab-status-row__updated {
+    align-self: flex-start;
+    margin-top: 0.05rem;
+    font-family: var(--font-mono);
+    font-size: 0.45rem;
+    white-space: nowrap;
+  }
+
+  .lab-status-row__aside svg {
+    width: 0.7rem;
+    height: 0.7rem;
+    transition: transform 180ms ease;
+  }
+
+  .lab-status-row:hover .lab-status-row__aside svg {
+    transform: translateX(0.12rem);
+  }
+
+  .lab-status-row.has-new-data .lab-status-row__dot {
+    animation: lab-data-arrived 680ms ease-out;
+  }
+
+  @keyframes lab-data-arrived {
+    0% { box-shadow: 0 0 0 0 var(--lab-state-color); }
+    65% { box-shadow: 0 0 0 0.42rem color-mix(in srgb, var(--lab-state-color) 0%, transparent); }
+    100% { box-shadow: 0 0 0 0.18rem color-mix(in srgb, var(--lab-state-color) 12%, transparent); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lab-status-row,
+    .lab-status-row__aside svg {
+      transition: none;
+    }
+
+    .lab-status-row.has-new-data .lab-status-row__dot {
+      animation: none;
+    }
+  }
+</style>
