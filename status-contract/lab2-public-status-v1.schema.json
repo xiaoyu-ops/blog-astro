@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://blog.xiaoyu666.cyou/schemas/lab2-public-status-v1.json",
+  "title": "LAB-2 public status response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "server",
+    "experiment",
+    "resources",
+    "health",
+    "observedAt",
+    "freshness",
+    "heartbeats"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "server": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "state"],
+      "properties": {
+        "id": { "const": "lab-2" },
+        "state": { "enum": ["online", "offline", "unknown"] }
+      }
+    },
+    "experiment": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "$ref": "https://blog.xiaoyu666.cyou/schemas/lab2-status-v1.json#/$defs/experiment"
+        }
+      ]
+    },
+    "resources": {
+      "$ref": "https://blog.xiaoyu666.cyou/schemas/lab2-status-v1.json#/$defs/resources"
+    },
+    "health": {
+      "$ref": "https://blog.xiaoyu666.cyou/schemas/lab2-status-v1.json#/$defs/health"
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "ageSeconds"],
+      "properties": {
+        "state": { "enum": ["fresh", "stale", "offline", "unknown"] },
+        "ageSeconds": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "integer", "minimum": 0 }
+          ]
+        }
+      }
+    },
+    "heartbeats": {
+      "type": "array",
+      "maxItems": 60,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["observedAt"],
+        "properties": {
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,299 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://blog.xiaoyu666.cyou/schemas/lab2-status-v1.json",
+  "title": "LAB-2 public status report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "server",
+    "experiment",
+    "resources",
+    "health",
+    "observedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "server": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "state"],
+      "properties": {
+        "id": {
+          "const": "lab-2"
+        },
+        "state": {
+          "const": "online"
+        }
+      }
+    },
+    "experiment": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/experiment"
+        }
+      ]
+    },
+    "resources": {
+      "$ref": "#/$defs/resources"
+    },
+    "health": {
+      "$ref": "#/$defs/health"
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "localizedText": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["zh", "en"],
+      "properties": {
+        "zh": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "en": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        }
+      }
+    },
+    "experiment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project",
+        "phase",
+        "task",
+        "state",
+        "startedAt",
+        "progress"
+      ],
+      "properties": {
+        "project": {
+          "const": "MMdedup-v2"
+        },
+        "phase": {
+          "$ref": "#/$defs/localizedText"
+        },
+        "task": {
+          "$ref": "#/$defs/localizedText"
+        },
+        "state": {
+          "enum": ["running", "idle", "completed", "failed", "unknown"]
+        },
+        "startedAt": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date-time"
+            }
+          ]
+        },
+        "progress": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/progress"
+            }
+          ]
+        }
+      }
+    },
+    "progress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["completed", "total", "percent", "unit", "authoritative"],
+      "properties": {
+        "completed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "percent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "authoritative": {
+          "const": true
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cpu", "gpu", "memory", "disk"],
+      "properties": {
+        "cpu": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["state", "utilizationPercent"],
+              "properties": {
+                "state": {
+                  "enum": ["busy", "idle", "unknown"]
+                },
+                "utilizationPercent": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            }
+          ]
+        },
+        "gpu": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "model",
+                "state",
+                "utilizationPercent",
+                "memoryUsedMiB",
+                "memoryTotalMiB",
+                "temperatureC"
+              ],
+              "properties": {
+                "model": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64
+                },
+                "state": {
+                  "enum": ["busy", "idle", "unavailable", "unknown"]
+                },
+                "utilizationPercent": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "memoryUsedMiB": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "memoryTotalMiB": {
+                  "type": "number",
+                  "minimum": 1
+                },
+                "temperatureC": {
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "number",
+                      "minimum": -20,
+                      "maximum": 150
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "memory": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["usedGiB", "totalGiB"],
+              "properties": {
+                "usedGiB": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "totalGiB": {
+                  "type": "number",
+                  "minimum": 0.1
+                }
+              }
+            }
+          ]
+        },
+        "disk": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["usedPercent", "freeGiB"],
+              "properties": {
+                "usedPercent": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "freeGiB": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "health": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["serviceRestarts", "oomDetected", "nanDetected"],
+      "properties": {
+        "serviceRestarts": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 0
+            }
+          ]
+        },
+        "oomDetected": {
+          "type": ["boolean", "null"]
+        },
+        "nanDetected": {
+          "type": ["boolean", "null"]
+        }
+      }
+    }
+  }
+}

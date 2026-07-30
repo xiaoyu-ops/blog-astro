@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "server": {
+    "id": "lab-2",
+    "state": "online"
+  },
+  "experiment": null,
+  "resources": {
+    "cpu": {
+      "state": "idle",
+      "utilizationPercent": 7.2
+    },
+    "gpu": null,
+    "memory": {
+      "usedGiB": 7.1,
+      "totalGiB": 62
+    },
+    "disk": {
+      "usedPercent": 17,
+      "freeGiB": 2908
+    }
+  },
+  "health": {
+    "serviceRestarts": null,
+    "oomDetected": null,
+    "nanDetected": null
+  },
+  "observedAt": "2026-07-30T21:20:00+08:00"
+}

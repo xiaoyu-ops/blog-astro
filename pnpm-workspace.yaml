@@ -1,6 +1,8 @@
 packages:
   - .
+  - status-worker
 
 allowBuilds:
   esbuild: true
   sharp: true
+  workerd: true

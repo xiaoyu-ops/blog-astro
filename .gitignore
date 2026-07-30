@@ -4,3 +4,5 @@ dist/
 .DS_Store
 .astro/
 .pnpm-store/
+__pycache__/
+*.pyc

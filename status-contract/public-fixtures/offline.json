@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "server": { "id": "lab-2", "state": "offline" },
+  "experiment": {
+    "project": "MMdedup-v2",
+    "phase": { "zh": "文本规模验证", "en": "Text-scale validation" },
+    "task": { "zh": "文本 100K 乱序审计", "en": "Text 100K shuffle audit" },
+    "state": "running",
+    "startedAt": "2026-07-30T20:00:00+08:00",
+    "progress": null
+  },
+  "resources": { "cpu": null, "gpu": null, "memory": null, "disk": null },
+  "health": {
+    "serviceRestarts": 0,
+    "oomDetected": false,
+    "nanDetected": false
+  },
+  "observedAt": "2026-07-30T21:46:00+08:00",
+  "freshness": { "state": "offline", "ageSeconds": 720 },
+  "heartbeats": [
+    { "observedAt": "2026-07-30T21:46:00+08:00" }
+  ]
+}

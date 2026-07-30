@@ -15,7 +15,10 @@
     "now:update": "node scripts/now.mjs update",
     "now:complete": "node scripts/now.mjs complete",
     "now:reopen": "node scripts/now.mjs reopen",
-    "test": "node --test scripts/*.test.mjs",
+    "test:site": "node --test scripts/*.test.mjs",
+    "test:worker": "pnpm --dir status-worker check && pnpm --dir status-worker test",
+    "test:collector": "python3 -m unittest discover -s lab2-collector/tests",
+    "test": "pnpm test:site && pnpm test:worker && pnpm test:collector",
     "build": "astro build",
     "preview": "astro preview"
   },

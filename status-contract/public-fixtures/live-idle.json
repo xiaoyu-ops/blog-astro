@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "server": { "id": "lab-2", "state": "online" },
+  "experiment": null,
+  "resources": {
+    "cpu": { "state": "idle", "utilizationPercent": 4.2 },
+    "gpu": {
+      "model": "RTX 3090",
+      "state": "idle",
+      "utilizationPercent": 0,
+      "memoryUsedMiB": 38,
+      "memoryTotalMiB": 24576,
+      "temperatureC": 47
+    },
+    "memory": { "usedGiB": 6.9, "totalGiB": 62 },
+    "disk": { "usedPercent": 17, "freeGiB": 2908 }
+  },
+  "health": {
+    "serviceRestarts": null,
+    "oomDetected": null,
+    "nanDetected": null
+  },
+  "observedAt": "2026-07-30T21:58:00+08:00",
+  "freshness": { "state": "fresh", "ageSeconds": 18 },
+  "heartbeats": [
+    { "observedAt": "2026-07-30T21:58:00+08:00" }
+  ]
+}

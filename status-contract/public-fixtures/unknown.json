@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "server": { "id": "lab-2", "state": "unknown" },
+  "experiment": null,
+  "resources": { "cpu": null, "gpu": null, "memory": null, "disk": null },
+  "health": {
+    "serviceRestarts": null,
+    "oomDetected": null,
+    "nanDetected": null
+  },
+  "observedAt": "1970-01-01T00:00:00.000Z",
+  "freshness": { "state": "unknown", "ageSeconds": null },
+  "heartbeats": []
+}

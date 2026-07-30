@@ -1,0 +1,17 @@
+{
+  "phase": {
+    "zh": "当前阶段",
+    "en": "Current phase"
+  },
+  "task": {
+    "zh": "MMdedup 实验",
+    "en": "MMdedup experiment"
+  },
+  "state": "running",
+  "startedAt": "2026-07-30T20:00:00+08:00",
+  "completed": 1,
+  "total": 4,
+  "unit": "subruns",
+  "oomDetected": false,
+  "nanDetected": false
+}

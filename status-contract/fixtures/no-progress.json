@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "server": {
+    "id": "lab-2",
+    "state": "online"
+  },
+  "experiment": {
+    "project": "MMdedup-v2",
+    "phase": {
+      "zh": "音频验证",
+      "en": "Audio validation"
+    },
+    "task": {
+      "zh": "音频关系核验",
+      "en": "Audio relation verification"
+    },
+    "state": "running",
+    "startedAt": "2026-07-30T20:30:00+08:00",
+    "progress": null
+  },
+  "resources": {
+    "cpu": {
+      "state": "busy",
+      "utilizationPercent": 93.1
+    },
+    "gpu": {
+      "model": "RTX 3090",
+      "state": "idle",
+      "utilizationPercent": 0,
+      "memoryUsedMiB": 38,
+      "memoryTotalMiB": 24576,
+      "temperatureC": 53
+    },
+    "memory": {
+      "usedGiB": 8.1,
+      "totalGiB": 62
+    },
+    "disk": {
+      "usedPercent": 17,
+      "freeGiB": 2908
+    }
+  },
+  "health": {
+    "serviceRestarts": 0,
+    "oomDetected": false,
+    "nanDetected": false
+  },
+  "observedAt": "2026-07-30T21:20:00+08:00"
+}

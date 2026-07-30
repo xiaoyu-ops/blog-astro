@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "server": {
+    "id": "lab-2",
+    "state": "online"
+  },
+  "experiment": {
+    "project": "MMdedup-v2",
+    "phase": {
+      "zh": "文本规模验证",
+      "en": "Text-scale validation"
+    },
+    "task": {
+      "zh": "文本 100K 乱序审计",
+      "en": "Text 100K shuffle audit"
+    },
+    "state": "running",
+    "startedAt": "2026-07-30T11:53:58+08:00",
+    "progress": {
+      "completed": 2,
+      "total": 4,
+      "percent": 50,
+      "unit": "subruns",
+      "authoritative": true
+    }
+  },
+  "resources": {
+    "cpu": {
+      "state": "busy",
+      "utilizationPercent": 82.4
+    },
+    "gpu": {
+      "model": "RTX 3090",
+      "state": "idle",
+      "utilizationPercent": 0,
+      "memoryUsedMiB": 38,
+      "memoryTotalMiB": 24576,
+      "temperatureC": 52
+    },
+    "memory": {
+      "usedGiB": 7.5,
+      "totalGiB": 62
+    },
+    "disk": {
+      "usedPercent": 17,
+      "freeGiB": 2908
+    }
+  },
+  "health": {
+    "serviceRestarts": 0,
+    "oomDetected": false,
+    "nanDetected": false
+  },
+  "observedAt": "2026-07-30T21:20:00+08:00"
+}

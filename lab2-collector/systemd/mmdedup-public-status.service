@@ -1,0 +1,22 @@
+[Unit]
+Description=Publish a sanitized LAB-2 experiment status snapshot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/srv/experiment/services/public-status/public-status.env
+ExecStart=/usr/bin/python3 /srv/experiment/services/public-status/collect_status.py
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/srv/experiment
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+Nice=15
+IOSchedulingClass=idle
+CPUWeight=10
+IOWeight=10
+
+[Install]
+WantedBy=default.target
