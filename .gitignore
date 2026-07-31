@@ -6,3 +6,5 @@ dist/
 .pnpm-store/
 __pycache__/
 *.pyc
+.graphify/
+output/
