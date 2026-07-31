@@ -10,20 +10,20 @@ posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).get
 
 const writingCategories = [
   {
-    id: "notes",
-    labelZh: "随手写",
-    labelEn: "Notes",
-    emptyZh: "还没有随手写。",
-    emptyEn: "No notes here yet.",
-    posts: posts.filter((post) => post.data.category === "notes"),
-  },
-  {
     id: "technical",
     labelZh: "技术",
     labelEn: "Technical",
     emptyZh: "技术文章正在整理中。",
     emptyEn: "Technical posts are on the way.",
     posts: posts.filter((post) => post.data.category === "technical"),
+  },
+  {
+    id: "notes",
+    labelZh: "随手写",
+    labelEn: "Notes",
+    emptyZh: "还没有随手写。",
+    emptyEn: "No notes here yet.",
+    posts: posts.filter((post) => post.data.category === "notes"),
   },
 ] as const;
 
@@ -344,12 +344,12 @@ const projectBeams = [
         {writingCategories.map((category) => (
           <button
             id={`writing-tab-${category.id}`}
-            class:list={["writing-tab", { "is-active": category.id === "notes" }]}
+            class:list={["writing-tab", { "is-active": category.id === "technical" }]}
             type="button"
             role="tab"
-            aria-selected={category.id === "notes" ? "true" : "false"}
+            aria-selected={category.id === "technical" ? "true" : "false"}
             aria-controls={`writing-panel-${category.id}`}
-            tabindex={category.id === "notes" ? "0" : "-1"}
+            tabindex={category.id === "technical" ? "0" : "-1"}
             data-writing-tab={category.id}
           >
             <span data-lang="zh">{category.labelZh}</span>
@@ -367,9 +367,9 @@ const projectBeams = [
           role="tabpanel"
           aria-labelledby={`writing-tab-${category.id}`}
           aria-label={`${category.labelZh} / ${category.labelEn}`}
-          tabindex={category.id === "notes" ? "0" : "-1"}
+          tabindex={category.id === "technical" ? "0" : "-1"}
           data-writing-panel={category.id}
-          hidden={category.id !== "notes"}
+          hidden={category.id !== "technical"}
         >
           {category.posts.length > 0 ? (
             category.posts.map((post, i) => {

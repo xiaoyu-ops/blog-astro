@@ -26,6 +26,9 @@ test("keeps homepage writing categories, local history scroll, and contact icons
   assert.match(homepage, /role="tablist"/);
   assert.match(homepage, /data-writing-tab=\{category\.id\}/);
   assert.match(homepage, /data-writing-panel=\{category\.id\}/);
+  assert.ok(homepage.indexOf('id: "technical"') < homepage.indexOf('id: "notes"'));
+  assert.match(homepage, /"is-active": category\.id === "technical"/);
+  assert.match(homepage, /hidden=\{category\.id !== "technical"\}/);
   assert.match(homepage, /height: 15rem/);
   assert.match(homepage, /margin-inline: -1rem/);
   assert.match(homepage, /padding-inline: 1rem/);
