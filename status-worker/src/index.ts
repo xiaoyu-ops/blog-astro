@@ -4,6 +4,7 @@ import schema from "../../status-contract/lab2-status-v1.schema.json" with {
 };
 import type {
   PublicStatus,
+  StatusHeartbeat,
   StatusReport,
   StoredStatus,
   WorkerEnv,
@@ -226,21 +227,22 @@ const writeStatus = async (
   report: StatusReport,
   receivedAt: string,
 ) => {
-  const stored: StoredStatus = { ...report, _receivedAt: receivedAt };
+  const previous = await env.LAB2_STATUS.get<StoredStatus>(LATEST_KEY, "json");
   const existing =
-    (await env.LAB2_STATUS.get<Array<{ observedAt: string }>>(
-      HEARTBEATS_KEY,
-      "json",
-    )) ?? [];
+    previous?._heartbeats ??
+    (await env.LAB2_STATUS.get<StatusHeartbeat[]>(HEARTBEATS_KEY, "json")) ??
+    [];
   const heartbeats = existing
     .filter((heartbeat) => heartbeat.observedAt !== report.observedAt)
     .concat({ observedAt: report.observedAt })
     .slice(-60);
+  const stored: StoredStatus = {
+    ...report,
+    _receivedAt: receivedAt,
+    _heartbeats: heartbeats,
+  };
 
-  await Promise.all([
-    env.LAB2_STATUS.put(LATEST_KEY, JSON.stringify(stored)),
-    env.LAB2_STATUS.put(HEARTBEATS_KEY, JSON.stringify(heartbeats)),
-  ]);
+  await env.LAB2_STATUS.put(LATEST_KEY, JSON.stringify(stored));
 };
 
 const unknownStatus = (): PublicStatus => ({
@@ -270,18 +272,23 @@ const unknownStatus = (): PublicStatus => ({
 });
 
 const readStatus = async (env: WorkerEnv, now = new Date()) => {
-  const [stored, heartbeats] = await Promise.all([
-    env.LAB2_STATUS.get<StoredStatus>(LATEST_KEY, "json"),
-    env.LAB2_STATUS.get<Array<{ observedAt: string }>>(HEARTBEATS_KEY, "json"),
-  ]);
+  const stored = await env.LAB2_STATUS.get<StoredStatus>(LATEST_KEY, "json");
   if (!stored) return unknownStatus();
+  const heartbeats =
+    stored._heartbeats ??
+    (await env.LAB2_STATUS.get<StatusHeartbeat[]>(HEARTBEATS_KEY, "json")) ??
+    [];
 
   const receivedAt = Date.parse(stored._receivedAt);
   if (!Number.isFinite(receivedAt)) return unknownStatus();
   const ageSeconds = Math.max(0, Math.floor((now.getTime() - receivedAt) / 1000));
   const freshness =
     ageSeconds <= 180 ? "fresh" : ageSeconds <= 600 ? "stale" : "offline";
-  const { _receivedAt: _internal, ...report } = stored;
+  const {
+    _receivedAt: _internalReceivedAt,
+    _heartbeats: _internalHeartbeats,
+    ...report
+  } = stored;
 
   return {
     ...report,
@@ -293,7 +300,7 @@ const readStatus = async (env: WorkerEnv, now = new Date()) => {
       state: freshness,
       ageSeconds,
     },
-    heartbeats: (heartbeats ?? []).slice(-60),
+    heartbeats: heartbeats.slice(-60),
   } satisfies PublicStatus;
 };
 

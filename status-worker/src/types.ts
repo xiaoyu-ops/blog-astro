@@ -57,8 +57,13 @@ export type StatusReport = {
   observedAt: string;
 };
 
+export type StatusHeartbeat = {
+  observedAt: string;
+};
+
 export type StoredStatus = StatusReport & {
   _receivedAt: string;
+  _heartbeats?: StatusHeartbeat[];
 };
 
 export type FreshnessState = "fresh" | "stale" | "offline" | "unknown";
@@ -72,9 +77,7 @@ export type PublicStatus = Omit<StatusReport, "server"> & {
     state: FreshnessState;
     ageSeconds: number | null;
   };
-  heartbeats: Array<{
-    observedAt: string;
-  }>;
+  heartbeats: StatusHeartbeat[];
 };
 
 export interface WorkerEnv {

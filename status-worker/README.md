@@ -2,9 +2,10 @@
 
 This isolated package owns `GET` and signed `POST /api/lab2/status`, plus the
 public `POST /api/views/track` compatibility endpoint used by the homepage. It
-stores the latest allowlisted LAB-2 snapshot and 60 heartbeats in KV. A Durable
-Object serializes replay protection, write-rate limiting, and privacy-preserving
-daily visitor counts (only a SHA-256 visitor fingerprint is stored).
+stores the latest allowlisted LAB-2 snapshot and 60 heartbeats together in one
+KV value, so each collector report consumes one KV `put`. A Durable Object
+serializes replay protection, write-rate limiting, and privacy-preserving daily
+visitor counts (only a SHA-256 visitor fingerprint is stored).
 
 ## Local verification
 

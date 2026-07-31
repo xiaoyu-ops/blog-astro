@@ -14,6 +14,7 @@ import type { StatusReport, StoredStatus, WorkerEnv } from "../src/types.ts";
 
 class MemoryKv {
   readonly values = new Map<string, string>();
+  readonly putKeys: string[] = [];
 
   async get<T>(key: string, type?: string): Promise<T | string | null> {
     const value = this.values.get(key);
@@ -22,6 +23,7 @@ class MemoryKv {
   }
 
   async put(key: string, value: string) {
+    this.putKeys.push(key);
     this.values.set(key, value);
   }
 }
@@ -142,8 +144,8 @@ test("accepts every fixed public status fixture and rejects private fields", asy
   assert.equal(validator.validate(privateFixture).valid, false);
 });
 
-test("stores sanitized status and recomputes authoritative progress", async () => {
-  const { env } = createEnvironment();
+test("stores sanitized status with one KV put and recomputes authoritative progress", async () => {
+  const { env, kv } = createEnvironment();
   const report = await readFixture("live-running");
   report.experiment!.progress!.percent = 12;
   const write = await handleRequest(
@@ -151,6 +153,7 @@ test("stores sanitized status and recomputes authoritative progress", async () =
     env,
   );
   assert.equal(write.status, 202);
+  assert.deepEqual(kv.putKeys, ["lab2:latest"]);
 
   const read = await handleRequest(
     new Request("https://example.com/api/lab2/status"),
@@ -167,6 +170,40 @@ test("stores sanitized status and recomputes authoritative progress", async () =
   assert.equal(publicStatus.experiment.progress.percent, 50);
   assert.equal(publicStatus.heartbeats.length, 1);
   assert.equal(JSON.stringify(publicStatus).includes("_receivedAt"), false);
+  assert.equal(JSON.stringify(publicStatus).includes("_heartbeats"), false);
+});
+
+test("migrates legacy heartbeat storage into the combined snapshot", async () => {
+  const { env, kv } = createEnvironment();
+  const previous = await readFixture("live-idle");
+  const legacyHeartbeat = { observedAt: previous.observedAt };
+  await kv.put(
+    "lab2:latest",
+    JSON.stringify({
+      ...previous,
+      _receivedAt: new Date().toISOString(),
+    } satisfies StoredStatus),
+  );
+  await kv.put("lab2:heartbeats", JSON.stringify([legacyHeartbeat]));
+  kv.putKeys.length = 0;
+
+  const report = await readFixture("live-running");
+  report.observedAt = new Date(
+    Date.parse(previous.observedAt) + 120 * 1000,
+  ).toISOString();
+  const write = await handleRequest(
+    signedRequest(report, env.LAB2_HMAC_SECRET),
+    env,
+  );
+  assert.equal(write.status, 202);
+  assert.deepEqual(kv.putKeys, ["lab2:latest"]);
+
+  const combined = await kv.get<StoredStatus>("lab2:latest", "json");
+  assert.equal(typeof combined, "object");
+  assert.deepEqual((combined as StoredStatus)._heartbeats, [
+    legacyHeartbeat,
+    { observedAt: report.observedAt },
+  ]);
 });
 
 test("returns a safe unknown response before the first report", async () => {
