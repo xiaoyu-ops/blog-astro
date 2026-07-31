@@ -15,6 +15,8 @@ const MAX_CLOCK_SKEW_SECONDS = 5 * 60;
 const REPLAY_WINDOW_SECONDS = 10 * 60;
 const RATE_WINDOW_SECONDS = 60;
 const RATE_LIMIT = 6;
+const FRESH_WINDOW_SECONDS = 6 * 60;
+const OFFLINE_WINDOW_SECONDS = 10 * 60;
 const LATEST_KEY = "lab2:latest";
 const HEARTBEATS_KEY = "lab2:heartbeats";
 const VIEWS_BASELINE_TOTAL = 84;
@@ -283,7 +285,11 @@ const readStatus = async (env: WorkerEnv, now = new Date()) => {
   if (!Number.isFinite(receivedAt)) return unknownStatus();
   const ageSeconds = Math.max(0, Math.floor((now.getTime() - receivedAt) / 1000));
   const freshness =
-    ageSeconds <= 180 ? "fresh" : ageSeconds <= 600 ? "stale" : "offline";
+    ageSeconds <= FRESH_WINDOW_SECONDS
+      ? "fresh"
+      : ageSeconds <= OFFLINE_WINDOW_SECONDS
+        ? "stale"
+        : "offline";
   const {
     _receivedAt: _internalReceivedAt,
     _heartbeats: _internalHeartbeats,

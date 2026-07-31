@@ -272,8 +272,8 @@ GET /api/lab2/status
 - 前端：页面可见时每 30 秒刷新一次。
 - 页面重新获得焦点时立即刷新。
 - 单次请求超时 5 秒。
-- 采集间隔 60 秒。
-- `ageSeconds > 180` 时强制显示 `STALE/OFFLINE`，不能显示 `LIVE`。
+- 采集间隔 300 秒。
+- `ageSeconds > 360` 时强制显示 `STALE/OFFLINE`，不能显示 `LIVE`。
 
 ## 7. LAB-2 采集器
 
@@ -318,7 +318,7 @@ GET /api/lab2/status
 ### systemd 建议
 
 - `mmdedup-public-status.service`：执行一次采集和上报。
-- `mmdedup-public-status.timer`：每 60 秒触发一次。
+- `mmdedup-public-status.timer`：每 300 秒触发一次。
 - 网络失败使用短退避重试，但不能阻塞实验。
 - 采集器本身无权启动、停止或修改实验。
 - 上报失败只写本地日志，不重新启用此前已停用的 GPU 空闲通知。
@@ -329,7 +329,7 @@ GET /api/lab2/status
 LOADING
   ├─ fresh + experiment running → LIVE / 运行中
   ├─ fresh + no experiment      → LIVE / 当前无实验
-  ├─ age 181–600s               → STALE / 数据延迟
+  ├─ age 361–600s               → STALE / 数据延迟
   ├─ age >600s                  → OFFLINE / 未收到上报
   └─ request/schema error       → UNKNOWN / 状态暂不可用
 ```
