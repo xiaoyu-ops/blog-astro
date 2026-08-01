@@ -27,6 +27,9 @@ DEFAULT_UNIT_PREFIX = "mmdedup-"
 SELF_UNIT_NAME = "mmdedup-public-status.service"
 REQUEST_TIMEOUT_SECONDS = 5
 RETRY_DELAYS_SECONDS = (0, 2, 5)
+AUTHORITATIVE_SOURCE = "authoritative_campaign_state"
+AUTHORITATIVE_SOURCE_MAX_AGE_SECONDS = 180
+COMPLETED_SOURCE_MAX_AGE_SECONDS = 24 * 60 * 60
 
 
 def run_command(arguments: list[str], timeout: float = 3.0) -> str | None:
@@ -218,13 +221,45 @@ def localized_text(value: Any, fallback_zh: str, fallback_en: str) -> dict[str, 
     }
 
 
+def authoritative_source_is_fresh(
+    source: dict[str, Any],
+    *,
+    now: datetime | None = None,
+) -> bool:
+    if source.get("telemetrySource") != AUTHORITATIVE_SOURCE:
+        return False
+    record_status = source.get("recordStatus")
+    timestamp_key = "sourceObservedAt" if record_status == "OPEN" else "stateChangedAt"
+    max_age = (
+        AUTHORITATIVE_SOURCE_MAX_AGE_SECONDS
+        if record_status == "OPEN"
+        else COMPLETED_SOURCE_MAX_AGE_SECONDS
+    )
+    if record_status not in {"OPEN", "CLOSED"}:
+        return False
+    observed_at = source.get(timestamp_key)
+    if not isinstance(observed_at, str):
+        return False
+    try:
+        observed = datetime.fromisoformat(observed_at.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    if observed.tzinfo is None:
+        return False
+    now = now or datetime.now(timezone.utc)
+    age_seconds = (now - observed.astimezone(timezone.utc)).total_seconds()
+    return 0 <= age_seconds <= max_age
+
+
 def experiment_from_source(
     source: dict[str, Any] | None,
     active_unit: str | None,
+    *,
+    now: datetime | None = None,
 ) -> dict[str, Any] | None:
-    if active_unit is None:
-        return None
     source = source or {}
+    if active_unit is None and not authoritative_source_is_fresh(source, now=now):
+        return None
     state = source.get("state")
     if state not in {"running", "idle", "completed", "failed", "unknown"}:
         state = "running"

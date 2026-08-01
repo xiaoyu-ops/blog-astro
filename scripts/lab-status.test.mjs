@@ -41,6 +41,8 @@ test("keeps the LAB-2 row first, locally scrollable, and separate from archive",
   assert.match(client, /stale: \{ zh: "数据延迟", en: "STALE" \}/);
   assert.match(client, /offline: \{ zh: "未上报", en: "OFFLINE" \}/);
   assert.match(client, /unknown: \{ zh: "暂不可用", en: "UNKNOWN" \}/);
+  assert.match(client, /未收到实验状态/);
+  assert.match(client, /实验状态未同步/);
 });
 
 test("detail page exposes resources, health, and exactly 60 heartbeat cells", async () => {

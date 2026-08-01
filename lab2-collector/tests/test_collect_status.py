@@ -6,6 +6,7 @@ import importlib.util
 import json
 import tempfile
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -97,6 +98,71 @@ class CollectStatusTests(unittest.TestCase):
         self.assertIsNone(
             collect_status.experiment_from_source({}, active_unit=None)
         )
+
+    def test_fresh_authoritative_source_survives_cross_user_service_lookup(self):
+        source = {
+            "telemetrySource": "authoritative_campaign_state",
+            "recordStatus": "OPEN",
+            "sourceObservedAt": "2026-08-01T12:00:00+00:00",
+            "phase": {"zh": "双模态验证", "en": "Dual-modal validation"},
+            "task": {"zh": "图像 I7 校准", "en": "Image I7 calibration"},
+            "state": "running",
+        }
+        experiment = collect_status.experiment_from_source(
+            source,
+            active_unit=None,
+            now=datetime(2026, 8, 1, 12, 2, tzinfo=timezone.utc),
+        )
+        self.assertIsNotNone(experiment)
+        self.assertEqual(experiment["task"]["zh"], "图像 I7 校准")
+
+    def test_stale_authoritative_source_does_not_claim_running_experiment(self):
+        source = {
+            "telemetrySource": "authoritative_campaign_state",
+            "recordStatus": "OPEN",
+            "sourceObservedAt": "2026-08-01T12:00:00+00:00",
+            "state": "running",
+        }
+        self.assertIsNone(
+            collect_status.experiment_from_source(
+                source,
+                active_unit=None,
+                now=datetime(2026, 8, 1, 12, 4, tzinfo=timezone.utc),
+            )
+        )
+
+    def test_closed_authoritative_source_does_not_claim_running_experiment(self):
+        source = {
+            "telemetrySource": "authoritative_campaign_state",
+            "recordStatus": "CLOSED",
+            "sourceObservedAt": "2026-08-01T12:00:00+00:00",
+            "stateChangedAt": "2026-07-30T12:00:00+00:00",
+            "state": "completed",
+        }
+        self.assertIsNone(
+            collect_status.experiment_from_source(
+                source,
+                active_unit=None,
+                now=datetime(2026, 8, 1, 12, 1, tzinfo=timezone.utc),
+            )
+        )
+
+    def test_recent_closed_source_reports_completed_without_active_unit(self):
+        source = {
+            "telemetrySource": "authoritative_campaign_state",
+            "recordStatus": "CLOSED",
+            "sourceObservedAt": "2026-08-01T12:01:00+00:00",
+            "stateChangedAt": "2026-08-01T12:00:00+00:00",
+            "state": "completed",
+            "task": {"zh": "音频验证已收口", "en": "Audio validation closed"},
+        }
+        experiment = collect_status.experiment_from_source(
+            source,
+            active_unit=None,
+            now=datetime(2026, 8, 1, 12, 1, tzinfo=timezone.utc),
+        )
+        self.assertIsNotNone(experiment)
+        self.assertEqual(experiment["state"], "completed")
 
     def test_hmac_headers_sign_exact_body(self):
         body = b'{"schemaVersion":1}'

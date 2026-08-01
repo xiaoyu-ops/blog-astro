@@ -165,8 +165,8 @@ const renderStatus = (
   setText(
     root,
     "task",
-    experiment?.task.zh ?? "当前无实验",
-    experiment?.task.en ?? "No active experiment",
+    experiment?.task.zh ?? "未收到实验状态",
+    experiment?.task.en ?? "Experiment status not reported",
   );
   setText(
     root,
@@ -217,14 +217,14 @@ const renderStatus = (
     "experiment-value",
     experiment
       ? experimentStateCopy(experiment.state).zh
-      : "当前无实验",
+      : "未同步",
     experiment
       ? experimentStateCopy(experiment.state).en
-      : "No active experiment",
+      : "Not reported",
   );
   const runState = experiment
     ? experimentStateCopy(experiment.state)
-    : { zh: "当前无实验", en: "No active experiment" };
+    : { zh: "实验状态未同步", en: "Experiment status not reported" };
   const duration = experiment
     ? formatDuration(experiment.startedAt)
     : { zh: "时长未知", en: "Duration unknown" };
