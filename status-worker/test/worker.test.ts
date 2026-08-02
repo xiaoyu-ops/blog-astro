@@ -283,8 +283,8 @@ test("computes stale and offline from server receipt time", async () => {
   const report = await readFixture("live-idle");
 
   for (const [age, expected] of [
-    [360, "fresh"],
-    [361, "stale"],
+    [180, "fresh"],
+    [181, "stale"],
     [600, "stale"],
     [601, "offline"],
   ] as const) {

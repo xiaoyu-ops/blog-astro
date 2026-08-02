@@ -1,10 +1,10 @@
 [Unit]
-Description=Publish LAB-2 public status every five minutes
+Description=Publish LAB-2 public status every two minutes
 
 [Timer]
 Unit=mmdedup-public-status.service
 OnBootSec=45s
-OnUnitActiveSec=300s
+OnUnitActiveSec=120s
 RandomizedDelaySec=5s
 AccuracySec=1s
 Persistent=true

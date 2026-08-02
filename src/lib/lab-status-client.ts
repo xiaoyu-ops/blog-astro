@@ -192,8 +192,8 @@ const renderStatus = (
   setText(
     root,
     "summary",
-    `CPU ${number(cpu?.utilizationPercent, "%")} · ${gpuStateZh}`,
-    `CPU ${number(cpu?.utilizationPercent, "%")} · ${gpuStateEn}`,
+    `主机 CPU ${number(cpu?.utilizationPercent, "%")} · ${gpuStateZh}`,
+    `Host CPU ${number(cpu?.utilizationPercent, "%")} · ${gpuStateEn}`,
   );
 
   const updated = formatUpdated(status);

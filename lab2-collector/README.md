@@ -24,6 +24,6 @@ Inspect the dry-run JSON before creating `public-status.env` or enabling the
 timer. Install the unit templates under `~/.config/systemd/user/`, then run the
 service once manually before enabling `mmdedup-public-status.timer`.
 
-The timer publishes every five minutes. Combined with the Worker's single KV
-write per report, this uses about 288 KV writes per day and remains inside the
-six-minute `fresh` window.
+The timer publishes every two minutes. Combined with the Worker's single KV
+write per report, this uses about 720 KV writes per day and remains inside the
+three-minute `fresh` window.
