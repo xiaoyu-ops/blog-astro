@@ -223,6 +223,43 @@ test("watchdog notifies only on state transitions and reports recovery", async (
   assert.equal(notifications.length, 2);
 });
 
+test("watchdog can deliver a safe email alert on one state transition", async () => {
+  const { env, kv } = createEnvironment();
+  const report = await readFixture("live-running");
+  report.experiment!.state = "failed";
+  await kv.put(
+    "lab2:latest",
+    JSON.stringify({
+      ...report,
+      _receivedAt: "2026-08-03T12:00:00.000Z",
+    } satisfies StoredStatus),
+  );
+  const messages: Array<Record<string, unknown>> = [];
+  env.LAB2_ALERT_EMAIL_TO = "wuzhuoyang252@gmail.com";
+  env.LAB2_ALERT_EMAIL_FROM = "lab-status@xiaoyu666.cyou";
+  env.LAB2_ALERT_EMAIL = {
+    send: async (message: unknown) => {
+      messages.push(message as Record<string, unknown>);
+      return { messageId: "test-message" };
+    },
+  } as unknown as SendEmail;
+
+  const first = await evaluateWatchdog(
+    env,
+    new Date("2026-08-03T12:01:00.000Z"),
+  );
+  const duplicate = await evaluateWatchdog(
+    env,
+    new Date("2026-08-03T12:02:00.000Z"),
+  );
+  assert.deepEqual(first, { state: "experiment_failed", changed: true });
+  assert.deepEqual(duplicate, { state: "experiment_failed", changed: false });
+  assert.equal(messages.length, 1);
+  assert.equal(messages[0].to, "wuzhuoyang252@gmail.com");
+  assert.match(String(messages[0].subject), /实验失败/);
+  assert.equal(JSON.stringify(messages[0]).includes("/srv/"), false);
+});
+
 test("migrates legacy heartbeat storage into the combined snapshot", async () => {
   const { env, kv } = createEnvironment();
   const previous = await readFixture("live-idle");

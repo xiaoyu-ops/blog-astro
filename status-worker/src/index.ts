@@ -368,6 +368,35 @@ const readStatus = async (env: WorkerEnv, now = new Date()) => {
 
 type WatchdogState = "ok" | "delayed" | "offline" | "experiment_failed" | "unknown";
 
+const alertTitle = (state: WatchdogState) => {
+  const labels: Record<WatchdogState, string> = {
+    ok: "LAB-2 已恢复正常",
+    delayed: "LAB-2 状态上报延迟",
+    offline: "LAB-2 监控离线",
+    experiment_failed: "LAB-2 实验失败",
+    unknown: "LAB-2 状态未知",
+  };
+  return labels[state];
+};
+
+const alertText = (payload: {
+  state: WatchdogState;
+  previousState: WatchdogState;
+  occurredAt: string;
+  campaignId: string | null;
+  task: { zh: string; en: string } | null;
+  phase: { zh: string; en: string } | null;
+}) =>
+  [
+    alertTitle(payload.state),
+    `状态：${payload.previousState} -> ${payload.state}`,
+    `时间：${payload.occurredAt}`,
+    `Campaign：${payload.campaignId ?? "未上报"}`,
+    `任务：${payload.task?.zh ?? "未上报"}`,
+    `阶段：${payload.phase?.zh ?? "未上报"}`,
+    "详情：https://blog.xiaoyu666.cyou/lab-status/",
+  ].join("\n");
+
 const watchdogState = (stored: StoredStatus | null, now: Date): WatchdogState => {
   if (!stored) return "unknown";
   const receivedAt = Date.parse(stored._receivedAt);
@@ -408,6 +437,18 @@ export const evaluateWatchdog = async (
       body: JSON.stringify(payload),
     });
     if (!response.ok) throw new Error(`alert webhook returned ${response.status}`);
+  }
+  if (
+    env.LAB2_ALERT_EMAIL &&
+    env.LAB2_ALERT_EMAIL_TO &&
+    env.LAB2_ALERT_EMAIL_FROM
+  ) {
+    await env.LAB2_ALERT_EMAIL.send({
+      from: env.LAB2_ALERT_EMAIL_FROM,
+      to: env.LAB2_ALERT_EMAIL_TO,
+      subject: alertTitle(next),
+      text: alertText(payload),
+    });
   }
   await env.LAB2_STATUS.put(
     ALERT_STATE_KEY,

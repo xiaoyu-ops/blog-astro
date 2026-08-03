@@ -28,3 +28,11 @@
 - 自动验证：站点14项、Worker12项、采集器14项全部通过；Astro生产构建通过；`git diff --check`通过。
 - 外部看门狗状态计算、状态转换去重、恢复事件和Webhook发送均有自动测试。`LAB2_ALERT_WEBHOOK_URL`尚未设置，因为用户尚未选择通知目的地；这不影响网页、freshness或外部cron检测，但在配置前不会产生站外通知。
 - 关闭决定：用户明确取消24小时观察期；以上即时验收满足本轮关闭门禁。
+
+## 2026-08-03 监控字段与通知渠道闭环修订
+
+- campaign runner和公开状态适配器新增权威任务开始时间、任务计数进度以及安全失败类别/退出码；当前v18失败任务已从systemd证据回填为开始于`2026-08-03T13:37:02Z`、进度`0/1 task`、`exit_code=2`。
+- LAB-2容器回归测试`12 passed`，公开API已验证上述字段完整出现，未公开日志、命令或路径。
+- Cloudflare Email绑定部署成功，但真实发送返回`could not find account config of sending domain`；当前Wrangler令牌访问Email Sending管理API返回`Unauthorized (2036)`。
+- ntfy随机主题作为备用渠道完成真实测试，但Cloudflare出口收到HTTP 429，判定不可靠并撤回，不作为生产告警方案。
+- 因此通知代码已就绪但渠道保持未绑定；待账户所有者在Cloudflare Email Service启用`xiaoyu666.cyou`的Email Sending后，再绑定固定收件人并执行一次真实邮件验收。

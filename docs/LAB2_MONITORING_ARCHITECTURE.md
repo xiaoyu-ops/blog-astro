@@ -52,7 +52,7 @@ LAB-2 private operations: Netdata bound to localhost only, reached by SSH/Tailsc
 
 ## 外部看门狗
 
-Cloudflare每分钟独立计算`ok/delayed/offline/experiment_failed/unknown`。只有状态转换才写入告警状态并调用可选的`LAB2_ALERT_WEBHOOK_URL`，避免重复通知。通知渠道未配置时，状态检测和测试仍然运行，但不会向外发送消息。
+Cloudflare每分钟独立计算`ok/delayed/offline/experiment_failed/unknown`。只有状态转换才写入告警状态，避免重复通知。Worker已经实现固定收件人的`LAB2_ALERT_EMAIL`和可选`LAB2_ALERT_WEBHOOK_URL`；正式邮件发送必须先在Cloudflare Email Service中为`xiaoyu666.cyou`启用Email Sending。未完成账户级发件域授权前保持渠道未绑定，watchdog仍正常计算与去重，但不伪装为已发送通知。
 
 ## 私有详细监控
 
@@ -67,4 +67,3 @@ Netdata只绑定LAB-2的`127.0.0.1:19999`，不开放公网。通过SSH端口转
 - 公开API与同刻SSH资源、systemd和实验状态一致。
 - Netdata只监听localhost。
 - 无需24小时观察期；以上即时验收通过即可关闭实施阶段。
-

@@ -118,4 +118,7 @@ export interface WorkerEnv {
   LAB2_GUARD: DurableObjectNamespace;
   LAB2_HMAC_SECRET: string;
   LAB2_ALERT_WEBHOOK_URL?: string;
+  LAB2_ALERT_EMAIL?: SendEmail;
+  LAB2_ALERT_EMAIL_TO?: string;
+  LAB2_ALERT_EMAIL_FROM?: string;
 }
