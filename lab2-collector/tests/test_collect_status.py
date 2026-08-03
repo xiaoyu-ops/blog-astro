@@ -115,6 +115,35 @@ class CollectStatusTests(unittest.TestCase):
         )
         self.assertIsNotNone(experiment)
         self.assertEqual(experiment["task"]["zh"], "图像 I7 校准")
+        self.assertEqual(experiment["state"], "idle")
+
+    def test_active_service_is_required_for_running_state(self):
+        source = {
+            "telemetrySource": "authoritative_campaign_state",
+            "recordStatus": "OPEN",
+            "sourceObservedAt": "2026-08-01T12:00:00+00:00",
+            "state": "running",
+        }
+        experiment = collect_status.experiment_from_source(
+            source,
+            active_unit="mmdedup-v18-audio-mert.service",
+            now=datetime(2026, 8, 1, 12, 1, tzinfo=timezone.utc),
+        )
+        self.assertIsNotNone(experiment)
+        self.assertEqual(experiment["state"], "running")
+
+    def test_active_unit_lookup_includes_long_running_oneshot_services(self):
+        observed = []
+
+        def runner(arguments, timeout):
+            observed.append(arguments)
+            return "mmdedup-v18-audio-mert.service loaded activating start task"
+
+        self.assertEqual(
+            collect_status.find_active_unit(runner=runner),
+            "mmdedup-v18-audio-mert.service",
+        )
+        self.assertIn("--state=running,activating", observed[0])
 
     def test_stale_authoritative_source_does_not_claim_running_experiment(self):
         source = {

@@ -166,7 +166,7 @@ def find_active_unit(
             "--user",
             "list-units",
             "--type=service",
-            "--state=running",
+            "--state=running,activating",
             "--no-legend",
             "--plain",
         ],
@@ -262,6 +262,13 @@ def experiment_from_source(
         return None
     state = source.get("state")
     if state not in {"running", "idle", "completed", "failed", "unknown"}:
+        state = "running"
+    # Campaign metadata describes workflow intent, while the active user service
+    # is the runtime proof.  Do not claim that an experiment is running merely
+    # because a fresh campaign record is OPEN/READY.
+    if state == "running" and active_unit is None:
+        state = "idle"
+    elif state in {"idle", "unknown"} and active_unit is not None:
         state = "running"
     started_at = source.get("startedAt")
     if not isinstance(started_at, str):
