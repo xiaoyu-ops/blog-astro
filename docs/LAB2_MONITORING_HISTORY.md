@@ -36,3 +36,4 @@
 - Cloudflare Email绑定部署成功，但真实发送返回`could not find account config of sending domain`；当前Wrangler令牌访问Email Sending管理API返回`Unauthorized (2036)`。
 - ntfy随机主题作为备用渠道完成真实测试，但Cloudflare出口收到HTTP 429，判定不可靠并撤回，不作为生产告警方案。
 - 因此通知代码已就绪但渠道保持未绑定；待账户所有者在Cloudflare Email Service启用`xiaoyu666.cyou`的Email Sending后，再绑定固定收件人并执行一次真实邮件验收。
+- 稳定Worker版本`7ccebd13-d956-4739-88bc-3051e14c8de5`已部署；站点14项、Worker13项、采集器14项和Astro生产构建全部通过。下一cron周期将看门狗状态恢复为真实的`experiment_failed`，证明定时计算与状态转换去重未被通知渠道影响。
