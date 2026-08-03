@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch the authoritative MMdedup public experiment state
+
+[Path]
+PathChanged=/srv/experiment/services/public-status/public-experiment-status.json
+Unit=mmdedup-public-status-event.service
+
+[Install]
+WantedBy=default.target

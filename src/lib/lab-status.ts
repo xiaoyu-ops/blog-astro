@@ -6,12 +6,24 @@ export interface LabPublicStatus {
     id: "lab-2";
     state: "online" | "offline" | "unknown";
   };
+  telemetry?: {
+    state: "reporting";
+    trigger: "heartbeat" | "state-change" | "manual";
+    source: "lab2-read-only-collector";
+  };
+  collector?: {
+    state: "reporting" | "delayed" | "offline" | "unknown";
+    trigger: "heartbeat" | "state-change" | "manual" | "unknown";
+  };
   experiment: {
     project: "MMdedup-v2";
+    campaignId?: string | null;
+    taskId?: string | null;
     phase: { zh: string; en: string };
     task: { zh: string; en: string };
     state: "running" | "idle" | "completed" | "failed" | "unknown";
     startedAt: string | null;
+    stateChangedAt?: string | null;
     progress: {
       completed: number;
       total: number;
@@ -19,6 +31,15 @@ export interface LabPublicStatus {
       unit: string;
       authoritative: true;
     } | null;
+    failure?: {
+      category: "exit_code" | "oom" | "nan" | "timeout" | "unknown";
+      exitCode: number | null;
+    } | null;
+    runtimeEvidence?: {
+      state: "active" | "inactive" | "unknown";
+      activeUnitCount: number;
+      source: "systemd";
+    };
   } | null;
   resources: {
     cpu: {
@@ -54,6 +75,13 @@ export interface LabPublicStatus {
   };
   heartbeats: Array<{
     observedAt: string;
+  }>;
+  resourceSamples?: Array<{
+    observedAt: string;
+    cpuPercent: number | null;
+    gpuPercent: number | null;
+    memoryUsedGiB: number | null;
+    diskUsedPercent: number | null;
   }>;
 }
 
@@ -124,11 +152,16 @@ const isExperiment = (value: unknown) => {
   if (
     !hasOnlyKeys(value, [
       "project",
+      "campaignId",
+      "taskId",
       "phase",
       "task",
       "state",
       "startedAt",
+      "stateChangedAt",
       "progress",
+      "failure",
+      "runtimeEvidence",
     ]) ||
     value.project !== "MMdedup-v2" ||
     !["running", "idle", "completed", "failed", "unknown"].includes(
@@ -137,6 +170,55 @@ const isExperiment = (value: unknown) => {
     !(value.startedAt === null || typeof value.startedAt === "string")
   ) {
     return false;
+  }
+  if (
+    !(
+      value.campaignId === undefined ||
+      value.campaignId === null ||
+      typeof value.campaignId === "string"
+    ) ||
+    !(
+      value.taskId === undefined ||
+      value.taskId === null ||
+      typeof value.taskId === "string"
+    ) ||
+    !(
+      value.stateChangedAt === undefined ||
+      value.stateChangedAt === null ||
+      typeof value.stateChangedAt === "string"
+    )
+  ) {
+    return false;
+  }
+  if (value.failure !== undefined && value.failure !== null) {
+    if (
+      !isRecord(value.failure) ||
+      !hasOnlyKeys(value.failure, ["category", "exitCode"]) ||
+      !["exit_code", "oom", "nan", "timeout", "unknown"].includes(
+        String(value.failure.category),
+      ) ||
+      !(value.failure.exitCode === null || Number.isInteger(value.failure.exitCode))
+    ) {
+      return false;
+    }
+  }
+  if (value.runtimeEvidence !== undefined) {
+    if (
+      !isRecord(value.runtimeEvidence) ||
+      !hasOnlyKeys(value.runtimeEvidence, [
+        "state",
+        "activeUnitCount",
+        "source",
+      ]) ||
+      !["active", "inactive", "unknown"].includes(
+        String(value.runtimeEvidence.state),
+      ) ||
+      !Number.isInteger(value.runtimeEvidence.activeUnitCount) ||
+      (value.runtimeEvidence.activeUnitCount as number) < 0 ||
+      value.runtimeEvidence.source !== "systemd"
+    ) {
+      return false;
+    }
   }
   for (const localized of [value.phase, value.task]) {
     if (
@@ -175,12 +257,15 @@ export const isLabPublicStatus = (value: unknown): value is LabPublicStatus => {
     !hasOnlyKeys(value, [
       "schemaVersion",
       "server",
+      "telemetry",
+      "collector",
       "experiment",
       "resources",
       "health",
       "observedAt",
       "freshness",
       "heartbeats",
+      "resourceSamples",
     ])
   ) {
     return false;
@@ -190,12 +275,32 @@ export const isLabPublicStatus = (value: unknown): value is LabPublicStatus => {
     ? candidate.resources
     : null;
   const health = isRecord(candidate.health) ? candidate.health : null;
+  const telemetry = candidate.telemetry;
+  const collector = candidate.collector;
+  const resourceSamples = candidate.resourceSamples ?? [];
   return (
     candidate.schemaVersion === 1 &&
     isRecord(candidate.server) &&
     hasOnlyKeys(candidate.server, ["id", "state"]) &&
     candidate.server?.id === "lab-2" &&
     ["online", "offline", "unknown"].includes(candidate.server.state ?? "") &&
+    (telemetry === undefined ||
+      (isRecord(telemetry) &&
+        hasOnlyKeys(telemetry, ["state", "trigger", "source"]) &&
+        telemetry.state === "reporting" &&
+        ["heartbeat", "state-change", "manual"].includes(
+          String(telemetry.trigger),
+        ) &&
+        telemetry.source === "lab2-read-only-collector")) &&
+    (collector === undefined ||
+      (isRecord(collector) &&
+        hasOnlyKeys(collector, ["state", "trigger"]) &&
+        ["reporting", "delayed", "offline", "unknown"].includes(
+          String(collector.state),
+        ) &&
+        ["heartbeat", "state-change", "manual", "unknown"].includes(
+          String(collector.trigger),
+        ))) &&
     isExperiment(candidate.experiment) &&
     Boolean(resources) &&
     hasOnlyKeys(resources!, ["cpu", "gpu", "memory", "disk"]) &&
@@ -227,6 +332,25 @@ export const isLabPublicStatus = (value: unknown): value is LabPublicStatus => {
         hasOnlyKeys(heartbeat, ["observedAt"]) &&
         typeof heartbeat.observedAt === "string" &&
         Number.isFinite(Date.parse(heartbeat.observedAt)),
+    ) &&
+    Array.isArray(resourceSamples) &&
+    resourceSamples.length <= 30 &&
+    resourceSamples.every(
+      (sample) =>
+        isRecord(sample) &&
+        hasOnlyKeys(sample, [
+          "observedAt",
+          "cpuPercent",
+          "gpuPercent",
+          "memoryUsedGiB",
+          "diskUsedPercent",
+        ]) &&
+        typeof sample.observedAt === "string" &&
+        Number.isFinite(Date.parse(sample.observedAt)) &&
+        isNullableFiniteNumber(sample.cpuPercent) &&
+        isNullableFiniteNumber(sample.gpuPercent) &&
+        isNullableFiniteNumber(sample.memoryUsedGiB) &&
+        isNullableFiniteNumber(sample.diskUsedPercent)
     )
   );
 };
@@ -263,6 +387,17 @@ const fixture = (
             ? "unknown"
             : "online",
     },
+    collector: {
+      state:
+        freshness === "fresh"
+          ? "reporting"
+          : freshness === "stale"
+            ? "delayed"
+            : freshness === "offline"
+              ? "offline"
+              : "unknown",
+      trigger: "heartbeat",
+    },
     experiment,
     resources: {
       cpu: {
@@ -297,6 +432,7 @@ const fixture = (
       ageSeconds,
     },
     heartbeats: freshness === "unknown" ? [] : heartbeats,
+    resourceSamples: [],
   };
 };
 
@@ -321,11 +457,26 @@ const runningExperiment: NonNullable<LabPublicStatus["experiment"]> = {
   },
 };
 
+const failedExperiment: NonNullable<LabPublicStatus["experiment"]> = {
+  ...runningExperiment,
+  state: "failed",
+  startedAt: null,
+  stateChangedAt: new Date().toISOString(),
+  progress: null,
+  failure: { category: "exit_code", exitCode: 2 },
+  runtimeEvidence: {
+    state: "inactive",
+    activeUnitCount: 0,
+    source: "systemd",
+  },
+};
+
 export const getDevelopmentFixture = () => {
   if (!import.meta.env.DEV) return null;
   const name = new URLSearchParams(window.location.search).get("labFixture");
   if (!name) return null;
   if (name === "running") return fixture("fresh", runningExperiment);
+  if (name === "failed") return fixture("fresh", failedExperiment);
   if (name === "idle") return fixture("fresh", null);
   if (name === "stale") return fixture("stale", runningExperiment);
   if (name === "offline") return fixture("offline", runningExperiment);

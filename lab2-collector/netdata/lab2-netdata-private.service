@@ -1,0 +1,17 @@
+[Unit]
+Description=Private Netdata dashboard for LAB-2
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker rm -f lab2-netdata-private
+ExecStart=/usr/bin/docker run --rm --name lab2-netdata-private --hostname lab-2 --pid host --gpus all -p 127.0.0.1:19999:19999 --cap-add SYS_PTRACE --security-opt apparmor=unconfined -v netdataconfig:/etc/netdata -v netdatalib:/var/lib/netdata -v netdatacache:/var/cache/netdata -v /:/host/root:ro,rslave -v /etc/passwd:/host/etc/passwd:ro -v /etc/group:/host/etc/group:ro -v /etc/localtime:/etc/localtime:ro -v /proc:/host/proc:ro -v /sys:/host/sys:ro -v /etc/os-release:/host/etc/os-release:ro -v /var/log:/host/var/log:ro -v /var/run/docker.sock:/var/run/docker.sock:ro netdata/netdata@sha256:689145f603fed0ca341b4d8a0fb9910cd9d8c0590b0530cd24ae1912a9c7f8f3
+ExecStop=/usr/bin/docker stop -t 10 lab2-netdata-private
+Restart=on-failure
+RestartSec=10s
+TimeoutStartSec=120
+TimeoutStopSec=30
+
+[Install]
+WantedBy=default.target

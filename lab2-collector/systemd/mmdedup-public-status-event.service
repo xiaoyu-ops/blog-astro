@@ -1,0 +1,16 @@
+[Unit]
+Description=Publish an immediate LAB-2 experiment state transition
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/srv/experiment/services/public-status/public-status.env
+ExecStart=/usr/bin/python3 /srv/experiment/services/public-status/collect_status.py --trigger state-change
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/srv/experiment
+Nice=15
+

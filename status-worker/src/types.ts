@@ -13,11 +13,37 @@ export type ExperimentProgress = {
 
 export type ExperimentStatus = {
   project: "MMdedup-v2";
+  campaignId?: string | null;
+  taskId?: string | null;
   phase: LocalizedText;
   task: LocalizedText;
   state: "running" | "idle" | "completed" | "failed" | "unknown";
   startedAt: string | null;
+  stateChangedAt?: string | null;
   progress: ExperimentProgress | null;
+  failure?: {
+    category: "exit_code" | "oom" | "nan" | "timeout" | "unknown";
+    exitCode: number | null;
+  } | null;
+  runtimeEvidence?: {
+    state: "active" | "inactive" | "unknown";
+    activeUnitCount: number;
+    source: "systemd";
+  };
+};
+
+export type TelemetryStatus = {
+  state: "reporting";
+  trigger: "heartbeat" | "state-change" | "manual";
+  source: "lab2-read-only-collector";
+};
+
+export type ResourceSample = {
+  observedAt: string;
+  cpuPercent: number | null;
+  gpuPercent: number | null;
+  memoryUsedGiB: number | null;
+  diskUsedPercent: number | null;
 };
 
 export type StatusReport = {
@@ -26,6 +52,7 @@ export type StatusReport = {
     id: "lab-2";
     state: "online";
   };
+  telemetry?: TelemetryStatus;
   experiment: ExperimentStatus | null;
   resources: {
     cpu: {
@@ -64,6 +91,7 @@ export type StatusHeartbeat = {
 export type StoredStatus = StatusReport & {
   _receivedAt: string;
   _heartbeats?: StatusHeartbeat[];
+  _resourceSamples?: ResourceSample[];
 };
 
 export type FreshnessState = "fresh" | "stale" | "offline" | "unknown";
@@ -78,10 +106,16 @@ export type PublicStatus = Omit<StatusReport, "server"> & {
     ageSeconds: number | null;
   };
   heartbeats: StatusHeartbeat[];
+  resourceSamples: ResourceSample[];
+  collector: {
+    state: "reporting" | "delayed" | "offline" | "unknown";
+    trigger: "heartbeat" | "state-change" | "manual" | "unknown";
+  };
 };
 
 export interface WorkerEnv {
   LAB2_STATUS: KVNamespace;
   LAB2_GUARD: DurableObjectNamespace;
   LAB2_HMAC_SECRET: string;
+  LAB2_ALERT_WEBHOOK_URL?: string;
 }

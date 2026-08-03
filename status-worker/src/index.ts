@@ -4,6 +4,7 @@ import schema from "../../status-contract/lab2-status-v1.schema.json" with {
 };
 import type {
   PublicStatus,
+  ResourceSample,
   StatusHeartbeat,
   StatusReport,
   StoredStatus,
@@ -19,6 +20,7 @@ const FRESH_WINDOW_SECONDS = 3 * 60;
 const OFFLINE_WINDOW_SECONDS = 10 * 60;
 const LATEST_KEY = "lab2:latest";
 const HEARTBEATS_KEY = "lab2:heartbeats";
+const ALERT_STATE_KEY = "lab2:alert-state";
 const VIEWS_BASELINE_TOTAL = 84;
 const validator = new Validator(schema as never, "2020-12");
 
@@ -81,9 +83,18 @@ const sanitizeReport = (input: StatusReport): StatusReport => {
       id: "lab-2",
       state: "online",
     },
+    telemetry: input.telemetry
+      ? {
+          state: "reporting",
+          trigger: input.telemetry.trigger,
+          source: "lab2-read-only-collector",
+        }
+      : undefined,
     experiment: input.experiment
       ? {
           project: "MMdedup-v2",
+          campaignId: input.experiment.campaignId ?? null,
+          taskId: input.experiment.taskId ?? null,
           phase: {
             zh: input.experiment.phase.zh,
             en: input.experiment.phase.en,
@@ -94,6 +105,7 @@ const sanitizeReport = (input: StatusReport): StatusReport => {
           },
           state: input.experiment.state,
           startedAt: input.experiment.startedAt,
+          stateChangedAt: input.experiment.stateChangedAt ?? null,
           progress: progress
             ? {
                 completed: progress.completed,
@@ -104,6 +116,19 @@ const sanitizeReport = (input: StatusReport): StatusReport => {
                 authoritative: true,
               }
             : null,
+          failure: input.experiment.failure
+            ? {
+                category: input.experiment.failure.category,
+                exitCode: input.experiment.failure.exitCode,
+              }
+            : null,
+          runtimeEvidence: input.experiment.runtimeEvidence
+            ? {
+                state: input.experiment.runtimeEvidence.state,
+                activeUnitCount: input.experiment.runtimeEvidence.activeUnitCount,
+                source: "systemd",
+              }
+            : undefined,
         }
       : null,
     resources: {
@@ -234,14 +259,27 @@ const writeStatus = async (
     previous?._heartbeats ??
     (await env.LAB2_STATUS.get<StatusHeartbeat[]>(HEARTBEATS_KEY, "json")) ??
     [];
+  const existingSamples = previous?._resourceSamples ?? [];
   const heartbeats = existing
     .filter((heartbeat) => heartbeat.observedAt !== report.observedAt)
     .concat({ observedAt: report.observedAt })
     .slice(-60);
+  const sample: ResourceSample = {
+    observedAt: report.observedAt,
+    cpuPercent: report.resources.cpu?.utilizationPercent ?? null,
+    gpuPercent: report.resources.gpu?.utilizationPercent ?? null,
+    memoryUsedGiB: report.resources.memory?.usedGiB ?? null,
+    diskUsedPercent: report.resources.disk?.usedPercent ?? null,
+  };
+  const resourceSamples = existingSamples
+    .filter((value) => value.observedAt !== sample.observedAt)
+    .concat(sample)
+    .slice(-30);
   const stored: StoredStatus = {
     ...report,
     _receivedAt: receivedAt,
     _heartbeats: heartbeats,
+    _resourceSamples: resourceSamples,
   };
 
   await env.LAB2_STATUS.put(LATEST_KEY, JSON.stringify(stored));
@@ -253,6 +291,7 @@ const unknownStatus = (): PublicStatus => ({
     id: "lab-2",
     state: "unknown",
   },
+  collector: { state: "unknown", trigger: "unknown" },
   experiment: null,
   resources: {
     cpu: null,
@@ -271,6 +310,7 @@ const unknownStatus = (): PublicStatus => ({
     ageSeconds: null,
   },
   heartbeats: [],
+  resourceSamples: [],
 });
 
 const readStatus = async (env: WorkerEnv, now = new Date()) => {
@@ -280,6 +320,7 @@ const readStatus = async (env: WorkerEnv, now = new Date()) => {
     stored._heartbeats ??
     (await env.LAB2_STATUS.get<StatusHeartbeat[]>(HEARTBEATS_KEY, "json")) ??
     [];
+  const resourceSamples = stored._resourceSamples ?? [];
 
   const receivedAt = Date.parse(stored._receivedAt);
   if (!Number.isFinite(receivedAt)) return unknownStatus();
@@ -293,8 +334,18 @@ const readStatus = async (env: WorkerEnv, now = new Date()) => {
   const {
     _receivedAt: _internalReceivedAt,
     _heartbeats: _internalHeartbeats,
+    _resourceSamples: _internalResourceSamples,
     ...report
   } = stored;
+
+  const collectorState =
+    freshness === "fresh"
+      ? "reporting"
+      : freshness === "stale"
+        ? "delayed"
+        : freshness === "offline"
+          ? "offline"
+          : "unknown";
 
   return {
     ...report,
@@ -306,8 +357,63 @@ const readStatus = async (env: WorkerEnv, now = new Date()) => {
       state: freshness,
       ageSeconds,
     },
+    collector: {
+      state: collectorState,
+      trigger: report.telemetry?.trigger ?? "unknown",
+    },
     heartbeats: heartbeats.slice(-60),
+    resourceSamples: resourceSamples.slice(-30),
   } satisfies PublicStatus;
+};
+
+type WatchdogState = "ok" | "delayed" | "offline" | "experiment_failed" | "unknown";
+
+const watchdogState = (stored: StoredStatus | null, now: Date): WatchdogState => {
+  if (!stored) return "unknown";
+  const receivedAt = Date.parse(stored._receivedAt);
+  if (!Number.isFinite(receivedAt)) return "unknown";
+  const ageSeconds = Math.max(0, Math.floor((now.getTime() - receivedAt) / 1000));
+  if (ageSeconds > OFFLINE_WINDOW_SECONDS) return "offline";
+  if (ageSeconds > FRESH_WINDOW_SECONDS) return "delayed";
+  if (stored.experiment?.state === "failed") return "experiment_failed";
+  return "ok";
+};
+
+export const evaluateWatchdog = async (
+  env: WorkerEnv,
+  now = new Date(),
+  send: typeof fetch = fetch,
+) => {
+  const stored = await env.LAB2_STATUS.get<StoredStatus>(LATEST_KEY, "json");
+  const next = watchdogState(stored, now);
+  const previous = await env.LAB2_STATUS.get<{ state: WatchdogState }>(
+    ALERT_STATE_KEY,
+    "json",
+  );
+  if (previous?.state === next) return { state: next, changed: false };
+
+  const payload = {
+    source: "lab2-public-status-watchdog",
+    state: next,
+    previousState: previous?.state ?? "unknown",
+    occurredAt: now.toISOString(),
+    campaignId: stored?.experiment?.campaignId ?? null,
+    task: stored?.experiment?.task ?? null,
+    phase: stored?.experiment?.phase ?? null,
+  };
+  if (env.LAB2_ALERT_WEBHOOK_URL) {
+    const response = await send(env.LAB2_ALERT_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) throw new Error(`alert webhook returned ${response.status}`);
+  }
+  await env.LAB2_STATUS.put(
+    ALERT_STATE_KEY,
+    JSON.stringify({ state: next, changedAt: now.toISOString() }),
+  );
+  return { state: next, changed: true };
 };
 
 const handlePost = async (request: Request, env: WorkerEnv) => {
@@ -511,5 +617,8 @@ export class LabStatusGuard {
 export default {
   fetch(request: Request, env: WorkerEnv) {
     return handleRequest(request, env);
+  },
+  scheduled(_controller: ScheduledController, env: WorkerEnv, ctx: ExecutionContext) {
+    ctx.waitUntil(evaluateWatchdog(env));
   },
 };

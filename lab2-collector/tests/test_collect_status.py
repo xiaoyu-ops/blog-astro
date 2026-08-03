@@ -48,6 +48,7 @@ class CollectStatusTests(unittest.TestCase):
             return (
                 "unrelated.service loaded active running Other\n"
                 "mmdedup-public-status.service loaded active running Collector\n"
+                "mmdedup-public-status-event.service loaded activating start Event\n"
                 "mmdedup-safe.service loaded active running MMdedup"
             )
 
@@ -88,6 +89,30 @@ class CollectStatusTests(unittest.TestCase):
         self.assertNotIn("internalPath", serialized)
         self.assertNotIn("container", serialized)
         self.assertNotIn("mmdedup-private", serialized)
+        self.assertEqual(experiment["runtimeEvidence"]["state"], "active")
+        self.assertEqual(experiment["runtimeEvidence"]["activeUnitCount"], 1)
+
+    def test_campaign_identity_failure_and_trigger_are_safely_projected(self):
+        source = {
+            "telemetrySource": "authoritative_campaign_state",
+            "recordStatus": "CLOSED",
+            "stateChangedAt": "2026-08-03T12:00:00+00:00",
+            "campaignId": "campaign-v18",
+            "taskId": "e3-text-prepare",
+            "state": "failed",
+            "failure": {"category": "exit_code", "exitCode": 2, "log": "secret"},
+        }
+        experiment = collect_status.experiment_from_source(
+            source,
+            active_unit=None,
+            now=datetime(2026, 8, 3, 12, 1, tzinfo=timezone.utc),
+        )
+        self.assertEqual(experiment["campaignId"], "campaign-v18")
+        self.assertEqual(experiment["taskId"], "e3-text-prepare")
+        self.assertEqual(
+            experiment["failure"], {"category": "exit_code", "exitCode": 2}
+        )
+        self.assertNotIn("secret", json.dumps(experiment))
 
     def test_progress_is_null_when_not_authoritative(self):
         experiment = collect_status.experiment_from_source(

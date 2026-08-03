@@ -51,6 +51,16 @@ const formatUpdated = (status: LabPublicStatus) => {
     return { zh: "等待首次上报", en: "Waiting for the first report" };
   }
   const date = new Date(observedAt);
+  const age = status.freshness.ageSeconds;
+  if (typeof age === "number") {
+    if (age < 60) {
+      return { zh: `${age} 秒前上报`, en: `Reported ${age}s ago` };
+    }
+    const minutes = Math.floor(age / 60);
+    if (minutes < 60) {
+      return { zh: `${minutes} 分钟前上报`, en: `Reported ${minutes}m ago` };
+    }
+  }
   return {
     zh: `更新 ${date.toLocaleTimeString("zh-CN", {
       hour: "2-digit",
@@ -61,6 +71,29 @@ const formatUpdated = (status: LabPublicStatus) => {
       minute: "2-digit",
     })}`,
   };
+};
+
+const renderTrend = (
+  root: HTMLElement,
+  selector: string,
+  values: Array<number | null>,
+  peakSelector: string,
+) => {
+  const container = root.querySelector<HTMLElement>(selector);
+  const peak = root.querySelector<HTMLElement>(peakSelector);
+  if (!container) return;
+  container.replaceChildren();
+  for (const value of values) {
+    const bar = document.createElement("i");
+    bar.setAttribute("aria-hidden", "true");
+    bar.style.setProperty(
+      "--bar-height",
+      typeof value === "number" ? `${Math.max(0, Math.min(100, value))}%` : "2px",
+    );
+    container.append(bar);
+  }
+  const numeric = values.filter((value): value is number => typeof value === "number");
+  if (peak) peak.textContent = numeric.length ? `峰值 ${Math.round(Math.max(...numeric))}%` : "—";
 };
 
 const experimentStateCopy = (
@@ -222,6 +255,43 @@ const renderStatus = (
       ? experimentStateCopy(experiment.state).en
       : "Not reported",
   );
+  const collectorState = status.collector?.state ??
+    (freshness === "fresh"
+      ? "reporting"
+      : freshness === "stale"
+        ? "delayed"
+        : freshness === "offline"
+          ? "offline"
+          : "unknown");
+  const collectorCopy = {
+    reporting: { zh: "正常上报", en: "Reporting" },
+    delayed: { zh: "上报延迟", en: "Delayed" },
+    offline: { zh: "链路中断", en: "Offline" },
+    unknown: { zh: "状态未知", en: "Unknown" },
+  } as const;
+  setText(
+    root,
+    "collector-value",
+    collectorCopy[collectorState].zh,
+    collectorCopy[collectorState].en,
+  );
+  const trigger = root.querySelector<HTMLElement>("[data-lab-collector-trigger]");
+  if (trigger) {
+    trigger.textContent =
+      status.collector?.trigger === "state-change"
+        ? "事件即时上报"
+        : status.collector?.trigger === "heartbeat"
+          ? "定时心跳"
+          : "上报来源未知";
+  }
+  const cpuBusy = (cpu?.utilizationPercent ?? 0) >= 20;
+  const gpuBusy = (gpu?.utilizationPercent ?? 0) >= 5;
+  setText(
+    root,
+    "workload-value",
+    gpuBusy ? (cpuBusy ? "CPU＋GPU任务" : "GPU任务") : cpuBusy ? "CPU任务" : "资源空闲",
+    gpuBusy ? (cpuBusy ? "CPU + GPU job" : "GPU job") : cpuBusy ? "CPU job" : "Resources idle",
+  );
   const runState = experiment
     ? experimentStateCopy(experiment.state)
     : { zh: "实验状态未同步", en: "Experiment status not reported" };
@@ -231,6 +301,22 @@ const renderStatus = (
   setText(root, "run-state", runState.zh, runState.en);
   setText(root, "duration", duration.zh, duration.en);
   renderExperimentProgress(root, experiment);
+  const failureLine = root.querySelector<HTMLElement>("[data-lab-failure]");
+  if (failureLine) {
+    const failure = experiment?.failure;
+    const failed = experiment?.state === "failed";
+    failureLine.hidden = !failed;
+    if (failed) {
+      const category = failure?.category ?? "unknown";
+      const exit = failure?.exitCode;
+      setText(
+        root,
+        "failure",
+        `实验失败 · ${category}${typeof exit === "number" ? ` · 退出码 ${exit}` : ""}`,
+        `Experiment failed · ${category}${typeof exit === "number" ? ` · exit ${exit}` : ""}`,
+      );
+    }
+  }
   setText(
     root,
     "cpu-value",
@@ -287,6 +373,9 @@ const renderStatus = (
   setText(root, "oom-value", oom.zh, oom.en);
   setText(root, "nan-value", nan.zh, nan.en);
   renderHeartbeats(root, status);
+  const samples = status.resourceSamples ?? [];
+  renderTrend(root, "[data-lab-cpu-trend]", samples.map((sample) => sample.cpuPercent), "[data-lab-cpu-peak]");
+  renderTrend(root, "[data-lab-gpu-trend]", samples.map((sample) => sample.gpuPercent), "[data-lab-gpu-peak]");
 
   if (
     previousObservedAt &&

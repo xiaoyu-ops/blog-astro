@@ -9,7 +9,7 @@ import publicSchema from "../../status-contract/lab2-public-status-v1.schema.jso
 import reportSchema from "../../status-contract/lab2-status-v1.schema.json" with {
   type: "json",
 };
-import { LabStatusGuard, handleRequest } from "../src/index.ts";
+import { LabStatusGuard, evaluateWatchdog, handleRequest } from "../src/index.ts";
 import type { StatusReport, StoredStatus, WorkerEnv } from "../src/types.ts";
 
 class MemoryKv {
@@ -66,7 +66,7 @@ const createEnvironment = () => {
     { storage } as unknown as DurableObjectState,
     {} as WorkerEnv,
   );
-  const env = {
+  const env: WorkerEnv = {
     LAB2_STATUS: kv as unknown as KVNamespace,
     LAB2_GUARD: {
       idFromName: () => ({ toString: () => "lab-2" }),
@@ -76,7 +76,7 @@ const createEnvironment = () => {
       }),
     } as unknown as DurableObjectNamespace,
     LAB2_HMAC_SECRET: "test-secret-with-enough-entropy",
-  } satisfies WorkerEnv;
+  };
   return { env, kv, guard };
 };
 
@@ -165,12 +165,62 @@ test("stores sanitized status with one KV put and recomputes authoritative progr
     freshness: { state: string };
     experiment: { progress: { percent: number } };
     heartbeats: unknown[];
+    resourceSamples: unknown[];
+    collector: { state: string; trigger: string };
   };
   assert.equal(publicStatus.freshness.state, "fresh");
   assert.equal(publicStatus.experiment.progress.percent, 50);
   assert.equal(publicStatus.heartbeats.length, 1);
+  assert.equal(publicStatus.resourceSamples.length, 1);
+  assert.equal(publicStatus.collector.state, "reporting");
   assert.equal(JSON.stringify(publicStatus).includes("_receivedAt"), false);
   assert.equal(JSON.stringify(publicStatus).includes("_heartbeats"), false);
+});
+
+test("watchdog notifies only on state transitions and reports recovery", async () => {
+  const { env, kv } = createEnvironment();
+  const report = await readFixture("live-running");
+  await kv.put(
+    "lab2:latest",
+    JSON.stringify({
+      ...report,
+      _receivedAt: "2026-08-03T12:00:00.000Z",
+    } satisfies StoredStatus),
+  );
+  const notifications: unknown[] = [];
+  env.LAB2_ALERT_WEBHOOK_URL = "https://alerts.example.test/lab2";
+  const send = async (_input: RequestInfo | URL, init?: RequestInit) => {
+    notifications.push(JSON.parse(String(init?.body)));
+    return new Response(null, { status: 202 });
+  };
+
+  const delayed = await evaluateWatchdog(
+    env,
+    new Date("2026-08-03T12:04:00.000Z"),
+    send as typeof fetch,
+  );
+  assert.deepEqual(delayed, { state: "delayed", changed: true });
+  const duplicate = await evaluateWatchdog(
+    env,
+    new Date("2026-08-03T12:05:00.000Z"),
+    send as typeof fetch,
+  );
+  assert.deepEqual(duplicate, { state: "delayed", changed: false });
+  assert.equal(notifications.length, 1);
+
+  const stored = (await kv.get<StoredStatus>(
+    "lab2:latest",
+    "json",
+  )) as StoredStatus;
+  stored._receivedAt = "2026-08-03T12:05:30.000Z";
+  await kv.put("lab2:latest", JSON.stringify(stored));
+  const recovered = await evaluateWatchdog(
+    env,
+    new Date("2026-08-03T12:06:00.000Z"),
+    send as typeof fetch,
+  );
+  assert.deepEqual(recovered, { state: "ok", changed: true });
+  assert.equal(notifications.length, 2);
 });
 
 test("migrates legacy heartbeat storage into the combined snapshot", async () => {

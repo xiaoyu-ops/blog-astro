@@ -29,6 +29,16 @@
         }
       }
     },
+    "telemetry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "trigger", "source"],
+      "properties": {
+        "state": { "const": "reporting" },
+        "trigger": { "enum": ["heartbeat", "state-change", "manual"] },
+        "source": { "const": "lab2-read-only-collector" }
+      }
+    },
     "experiment": {
       "oneOf": [
         {
@@ -83,6 +93,14 @@
         "project": {
           "const": "MMdedup-v2"
         },
+        "campaignId": {
+          "type": ["string", "null"],
+          "maxLength": 96
+        },
+        "taskId": {
+          "type": ["string", "null"],
+          "maxLength": 96
+        },
         "phase": {
           "$ref": "#/$defs/localizedText"
         },
@@ -103,6 +121,12 @@
             }
           ]
         },
+        "stateChangedAt": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "format": "date-time" }
+          ]
+        },
         "progress": {
           "oneOf": [
             {
@@ -112,6 +136,30 @@
               "$ref": "#/$defs/progress"
             }
           ]
+        },
+        "failure": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["category", "exitCode"],
+              "properties": {
+                "category": { "enum": ["exit_code", "oom", "nan", "timeout", "unknown"] },
+                "exitCode": { "type": ["integer", "null"], "minimum": 0, "maximum": 255 }
+              }
+            }
+          ]
+        },
+        "runtimeEvidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["state", "activeUnitCount", "source"],
+          "properties": {
+            "state": { "enum": ["active", "inactive", "unknown"] },
+            "activeUnitCount": { "type": "integer", "minimum": 0, "maximum": 32 },
+            "source": { "const": "systemd" }
+          }
         }
       }
     },

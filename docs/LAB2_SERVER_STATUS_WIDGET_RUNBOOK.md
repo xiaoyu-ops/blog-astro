@@ -20,6 +20,7 @@ pnpm dev
 - `/?labFixture=stale`
 - `/?labFixture=offline`
 - `/?labFixture=unknown`
+- `/?labFixture=failed`
 - `/lab-status/?labFixture=running`
 
 这些 fixture 只在 `import.meta.env.DEV` 为真时生效，不会进入公网状态逻辑。
@@ -31,9 +32,11 @@ pnpm dev
 3. 通过 `wrangler secret put LAB2_HMAC_SECRET` 设置 Worker 端密钥。
 4. 在 LAB-2 安装采集器，先执行 `--dry-run`，再手动运行一次 service。
 5. 确认签名 POST/GET 和字段脱敏后启用 timer。
-6. 连续观察至少 10 次上报。
+6. 启用 `mmdedup-public-status.path`，修改权威状态文件副本并验证15秒内事件上报。
 7. 演练 `LIVE → STALE → OFFLINE → LIVE`，不得触碰实验服务。
-8. 用户确认本地样板后才发布站点前端。
+8. 核验外部看门狗的状态去重和恢复通知测试。
+9. 核验Netdata只监听`127.0.0.1:19999`。
+10. 公网API与同刻SSH状态一致后发布站点前端；不要求额外24小时观察。
 
 ## 明确的完成边界
 

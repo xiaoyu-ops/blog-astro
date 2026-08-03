@@ -25,6 +25,18 @@
         "state": { "enum": ["online", "offline", "unknown"] }
       }
     },
+    "telemetry": {
+      "$ref": "https://blog.xiaoyu666.cyou/schemas/lab2-status-v1.json#/properties/telemetry"
+    },
+    "collector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "trigger"],
+      "properties": {
+        "state": { "enum": ["reporting", "delayed", "offline", "unknown"] },
+        "trigger": { "enum": ["heartbeat", "state-change", "manual", "unknown"] }
+      }
+    },
     "experiment": {
       "oneOf": [
         { "type": "null" },
@@ -69,6 +81,22 @@
             "type": "string",
             "format": "date-time"
           }
+        }
+      }
+    },
+    "resourceSamples": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["observedAt", "cpuPercent", "gpuPercent", "memoryUsedGiB", "diskUsedPercent"],
+        "properties": {
+          "observedAt": { "type": "string", "format": "date-time" },
+          "cpuPercent": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+          "gpuPercent": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+          "memoryUsedGiB": { "type": ["number", "null"], "minimum": 0 },
+          "diskUsedPercent": { "type": ["number", "null"], "minimum": 0, "maximum": 100 }
         }
       }
     }

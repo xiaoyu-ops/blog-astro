@@ -104,11 +104,12 @@ test("contract fixtures stay schema version 1 and contain no private fields", as
 });
 
 test("worker and collector retain their security boundaries", async () => {
-  const [worker, wrangler, collector, service] = await Promise.all([
+  const [worker, wrangler, collector, service, client] = await Promise.all([
     read("status-worker/src/index.ts"),
     read("status-worker/wrangler.jsonc"),
     read("lab2-collector/collect_status.py"),
     read("lab2-collector/systemd/mmdedup-public-status.service"),
+    read("src/lib/lab-status-client.ts"),
   ]);
 
   assert.match(worker, /MAX_BODY_BYTES = 8 \* 1024/);
@@ -120,7 +121,10 @@ test("worker and collector retain their security boundaries", async () => {
 
   assert.match(collector, /--dry-run/);
   assert.match(collector, /SELF_UNIT_NAME = "mmdedup-public-status\.service"/);
-  assert.match(collector, /unit != SELF_UNIT_NAME/);
+  assert.match(collector, /unit not in \{SELF_UNIT_NAME, EVENT_UNIT_NAME\}/);
+  assert.match(collector, /"trigger": trigger/);
+  assert.match(client, /Reported \$\{age\}s ago/);
+  assert.match(client, /data-lab-cpu-trend/);
   assert.doesNotMatch(collector, /systemctl",\s*"(start|stop|restart|enable|disable)/);
   assert.doesNotMatch(collector, /docker",\s*"(start|stop|restart|exec)/);
   assert.match(service, /NoNewPrivileges=true/);

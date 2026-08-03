@@ -25,6 +25,7 @@ DEFAULT_STATUS_FILE = (
 )
 DEFAULT_UNIT_PREFIX = "mmdedup-"
 SELF_UNIT_NAME = "mmdedup-public-status.service"
+EVENT_UNIT_NAME = "mmdedup-public-status-event.service"
 REQUEST_TIMEOUT_SECONDS = 5
 RETRY_DELAYS_SECONDS = (0, 2, 5)
 AUTHORITATIVE_SOURCE = "authoritative_campaign_state"
@@ -156,10 +157,10 @@ def collect_gpu(
     }
 
 
-def find_active_unit(
+def find_active_units(
     prefix: str = DEFAULT_UNIT_PREFIX,
     runner: Callable[[list[str], float], str | None] = run_command,
-) -> str | None:
+) -> list[str]:
     output = runner(
         [
             "systemctl",
@@ -173,17 +174,25 @@ def find_active_unit(
         3.0,
     )
     if not output:
-        return None
+        return []
     units = []
     for row in output.splitlines():
         unit = row.split(maxsplit=1)[0] if row.strip() else ""
         if (
-            unit != SELF_UNIT_NAME
+            unit not in {SELF_UNIT_NAME, EVENT_UNIT_NAME}
             and unit.startswith(prefix)
             and unit.endswith(".service")
         ):
             units.append(unit)
-    return sorted(units)[0] if units else None
+    return sorted(set(units))
+
+
+def find_active_unit(
+    prefix: str = DEFAULT_UNIT_PREFIX,
+    runner: Callable[[list[str], float], str | None] = run_command,
+) -> str | None:
+    units = find_active_units(prefix, runner)
+    return units[0] if units else None
 
 
 def unit_restart_count(
@@ -253,12 +262,19 @@ def authoritative_source_is_fresh(
 
 def experiment_from_source(
     source: dict[str, Any] | None,
-    active_unit: str | None,
+    active_unit: list[str] | str | None = None,
     *,
     now: datetime | None = None,
 ) -> dict[str, Any] | None:
     source = source or {}
-    if active_unit is None and not authoritative_source_is_fresh(source, now=now):
+    if isinstance(active_unit, str):
+        active_units = [active_unit]
+    elif active_unit is None:
+        active_units = []
+    else:
+        active_units = active_unit
+    runtime_active = bool(active_units)
+    if not runtime_active and not authoritative_source_is_fresh(source, now=now):
         return None
     state = source.get("state")
     if state not in {"running", "idle", "completed", "failed", "unknown"}:
@@ -266,9 +282,9 @@ def experiment_from_source(
     # Campaign metadata describes workflow intent, while the active user service
     # is the runtime proof.  Do not claim that an experiment is running merely
     # because a fresh campaign record is OPEN/READY.
-    if state == "running" and active_unit is None:
+    if state == "running" and not runtime_active:
         state = "idle"
-    elif state in {"idle", "unknown"} and active_unit is not None:
+    elif state in {"idle", "unknown"} and runtime_active:
         state = "running"
     started_at = source.get("startedAt")
     if not isinstance(started_at, str):
@@ -296,15 +312,40 @@ def experiment_from_source(
             "authoritative": True,
         }
 
+    campaign_id = source.get("campaignId")
+    task_id = source.get("taskId")
+    state_changed_at = source.get("stateChangedAt")
+    failure = source.get("failure")
+    safe_failure = None
+    if isinstance(failure, dict):
+        category = failure.get("category")
+        exit_code = failure.get("exitCode")
+        if category in {"exit_code", "oom", "nan", "timeout", "unknown"}:
+            safe_failure = {
+                "category": category,
+                "exitCode": exit_code if isinstance(exit_code, int) else None,
+            }
+
     return {
         "project": "MMdedup-v2",
+        "campaignId": campaign_id[:96] if isinstance(campaign_id, str) else None,
+        "taskId": task_id[:96] if isinstance(task_id, str) else None,
         "phase": localized_text(source.get("phase"), "当前阶段", "Current phase"),
         "task": localized_text(
             source.get("task"), "MMdedup 实验", "MMdedup experiment"
         ),
         "state": state,
         "startedAt": started_at,
+        "stateChangedAt": (
+            state_changed_at if isinstance(state_changed_at, str) else None
+        ),
         "progress": progress,
+        "failure": safe_failure,
+        "runtimeEvidence": {
+            "state": "active" if runtime_active else "inactive",
+            "activeUnitCount": len(active_units),
+            "source": "systemd",
+        },
     }
 
 
@@ -318,14 +359,21 @@ def build_status(
     disk_path: str = DEFAULT_DISK_PATH,
     status_file: str = DEFAULT_STATUS_FILE,
     unit_prefix: str = DEFAULT_UNIT_PREFIX,
+    trigger: str = "heartbeat",
     runner: Callable[[list[str], float], str | None] = run_command,
 ) -> dict[str, Any]:
-    active_unit = find_active_unit(unit_prefix, runner)
+    active_units = find_active_units(unit_prefix, runner)
+    active_unit = active_units[0] if active_units else None
     source = load_public_experiment(status_file)
     return {
         "schemaVersion": 1,
         "server": {"id": "lab-2", "state": "online"},
-        "experiment": experiment_from_source(source, active_unit),
+        "telemetry": {
+            "state": "reporting",
+            "trigger": trigger,
+            "source": "lab2-read-only-collector",
+        },
+        "experiment": experiment_from_source(source, active_units),
         "resources": {
             "cpu": collect_cpu(),
             "gpu": collect_gpu(runner),
@@ -396,6 +444,12 @@ def parse_arguments() -> argparse.Namespace:
         action="store_true",
         help="print sanitized JSON without sending a request",
     )
+    parser.add_argument(
+        "--trigger",
+        choices=("heartbeat", "state-change", "manual"),
+        default="heartbeat",
+        help="label why this report was emitted without exposing private details",
+    )
     return parser.parse_args()
 
 
@@ -405,6 +459,7 @@ def main() -> int:
         disk_path=os.environ.get("LAB2_DISK_PATH", DEFAULT_DISK_PATH),
         status_file=os.environ.get("LAB2_EXPERIMENT_STATUS_FILE", DEFAULT_STATUS_FILE),
         unit_prefix=os.environ.get("LAB2_UNIT_PREFIX", DEFAULT_UNIT_PREFIX),
+        trigger=arguments.trigger,
     )
 
     if arguments.dry_run:

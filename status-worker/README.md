@@ -7,6 +7,12 @@ KV value, so each collector report consumes one KV `put`. A Durable Object
 serializes replay protection, write-rate limiting, and privacy-preserving daily
 visitor counts (only a SHA-256 visitor fingerprint is stored).
 
+The Worker also runs a one-minute scheduled watchdog. It writes only on state
+transitions and optionally POSTs a sanitized payload to
+`LAB2_ALERT_WEBHOOK_URL`. Leave that variable unset until the user selects a
+notification destination; detection, public freshness, and transition tests do
+not depend on a webhook.
+
 ## Local verification
 
 ```bash
