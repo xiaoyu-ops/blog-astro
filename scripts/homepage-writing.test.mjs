@@ -13,14 +13,15 @@ test("keeps homepage writing categories, local history scroll, and contact icons
     readFile(new URL("src/content/README.md", root), "utf8"),
   ]);
 
-  assert.match(contentConfig, /z\.enum\(\["notes", "technical"\]\)\.default\("notes"\)/);
-  assert.match(newPostScript, /--category notes\|technical/);
+  assert.match(contentConfig, /z\.enum\(\["technical", "notes"\]\)\.default\("technical"\)/);
+  assert.match(newPostScript, /--category technical\|notes/);
+  assert.match(newPostScript, /let category = "technical"/);
   assert.match(newPostScript, /category: "\$\{category\}"/);
   assert.equal(JSON.parse(packageJson).scripts["new:post"], "node scripts/new-post.mjs");
   assert.match(newPostScript, /Usage: pnpm new:post/);
   assert.match(contentReadme, /pnpm new:post/);
   assert.match(contentReadme, /--category notes/);
-  assert.match(contentReadme, /--category technical/);
+  assert.match(contentReadme, /默认为 `technical`/);
   assert.match(contentReadme, /--publish/);
 
   assert.match(homepage, /role="tablist"/);

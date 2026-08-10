@@ -7,7 +7,7 @@ const args = process.argv.slice(2);
 const titleArg = args.shift();
 
 if (!titleArg) {
-  console.error('Usage: pnpm new:post "文章标题" [slug] [--title-en "English title"] [--description "一句话摘要"] [--description-en "One sentence"] [--category notes|technical] [--publish]');
+  console.error('Usage: pnpm new:post "文章标题" [slug] [--title-en "English title"] [--description "一句话摘要"] [--description-en "One sentence"] [--category technical|notes] [--publish]');
   process.exit(1);
 }
 
@@ -23,7 +23,7 @@ let hasTitleEn = false;
 let descriptionEn = "TODO: Add a natural English summary";
 let hasDescriptionEn = false;
 let draft = true;
-let category = "notes";
+let category = "technical";
 
 for (let i = 0; i < args.length; i += 1) {
   const arg = args[i];
@@ -58,8 +58,8 @@ for (let i = 0; i < args.length; i += 1) {
     category = args[i + 1]?.trim();
     i += 1;
 
-    if (!["notes", "technical"].includes(category)) {
-      console.error('Category must be "notes" or "technical".');
+    if (!["technical", "notes"].includes(category)) {
+      console.error('Category must be "technical" or "notes".');
       process.exit(1);
     }
     continue;

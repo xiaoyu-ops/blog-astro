@@ -45,7 +45,7 @@ const blog = defineCollection({
       description: z.string().min(1),
       descriptionEn: z.string().min(1).optional(),
       date: dateString,
-      category: z.enum(["notes", "technical"]).default("notes"),
+      category: z.enum(["technical", "notes"]).default("technical"),
       draft: z.boolean().optional(),
       tags: z.array(z.string()).optional(),
     })

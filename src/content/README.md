@@ -4,7 +4,16 @@
 
 ## 1. 创建文章
 
-在项目根目录运行。随手写使用 `notes`：
+在项目根目录运行。技术文章是默认类型，使用 `technical`：
+
+```bash
+pnpm new:post "用 Astro 构建个人博客" astro-blog \
+  --title-en "Building a Personal Blog with Astro" \
+  --description "记录博客的架构、内容管理与部署流程。" \
+  --description-en "A practical look at the blog's architecture, content workflow, and deployment."
+```
+
+随手写使用 `notes`，需要显式选择：
 
 ```bash
 pnpm new:post "秋招复盘" autumn-recruit-review \
@@ -14,19 +23,9 @@ pnpm new:post "秋招复盘" autumn-recruit-review \
   --category notes
 ```
 
-技术文章使用 `technical`：
+首页 Writing 区域会根据 `category` 将文章放进 `Technical` 或 `Notes` 标签页，每个标签页固定显示三篇，超过后可在区域内滚动查看。
 
-```bash
-pnpm new:post "用 Astro 构建个人博客" astro-blog \
-  --title-en "Building a Personal Blog with Astro" \
-  --description "记录博客的架构、内容管理与部署流程。" \
-  --description-en "A practical look at the blog's architecture, content workflow, and deployment." \
-  --category technical
-```
-
-首页 Writing 区域会根据 `category` 将文章放进 `Notes` 或 `Technical` 标签页，每个标签页固定显示三篇，超过后可在区域内滚动查看。
-
-- 省略 `--category` 时默认为 `notes`。
+- 省略 `--category` 时默认为 `technical`，与首页默认打开“技术”标签保持一致。
 - 默认创建草稿，方便先在本地预览。
 - `--title-en` 和 `--description-en` 分别填写自然的英文标题与摘要；英文模式的首页会使用这两项。
 - 命令末尾添加 `--publish` 可直接创建非草稿文章；此时必须同时填写 `--description`、`--title-en` 和 `--description-en`。
