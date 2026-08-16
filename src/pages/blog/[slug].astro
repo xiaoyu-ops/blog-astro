@@ -33,9 +33,11 @@ const { Content } = await render(post);
     <p class="text-xs text-[hsl(var(--muted-foreground))] font-mono mb-6">
       {post.data.date}
     </p>
-    <p data-lang="en" class="mb-6 rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] px-3 py-2 text-xs text-[hsl(var(--muted-foreground))]">
-      This essay is currently available in Chinese.
-    </p>
+    {!post.data.bilingual && (
+      <p data-lang="en" class="mb-6 rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] px-3 py-2 text-xs text-[hsl(var(--muted-foreground))]">
+        This essay is currently available in Chinese.
+      </p>
+    )}
     <article class="blog-content prose prose-sm prose-neutral dark:prose-invert max-w-none
       prose-headings:font-medium prose-headings:tracking-tight
       prose-p:leading-relaxed prose-p:text-[hsl(var(--muted-foreground))]

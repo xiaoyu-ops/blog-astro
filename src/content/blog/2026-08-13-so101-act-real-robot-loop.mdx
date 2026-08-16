@@ -1,0 +1,177 @@
+---
+title: "复现 ACT：让 SO-101 用 9 条示教学会抓东西"
+titleEn: "Reproducing ACT on SO-101 with 9 Demonstrations"
+description: "记录我从采集第一批示教数据，到训练 ACT、排查动作块问题，最终让 SO-101 在固定场景完成抓放任务的过程。"
+descriptionEn: "A practical record of collecting demonstrations, training ACT, debugging action chunks, and closing the loop on a real SO-101 robot."
+date: "2026-08-13"
+category: "technical"
+bilingual: true
+draft: false
+tags:
+  - Embodied AI
+  - LeRobot
+  - ACT
+  - SO-101
+---
+
+import BlogVideo from "../../components/BlogVideo.astro";
+
+<section data-lang="zh">
+
+**ACT 的全称是 Action Chunking with Transformers，是一种机器人模仿学习方法。它的思路很直白：不要让机器人一步一步猜，而是根据相机画面和当前状态，一次预测接下来的一段动作。这样既能少积累一些误差，动作也会更连贯。**
+
+做这个机械臂项目时，起点很简单：复现一个最基础的模仿学习任务，让 SO-101 看着腕部相机，把桌面上的蓝色胶带卷抓起来，再放进旁边的白色盒子里。
+
+![SO-101 ACT 抓放任务全景：机械臂、白色方框内的蓝色胶带卷和目标盒子](/images/blog/2026-08-13-so101-act-real-robot-loop/act-task-overview.jpg)
+
+*任务场景：SO-101 从白色方框内抓起蓝色胶带卷，再把它放进右侧的白色盒子。*
+
+但真做起来，训练反而不是最麻烦的。数据有没有录对，动作和画面有没有对齐，Checkpoint 应该选哪个，推理时每轮执行多少步，这些地方只要错一个，机械臂就可能趴在桌面上抽动。更头疼的是，单看这个现象很难知道问题到底出在哪。
+
+这篇就不讲得太学术了，主要记一下 ACT 从数据采集跑到真机闭环的过程，还有中间踩过的几个坑。
+
+## 为什么先用 ACT
+
+我后面真正想做的是 π0.5 这类 VLA。不过一上来就换大模型，数据、网络、推理和机械臂都有可能同时出问题，到时候连排查该从哪里开始都说不清。
+
+于是先拿 ACT 做工程基线。输入只有腕部相机画面和机械臂当前的关节状态，输出是接下来的一段动作。这个阶段不追求模型有多强，只确认下面这条链路能不能真的跑通：
+
+**遥操作采集 → 数据检查 → RTX 3090 训练 → Checkpoint 回传 → 真机推理。**
+
+硬件是一套 SO-101 主从机械臂和腕部相机。机械臂接在 Home Linux 上，数据采集和动作执行都在这台机器完成；训练放到另一台带 RTX 3090 的机器上。后面换成 π0.5 时，这套结构还能接着用。
+
+## 第一批数据只有 10 条
+
+第一轮只录了 10 条完整示教。每条轨迹都是从机械臂开始运动，到抓住蓝色胶带卷、移动到白色盒子并释放为止，录制频率是 30 FPS。
+
+复查时看到，其中一条轨迹在机械臂已经开始运动后，又混入了一次人工复位。这条轨迹已经不再是一个连续任务，最后直接删掉了，没有为了凑满 10 条继续留着。
+
+清洗后剩下 **9 Episodes、4,005 Frames**，其中包含腕部画面、6 维关节状态、6 维动作以及对应的时间戳和任务信息。
+
+模仿学习的数据不是“看起来录到了”就能直接拿去训练。物体复位、无效停顿、相机掉帧、动作边界不一致，最后都可能被模型一起学进去。这次总共只有几条数据，一条坏轨迹的影响就更明显。
+
+## 20 Steps 只是在确认链路
+
+数据传到 3090 后，先跑了一个 20 Steps 的冒烟测试。这里只检查几件事：数据能不能读取，视频能不能解码，ACT 能不能完成前向和反向传播，Checkpoint 能不能保存后再加载。
+
+这个结果和“机械臂学会抓东西”还差得很远。20 Steps 的 loss 就算下降，也只能说明训练代码没有立刻报错。
+
+冒烟通过后，正式训练跑到 10K Steps，并保留了从 1K 到 10K 的多个 Checkpoint。10K 的 eval loss 更低，按常理似乎应该直接用它。但把训练首帧、留出数据首帧和真机动作放在一起比较后，7K 在几个关键动作上反而更可靠。最后部署到真机上的不是训练最久的 10K，而是 **7K Checkpoint**。
+
+这次也碰到了一个很实际的问题：**离线 loss 最低，不一定等于真机效果最好。**
+
+## 第一次真机运行为什么只会抽动
+
+真正折腾的是部署。ACT 每次给出的不是一个动作，而是一整个动作块。当前模型的 `chunk_size` 是 100，也就是一次会预测未来 100 个动作。
+
+为了让机械臂“反馈更及时”，我一开始把 `n_action_steps` 设置成了 1。听起来很合理：每执行一步就重新读画面，再规划一次，似乎还会更安全。
+
+问题就在这里。模型每轮预测 100 步，机械臂却只执行第一步，剩下的 99 步马上被丢掉。下次推理又换成一个新动作块的第一步，原本连续的抓取动作就这样被切碎了。真机上的表现是反复抽动、夹爪频繁开合，连正常抬起都很难。
+
+恢复 ACT 原本的动作块执行方式后，机械臂第一次连续完成了接近、夹取和抬升。训练其实没有完全失败，继续堆训练步数也解决不了这个问题。真正出错的是部署配置，它把模型学到的连续动作拆散了。
+
+## 最后跑到了 8/10
+
+修正动作块配置、相机输入和安全限制后，在固定场景进行了 10 次完整测试。最终结果是 8 次成功、2 次失败，也就是 **8/10 的完整任务成功率**。
+
+下面这段视频记录了其中一次完整运行。机械臂从腕部画面获取观测，接近蓝色胶带卷，完成夹取和抬升，再移动到白色盒子上方释放。
+
+</section>
+
+<section data-lang="en">
+
+**ACT stands for Action Chunking with Transformers. The basic idea is simple: instead of making a robot guess one action at a time, ACT uses the camera image and current robot state to predict a chunk of upcoming actions. This reduces accumulated error and usually produces more continuous motion.**
+
+The project started with a simple goal: reproduce a basic imitation-learning task in which an SO-101 uses its wrist camera to pick up a blue tape roll and place it into the white box beside it.
+
+![An overview of the SO-101 ACT pick-and-place task, showing the robot, the blue tape roll inside the marked square, and the target box](/images/blog/2026-08-13-so101-act-real-robot-loop/act-task-overview.jpg)
+
+*Task setup: SO-101 picks up the blue tape roll from the marked square and places it into the white box on the right.*
+
+Once the work began, training turned out not to be the hardest part. Was the data recorded correctly? Were the actions aligned with the images? Which checkpoint should be used? How many predicted actions should the robot execute before asking the model again? One wrong choice could leave the arm twitching on the table, without an obvious clue about the cause.
+
+This article is not meant to be highly academic. It is a record of taking ACT from data collection to a real-robot closed loop, including a few problems that appeared along the way.
+
+## Why I started with ACT
+
+What I really wanted to work on next was a VLA model such as π0.5. Starting with the larger model would have allowed the data, network, inference service and robot hardware to fail at the same time. Debugging would have become much harder.
+
+ACT therefore became the engineering baseline. It took a wrist-camera image and the robot's current joint state, then predicted a sequence of future actions. At this stage, the only goal was to confirm that the following pipeline worked:
+
+**Teleoperation → data inspection → training on the RTX 3090 → checkpoint transfer → real-robot inference.**
+
+The hardware consisted of an SO-101 leader-follower arm setup and a wrist camera. The Home Linux machine connected to the arm handled data collection and action execution, while another machine with an RTX 3090 handled training. The same layout could later be reused for π0.5.
+
+## My first dataset had only 10 demonstrations
+
+The first run contained only 10 complete demonstrations. Each trajectory started when the arm began to move and ended after it grasped the blue tape roll, carried it to the white box and released it. Everything was recorded at 30 FPS.
+
+Inspection found one trajectory with a manual object reset after the robot had already started moving, all within the same episode. It was no longer a continuous task, so the trajectory was removed instead of being kept merely to make the dataset look larger.
+
+After cleaning, the dataset contained **9 episodes and 4,005 frames**, including wrist-camera images, a six-dimensional joint state, six-dimensional actions, timestamps and task metadata.
+
+The most direct lesson was that imitation-learning data is not usable merely because it looks like it was recorded successfully. Object resets, unnecessary pauses, dropped frames and inconsistent episode boundaries can all be learned by the model. When the whole experiment contains only a handful of demonstrations, one bad trajectory matters a lot.
+
+## The 20-step run only checked the pipeline
+
+After the dataset reached the 3090, a 20-step smoke test checked four things: data loading, video decoding, ACT forward and backward passes, and checkpoint save/reload.
+
+That result was still far from showing that the robot had learned to grasp. A falling loss over 20 steps only showed that the training code had not immediately failed.
+
+After the smoke test passed, formal training ran for 10K steps and kept checkpoints from 1K through 10K. The 10K checkpoint had the lower evaluation loss and looked like the obvious choice. But once initial training frames, held-out frames and actual robot motion were compared together, the 7K checkpoint behaved more reliably on several critical actions. The deployed model was therefore not the one trained for the longest time, but the **7K checkpoint**.
+
+This produced a practical lesson: **the lowest offline loss does not necessarily give the best real-robot result.**
+
+## Why the robot only twitched during the first rollout
+
+Deployment caused the most trouble. ACT does not return one isolated action at a time; it predicts an entire action chunk. Here, `chunk_size` was 100, so each inference call produced the next 100 actions.
+
+To make the robot react to feedback more frequently, I initially set `n_action_steps` to 1. The idea sounded reasonable: execute one action, read a new image and plan again. It even seemed safer.
+
+That setting was the problem. The model predicted 100 actions, but the robot executed only the first and discarded the remaining 99. The next inference call supplied the first step of another chunk, breaking a continuous grasp into disconnected pieces. On the real arm, this appeared as repeated twitching, unstable gripper opening and closing, and difficulty lifting the object normally.
+
+After restoring ACT's chunked execution, the robot completed a continuous approach, grasp and lift for the first time. The training had not completely failed, and adding more steps would not have fixed the problem. The deployment configuration had broken the continuity learned by the policy.
+
+## The final result was 8/10
+
+After correcting the action-chunk configuration, camera input and safety limits, the fixed setup was tested in 10 complete trials. Eight succeeded and two failed, giving an **8/10 complete-task success rate**.
+
+The video below shows one complete rollout. The robot observes the scene through its wrist camera, approaches the blue tape roll, grasps and lifts it, then moves over the white box and releases it.
+
+</section>
+
+<BlogVideo
+  src="/videos/2026-08-13-so101-act-real-robot-loop/act-success.mp4"
+  poster="/videos/2026-08-13-so101-act-real-robot-loop/act-success-poster.jpg"
+  title="SO-101 使用 ACT 完成蓝色胶带卷抓放任务"
+  caption="一次 ACT 真机闭环：接近、夹取、抬升、搬运并释放到白色盒子。视频为原始手机录像的网页兼容版本。"
+  captionEn="One ACT rollout on the real robot: approach, grasp, lift, carry and release into the white box. This is a web-compatible version of the original phone recording."
+/>
+
+<section data-lang="zh">
+
+这个 8/10 有很明确的范围。物体、相机和光照都是固定的，起始位置也接近训练数据，而且总共只测了 10 次。这个结果能说明模型学到了一些有用的视觉到动作映射，也说明采集、训练和部署链路跑通了。至于未知位置的泛化能力，这轮实验还证明不了。
+
+## 现在回头看，最有用的是排查顺序
+
+只看最后的视频，这个项目无非是机械臂把一个东西放进盒子里。真正花时间的，是给每次失败排一个检查顺序。真机抽动时，先看数据和时间边界，再看动作块和部署配置；冒烟训练只负责确认工程链路，不能拿来证明模型效果；选 Checkpoint 时，也得把离线结果和真机动作放在一起看。
+
+安全这件事同样不能省。每次真机运行都保留关节限幅，从短时间测试开始，旁边随时可以断电。很多问题最后能查清楚，前提是机械臂没有先把自己撞坏。
+
+对我来说，ACT 到这里就完成了它的任务。这套 SO-101 已经能用自己采集的数据，在 3090 上训练，再回到真机形成闭环。后面没有继续围着 ACT 大量调参，而是把这条跑通的链路迁移到 π0.5。模型变大以后，问题也换成了远程推理延迟、动作块交接和实时控制，这部分留到下一篇再写。
+
+</section>
+
+<section data-lang="en">
+
+The 8/10 result has a clear boundary. The object, camera and lighting were fixed, the starting positions stayed close to the training distribution, and the evaluation covered only 10 trials. The result shows that the model learned a useful visual-to-action mapping and that the collection, training and deployment pipeline worked. It does not show that ACT can generalize to unseen object positions.
+
+## Looking back, the debugging order mattered most
+
+The final video makes the project look simple: a robot arm puts an object into a box. Most of the work went into establishing a useful debugging order. When the arm twitched, the data and timing boundaries came first, followed by action chunks and deployment settings. Smoke training checked the pipeline but said nothing about policy quality. Checkpoint selection also needed both offline results and real-robot motion.
+
+Safety could not be treated as an optional extra. Every rollout kept joint limits in place, started with short guarded runs and left an emergency power-off path nearby. Debugging only works if the robot does not damage itself first.
+
+For me, ACT had done its job at that point. The SO-101 could train on self-collected data using the 3090 and bring the resulting policy back to the real robot. Instead of running a large ACT hyperparameter sweep, the working pipeline moved on to π0.5. The larger model introduced a different set of problems, including remote-inference latency, action-chunk handoff and real-time control. Those belong in the next article.
+
+</section>
