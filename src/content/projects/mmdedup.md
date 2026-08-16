@@ -1,241 +1,153 @@
 ---
-title: "MMdedup — 多模态去重管道"
-titleEn: "MMdedup — Multimodal Deduplication Pipeline"
-description: "面向多模态大语言模型训练数据集的高吞吐量数据清洗管道。存储减少 90%，吞吐量比 SemDeDup 提升 3.6 倍。正在投稿中。"
-descriptionEn: "A high-throughput cleaning pipeline for multimodal LLM training data. It reduced storage use by 90% and delivered 3.6× the throughput of SemDeDup. The accompanying paper is currently under review."
+title: "MMdedup：多模态数据去重，难点不只是找相似"
+titleEn: "MMdedup: Multimodal Deduplication Is More Than Similarity Search"
+description: "一个面向文本、图像、音频及图文对的数据清洗研究项目，重点区分候选召回、重复关系判断与安全删除，并为实验结果保留可追溯证据。"
+descriptionEn: "A research system for cleaning text, image, audio, and image-caption data, separating candidate retrieval, duplicate relation typing, and safe deletion with traceable experiment evidence."
 date: "2025-06-01"
 order: 1
 tags:
   - Python
-  - 数据系统
-  - 大语言模型
+  - 多模态
+  - 数据去重
+  - 实验系统
   - 研究
 tagsEn:
   - Python
-  - Data Systems
-  - Large Language Models
+  - Multimodal
+  - Data Deduplication
+  - Experiment Systems
   - Research
 ---
 
-## 概述
+## 从“相似”重新理解去重
 
-**MMdedup** 是一个面向多模态大语言模型训练数据集的高吞吐量数据清洗管道。该管道处理文本、图像和音频三种模态，采用**两阶段架构**：基于内容的分类（Sorter），然后是模态特定的去重。
+MMdedup 最初是一个文本、图像和音频三模态的数据清洗流水线。项目继续推进后，最重要的变化不是又加入了几个模型，而是重新定义了问题：
 
-**核心挑战**：多模态数据集（TB 级）中存在大量重复内容，直接训练会导致模型过拟合、浪费计算资源。传统去重方法（如 SemDeDup）只针对单一模态，且无法处理工业级数据规模。
+> **相似不等于重复；候选召回、关系判断和删除权限必须分开。**
 
-**成果**：
-- TB 级数据集 **存储减少 90%**
-- 比 SemDeDup 基线 **吞吐量提升 3.6 倍**
-- 目前正在投稿中；已申请**国家发明专利**和**软件著作权**
+两段文本讨论同一主题、两张图片拍摄同一个物体、两段音频属于同一首歌，都可能非常相似，但不一定应该删除。相反，裁剪图、拼接图、局部引用和同一录音的截取片段，有时全局相似度并不高，却包含真实的复制关系。
 
----
-
-## 系统架构
-
-![MMdedup 架构图](/images/architecture/mmdedup-arch.svg)
-
-### 两阶段流水线
-
-```
-原始多模态数据（文本 · 图像 · 音频）
-           │
-           ▼
-    ┌─────────────────┐
-    │  阶段 1: Sorter  │
-    │  · 魔数排序        │
-    │  · 可打印性分析     │
-    │  · 语义解析 → 按模态分类 │
-    └─────────────────┘
-           │
-           ▼
-    ┌─────────────────────────────┐
-    │    阶段 2: 模态特定去重       │
-    │  ┌─────────┬─────────┬─────┐│
-    │  │  文本    │  图像    │ 音频 ││
-    │  │N-gram   │CLIP     │频谱  ││
-    │  │Jaccard  │K-means  │指纹  ││
-    │  │MinHash  │Faiss    │LSH   ││
-    │  └─────────┴─────────┴─────┘│
-    └─────────────────────────────┘
-           │
-           ▼
-    去重后数据集（存储 ↓90%，吞吐量 ↑3.6×）
-```
+因此，当前 MMdedup 更像一套可审计的研究管道：先召回有限候选，再用模态相关证据判断 `FULL / PARTIAL / DISTINCT` 等关系，最后由保守规则决定是否允许删除。
 
 ---
 
-## 阶段 1: Sorter — 内容分类
+## 当前系统结构
 
-Sorter 的作用是将原始数据按模态分类，为后续的去重阶段提供正确的输入。
+![MMdedup 当前架构：整理、候选、关系验证与实验证据四个阶段](/images/architecture/mmdedup-arch.svg)
 
-### 魔数排序（Magic Number Sorting）
+项目包含四个连续阶段：
 
-通过文件头的魔数（magic bytes）快速识别文件类型：
+1. **Sorter**：识别文件类型、隔离损坏文件，并为不同模态生成 manifest；
+2. **Candidate Retrieval**：用便宜的哈希、LSH 或向量检索缩小候选范围；
+3. **Relation Verification**：结合内容覆盖、局部结构和时间对齐判断关系类型；
+4. **Evidence & Reporting**：保存配置、逐样本预测、指标、环境和来源映射，避免只留下一个无法复核的最终数字。
 
-| 文件类型 | 魔数 | 说明 |
-|---------|------|------|
-| JPEG | `FF D8 FF` | 图像文件 |
-| PNG | `89 50 4E 47` | 图像文件 |
-| WAV | `52 49 46 46` | 音频文件 |
-| MP3 | `49 44 33` | 音频文件 |
-| UTF-8 文本 | 无可打印性分析 | 文本文件 |
-
-### 可打印性分析（Printability Analysis）
-
-对于没有明确魔数的文件，通过分析字节分布判断是否为文本：
-- 计算字节值在可打印字符范围（0x20-0x7E）的比例
-- 比例 > 80% → 判定为文本
-- 比例 < 20% → 需要进一步解析（可能是二进制图像/音频）
-
-### 语义解析
-
-对于边界情况（如 HTML 页面包含嵌入的图片），通过浅层解析提取：
-- `<img>` 标签的 `src` 属性 → 图像 URL
-- `<audio>` 标签 → 音频资源
-- 纯文本内容 → 文本数据
+Stage 4 则把图像和描述视为一个训练单元，补充图文对层面的重复判断。它不是把两个单模态分数简单相加，而是专门研究单模态重复、联合重复和过度删除之间的差异。
 
 ---
 
-## 阶段 2: 模态特定去重
+## 三种模态分别怎样判断重复
 
-### 文本去重
+### Text-v2：既看全文，也看方向性包含
 
-**精确去重**：
-- **N-gram + Jaccard 相似度**：将文本拆分为 n-gram（n=5），计算 Jaccard 相似度
-- 相似度 > 0.95 → 判定为重复
+文本首先通过文档级与段落级 MinHash-LSH 召回候选，再计算精确哈希、Jaccard 和 containment。关键是保留 containment 的方向：短文完整出现在长文里，并不意味着两个方向的覆盖程度相同。
 
-**近似去重（大规模）**：
-- **MinHash LSH**：将文档表示为 MinHash 签名，通过局部敏感哈希（LSH）快速找到候选重复对
-- 时间复杂度：O(n) 而非 O(n²)
-
-```python
-# MinHash 签名生成（简化）
-def minhash_signature(text, num_perm=128):
-    shingles = set(ngrams(text, n=5))
-    signature = []
-    for i in range(num_perm):
-        min_hash = min(hash((shingle, i)) for shingle in shingles)
-        signature.append(min_hash)
-    return signature
+```text
+Document / Passage LSH
+          ↓
+   bounded candidates
+          ↓
+exact hash + Jaccard + directional containment
+          ↓
+FULL_DUPLICATE / CONTAINMENT / SEMANTIC_SIMILAR / DISTINCT
 ```
 
-### 图像去重
+语义相似可以帮助发现候选，但不能直接获得删除权限。当前内部验证使用 peS2o 的固定 revision 和冻结关系集，10K / 100K 关系评价中 candidate recall 为 **1.0000**、Macro-F1 为 **0.9569**。这能支持当前协议下的方法对比，但不等于在所有网页语料上都达到同样结果。
 
-**特征提取**：
-- **CLIP 嵌入**：使用 OpenAI CLIP 模型将图像编码为 512 维向量
-- 向量空间中的距离 = 语义相似度
+### Image I6：全图分数之外，还要看局部覆盖
 
-**聚类与去重**：
-- **K-means 聚类**：将向量空间划分为 k 个簇
-- **Faiss 索引**：GPU 加速的近似最近邻搜索（ANN）
+仅靠 CLIP 全图向量，很难区分复制、裁剪、截图、拼接和“语义相似但并非复制”。I6 使用 SSCD 进行候选召回，并在候选对上建立 patch 对应，计算 query 与 reference 两个方向的覆盖率，再检查局部几何和空间一致性。
 
-**分布式分片（关键设计）**：
+双向覆盖用于区分完整复制和部分复用：一张小图被嵌入海报时，小图方向可能接近全覆盖，海报方向却只覆盖很小区域。该样本应该标为 `PARTIAL`，而不是直接删除整张海报。
 
-在 TB 级数据（亿级向量）规模下，采用 **Voronoi 空间分片**：
+在由 DISC21 与 COCO 2017 val 构成的固定关系安全集上，I6 的 Macro-F1 为 **0.9317**；但在 DISC21 100K development 检索中 Recall@256 为 **0.8985**。所以图像路线目前被记录为 **PARTIAL**：关系判断已有明显改善，大库召回还没有完全闭环。
 
-```
-512维空间划分为 k 个（如 k=2000）Voronoi 单元
-    │
-    ├── 节点 1: 负责 Cluster [0-100] 的向量索引
-    ├── 节点 2: 负责 Cluster [101-200] 的向量索引
-    └── ...
-    
-每个分片内部使用 Faiss IVFFlat 或 IndexFlatIP
-```
+### Audio A7：录音身份和时间覆盖分开
 
-**同步开销**：
-- 不同步全量索引，只同步 **聚类中心（Centroids）**
-- 2000 个 512 维 float32 向量 ≈ 4MB
-- 10Gbps 网络下广播开销微秒级可忽略
+音频先统一采样率并分段，通过 chroma / 频谱特征召回候选，再用频谱地标判断是否来自同一录音，最后依据时间覆盖区分完整复制和局部复用。
 
-**跨节点重复发现机制**：
+这一步很重要：移调或变速后的同一录音，与同一首歌的另一场演奏，不能只靠一个整体相似度区分。`PARTIAL` 和证据不足的样本默认不会触发整段删除。
 
-```
-Stage 1: 并行特征提取
-    节点 A 处理图像 A → CLIP 嵌入 → 512维向量
-    节点 B 处理图像 B → CLIP 嵌入 → 512维向量
-    
-Stage 2: 重心路由（Centroid-based Routing）
-    节点 A 计算图像 A 的向量与全局 k 个中心的距离
-    → 得到 Cluster_ID（假设为 42）
-    → 将 (Embedding, Image_ID) 发送给负责 Cluster 42 的节点 C
-    
-Stage 3: 局部精确比对
-    节点 C 收集所有属于 Cluster 42 的向量
-    → 执行 O(N²) 内积比对
-    → 图像 A 和 B 在节点 C 汇合，重复无所遁形
-```
-
-**通信优化**：
-- 原始图像：数 MB
-- 512维向量：约 2KB
-- **特征级传输将跨节点通信开销降低 1000 倍以上**
-
-### 音频去重
-
-**频谱指纹（Spectral Fingerprinting）**：
-- 将音频转换为频谱图（spectrogram）
-- 提取峰值特征点作为指纹
-- 类似 Shazam 的音乐识别原理
-
-**MinHash LSH 匹配**：
-- 将频谱指纹表示为集合
-- MinHash + LSH 快速找到相似音频
+A7 在 FMA Small 的扩大关系集上 candidate recall 为 **1.0000**、Macro-F1 为 **0.8636**。它在同数据协议下明显优于论文原版流程，但 DISTINCT 泛化和现代音频基线的统一重算仍在继续，因此同样记录为 **PARTIAL**。
 
 ---
 
-## 性能优化与 "3.6× 提升" 的秘密
+## Stage 4：把图像和描述当作一个训练单元
 
-### 1. 计算/通信重叠（Overlapping）
+对于图文训练数据，只分别清理图片和文字会遇到两个问题：
 
-```
-时间轴 →
-节点 A: [Embedding 批次 1] [Embedding 批次 2] [Embedding 批次 3]
-节点 B: [Embedding 批次 1] [Embedding 批次 2] [Embedding 批次 3]
-节点 C:           [Compare 批次 1]      [Compare 批次 2]      [Compare 批次 3]
-```
+- 图片不同但模板化描述相同，文本去重可能误删；
+- 图片和描述各自没有达到单模态阈值，但作为一对训练单元已经高度重复。
 
-当节点 C 正在对比上一批次时，节点 A/B 在计算当前批次的 Embedding。**流水线掩盖了通信延迟**。
+Stage 4 同时编码图像与文本，在候选对上保留 image、text 和 joint 三类信号，并与 image-only、text-only、naive union 进行比较。
 
-### 2. 复杂度红利
+当前主评价来自 CC3M 200K 候选池中的 **3,000 条 score-space 分层标注**，其中 462 条被标为 duplicate 或 near-duplicate。固定阈值下的结果为：
 
-传统 SemDeDup 在单机上处理过大的聚类，或者在全局范围内进行低效搜索。MMdedup 通过物理分片将 N 缩小了 k 倍：
+| 方法 | Precision | Recall | F1 | 说明 |
+| --- | ---: | ---: | ---: | --- |
+| Image only | 0.218 | 0.701 | 0.333 | 图像阈值固定为 0.85 |
+| Text only | 0.280 | 0.277 | 0.279 | 文本阈值固定为 0.95 |
+| Naive union | 0.201 | 0.799 | 0.322 | 任一单模态命中即删除，召回高但误删多 |
+| Conservative Stage 4 | **0.726** | 0.431 | **0.541** | 图像和文本证据同时满足条件 |
+| Joint（消融点） | 0.569 | **0.671** | **0.616** | 作为 alternative operating point 保留 |
 
-- 原始复杂度：O(N²) 或 O(N·logN)
-- 分片后复杂度：O((N/k)²) × k = O(N²/k)
-- 加上 Shuffle 开销后，节省的计算时间远超网络传输时间
+论文主线采用 conservative rule，因为它和下游数据划分使用同一规则，并优先控制误删。Joint 的 F1 更高，但保留为替代工作点和消融结果，不混写成同一个主结论。
 
-### 3. 底层瓶颈分析
+### 为什么不再写“存储减少 90%、吞吐提升 3.6 倍”
 
-工业级压测发现系统的绝对瓶颈是 **GPU 显存吞吐（Memory Bandwidth）** 而非网络 IO：
+旧版项目页把早期稿件中的两个数字放到了最显眼的位置，却没有同时说明数据集、基线、硬件、阈值和证据文件。这种表达无法回答“在什么条件下成立”。
 
-- 将索引分片化后，每个节点只需加载其负责的簇向量
-- 避免了频繁的显存/内存交换
-- **这才是 3.6× 提升的底层动力**
+当前页面不再使用这两个数字作为项目结论。性能结果只有在同一冻结协议下完成重算，并留下配置、机器环境、原始产物与指标文件后，才会重新加入。
 
 ---
 
-## 成果数据
+## 实验系统比单个算法更重要
 
-| 指标 | 数值 | 对比基准 |
-|------|------|---------|
-| 存储减少 | **90%** | 原始 TB 级数据集 |
-| 吞吐量提升 | **3.6×** | SemDeDup 基线 |
-| 覆盖模态 | 3 种 | 文本、图像、音频 |
-| 数据规模 | TB 级 | 亿级样本 |
-| 向量维度 | 512 维 | CLIP 嵌入 |
-| 分片数 | 2000 | Voronoi 单元 |
+研究过程中最容易发生的问题不是代码报错，而是把不同级别的证据混在一起。例如：
+
+- smoke test 只能证明代码能运行，不能证明算法有效；
+- development 结果可以用于诊断，不能冒充 locked holdout；
+- 去重 F1 提升不等于下游模型一定变好；
+- 官方基线缺少权重或推理协议时，应标记为 `UNVERIFIED` 或 `WAIVED`，不能用随机权重补一个数字。
+
+为此，MMdedup 给每次论文级实验保存：
+
+- experiment id、配置与代码版本；
+- 数据 revision、拆分清单与 SHA；
+- 硬件和容器镜像；
+- 逐样本预测及汇总指标；
+- 实验账本和追加式状态记录；
+- `PASS / PARTIAL / NARROW / NEGATIVE / UNVERIFIED` 的结论边界。
+
+正式计算固定在 LAB-2 的 RTX 3090 环境中，Mac 主要保存代码、合同和核心证据镜像。文本、图像和音频使用隔离环境，避免把 CUDA、TensorFlow、PyTorch 与 Java 依赖堆进一个难以复现的容器。
 
 ---
 
-## 学术成果
+## 当前进展与边界
 
-- **VLDB 2026 投稿中**：论文正在审稿阶段
-- **国家发明专利**：已申请，待授权
-- **软件著作权**：已登记
+| 方向 | 当前可以支持的结论 | 仍不能写成的结论 |
+| --- | --- | --- |
+| Text-v2 | 在冻结 peS2o 协议下优于项目旧流程及若干已复现基线 | 所有外部文本语料上的 SOTA |
+| Image I6 | 局部关系判定与删除安全得到改善 | DISC21 大库检索已经全面解决 |
+| Audio A7 | 同协议下明显改善论文原版流程 | 严格优于所有现代音频基线 |
+| Stage 4 | 3,000 条分层标注上，保守规则显著减少 naive union 的误删 | 新数据划分上的下游收益已经闭环 |
+
+新的 A/B/C/D/E 训练清单已经按 3,000 条标注后的规则生成，但旧 LLaVA 训练和 VQAv2 quick evaluation 使用的是旧划分，只能作为诊断记录。正式下游结论仍需在新划分上重训，因此这里没有用去重指标替代训练结果。
+
+论文目前处于 **ICDM 2026 方向的持续修订阶段**。对我来说，这个项目现在最有价值的部分，不只是某个模态的分数，而是逐渐建立了一套不会轻易把“跑通”写成“证明”的实验工作流。
 
 ---
 
-## 链接
+## 项目地址
 
-- [GitHub: xiaoyu-ops/VLDB26](https://github.com/xiaoyu-ops/VLDB26)
+- [GitHub：xiaoyu-ops/MMdedup](https://github.com/xiaoyu-ops/MMdedup)

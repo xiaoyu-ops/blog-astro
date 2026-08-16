@@ -3,14 +3,14 @@ const { url } = Astro;
 const path = url?.pathname || "/";
 ---
 
-<header class="fade-up fixed top-0 left-0 right-0 z-50 bg-[hsl(var(--background))]/80 backdrop-blur-sm">
-  <nav class="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
+<header class="fade-up fixed top-0 left-0 right-0 z-50 overflow-x-clip bg-[hsl(var(--background))]/80 backdrop-blur-sm">
+  <nav class="w-full min-w-0 max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
     <a href="/" class="font-mono text-sm font-medium hover:opacity-70 transition-opacity">
       <span data-lang="zh">吴卓阳</span>
       <span data-lang="en" class="sm:hidden">Z. Wu</span>
       <span data-lang="en" class="hidden sm:inline">Zhuoyang Wu</span>
     </a>
-    <div class="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-[hsl(var(--muted-foreground))] font-mono">
+    <div class="min-w-0 flex items-center gap-1.5 sm:gap-4 text-[0.6875rem] sm:text-sm text-[hsl(var(--muted-foreground))] font-mono">
       <a href="/#about" class="hover:text-[hsl(var(--foreground))] transition-colors">
         <span data-lang="zh">关于</span>
         <span data-lang="en">About</span>

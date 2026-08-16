@@ -1,238 +1,177 @@
 ---
-title: "深信服科技 — AI 算法实习生"
-titleEn: "Sangfor Technologies — AI Algorithm Intern"
-description: "为自进化终端安全 Agent 构建双路径聚类管道，识别罕见攻击模式（Rare TTP）。识别准确率超 70%，生成 2000+ 高价值训练样本。"
-descriptionEn: "Built a dual-path clustering pipeline for a self-evolving endpoint security agent to surface rare attack patterns (Rare TTPs). It achieved over 70% precision and produced more than 2,000 high-value training samples."
+title: "深信服实习：把 10,000 条安全告警压成 680 条待审样本"
+titleEn: "Sangfor Internship: Reducing 10,000 Security Alerts to 680 Review Candidates"
+description: "为终端安全数据构建语义与行为图双维度的增量聚类管道，处理生长告警、簇心更新和运营 review 包交付。"
+descriptionEn: "An incremental clustering pipeline for endpoint-security data, combining semantic and behavior-graph signals with growth-event deduplication and review-package delivery."
 date: "2026-02-01"
 order: 2
 tags:
   - Python
   - 聚类
-  - 安全
-  - AI
+  - 图算法
+  - 安全数据
   - 实习
 tagsEn:
   - Python
   - Clustering
-  - Cybersecurity
-  - AI
+  - Graph Algorithms
+  - Security Data
   - Internship
 ---
 
-## 职位
+## 工作内容
 
-**AI 算法实习生** · 深信服科技 · 2026年2月 – 2026年4月 · 深圳
+**AI 算法实习生 · 深信服科技 · 2026 年 2 月—4 月 · 深圳**
 
-## 项目背景
+当时面对的不是一个已经整理好的分类数据集，而是一批持续增长的终端安全告警。完整数据约 12 万条，其中包含大量重复事件、模板化研判文本和同一事件在不同时间点产生的“生长记录”。如果把它们全部交给运营人员逐条审查，绝大多数时间都会花在相似告警上。
 
-深信服终端安全产品需要持续进化以应对新型攻击。传统基于规则的安全防护无法应对**罕见攻击模式（Rare TTP, Tactics Techniques Procedures）**，而这些正是高级持续性威胁（APT）的典型特征。
+项目目标因此被拆成两件事：
 
-**核心挑战**：
-- 罕见攻击样本极少（正样本稀缺），传统监督学习失效
-- 需要自动发现未知攻击模式，而非依赖人工规则
-- 识别结果需要可解释，供安全运营团队审核
+1. 把相同或高度相似的告警归到一起，选出能够代表每个模式的样本；
+2. 保留与已有模式距离较远的 rare 候选，交给安全运营人员复核。
 
-**解决方案**：构建**双路径聚类管道**，结合语义向量相似性和进程树结构模式，自动识别 Rare TTP，并生成高价值训练样本反哺安全 Agent。
+这里的 `rare` 只表示**值得人工关注的稀有候选**，不是模型已经确认的新型攻击，也不能直接等同于 Rare TTP。
 
 ---
 
-## 系统架构
+## 从原始告警到 review 包
 
-![深信服双路径聚类架构](/images/architecture/sangfor-arch.svg)
+![安全告警双维度增量聚类与运营交付流程](/images/architecture/sangfor-arch.svg)
 
-### 整体流程
+整条管道可以概括为：字段提取 → 语义聚类 → 行为图聚类 → 分数归一化与汇总 → 生长事件后处理 → 代表样本选择 → 原始记录回捞。
 
-```
-终端行为数据（进程树 · API 调用 · 文件操作）
-           │
-           ├──► 路径 A: 语义向量
-           │     · Embedding 编码
-           │     · 基于嵌入的相似性聚类
-           │
-           └──► 路径 B: 进程树 DFS 序列化
-                 · 结构模式匹配
-                 · 保留父子关系和执行顺序
-           │
-           ▼
-    ┌─────────────────┐
-    │   双路径融合层    │
-    │  向量相似度 + 结构匹配 │
-    │  联合评分 → 异常检测  │
-    │  Rare TTP 识别     │
-    └─────────────────┘
-           │
-           ▼
-    输出: 罕见攻击模式标注 + 高价值训练样本
-```
+两条路径并不是把向量简单拼接后训练一个分类器：
+
+- **语义路径**处理 `gptResponse`、`analyseAnswer` 等研判文本，用 SBERT 表示攻击描述；
+- **行为图路径**处理 `treeList` 与 `virtualEdges`，用 Weisfeiler–Lehman Kernel 表示进程树结构；
+- 两侧分别产生簇、相似度和异常程度，汇总阶段再做百分位归一化。
+
+这样既能看“这两条告警说的是不是同一类行为”，也能看“它们的进程结构是不是真的相似”。
 
 ---
 
-## 路径 A: 语义向量聚类
+## 语义路径：先去掉模板，再谈相似度
 
-### 行为 Embedding 编码
+告警文本中有大量固定套话，例如“发现一起……攻击”或“攻击者通过……”。直接编码整段文本时，模型会被这些高频句式主导，不同攻击模式也可能得到很高的余弦相似度。
 
-将终端行为（API 调用序列、文件操作、注册表访问等）编码为固定维度的向量：
+实际处理分成三步：
 
-```python
-# 行为序列编码示例
-def encode_behavior(api_calls, file_ops, registry_ops):
-    # 1. 构建行为词汇表
-    behavior_tokens = api_calls + file_ops + registry_ops
-    
-    # 2. 使用预训练模型编码（或自训练）
-    embedding = behavior_encoder.encode(behavior_tokens)
-    
-    # 3. 聚合为固定长度向量
-    return aggregate_embedding(embedding)
-```
+1. 按优先级从 `gptResponse` 和 `analyseAnswer` 中回退提取有效文本；
+2. 过滤在多数样本中都出现的模板词，保留进程名、安全术语和关键英文 token；
+3. 使用 `paraphrase-multilingual-MiniLM-L12-v2` 生成 384 维向量。
 
-### 相似性聚类
+### 为什么没有沿用 DBSCAN / HDBSCAN
 
-使用 **HDBSCAN** 或 **DBSCAN** 进行密度聚类：
-- 正常行为形成密集簇（高密度区域）
-- 罕见攻击落在稀疏区域（低密度区域）
-- 通过密度阈值自动识别异常点
+早期方案考虑过密度聚类和 Union-Find，但真实数据中出现了明显的链式传递：A 接近 B，B 接近 C，并不代表 A 与 C 足够相似。最终采用簇中心法，每个新样本只与已有簇中心比较，超过 `pattern_threshold` 才加入最相近的簇，否则建立新簇。
 
-```python
-from sklearn.cluster import DBSCAN
-
-# 密度聚类
-clusterer = DBSCAN(eps=0.5, min_samples=10)
-labels = clusterer.fit_predict(behavior_embeddings)
-
-# 标签为 -1 的样本 = 异常点（Rare TTP 候选）
-rare_ttp_candidates = embeddings[labels == -1]
-```
+这仍不是完美方案。875 条小样本实验中，420 条黑样本里出现过一个包含 305 条数据的超大簇，说明凭证窃取、恶意程序等描述在文本空间中仍会重叠。项目因此保留了二级聚类和人工复核，而不是把“成功聚成大簇”当成算法正确。
 
 ---
 
-## 路径 B: 进程树结构匹配
+## 行为图路径：结构信息不能靠 DFS 字符串替代
 
-### DFS 序列化
+每条告警的进程行为由 `treeList` 和 `virtualEdges` 表示。部分数据是嵌套树，如果不先展平，程序会误以为它只有一个根节点，后面的图相似度就失去意义。
 
-将进程树转换为深度优先搜索（DFS）序列，保留结构信息：
+行为图处理包含：
 
-```
-原始进程树:
-  cmd.exe
-  ├── powershell.exe
-  │   ├── net.exe (query user)
-  │   └── reg.exe (query run key)
-  └── explorer.exe
+- 展平嵌套 `treeList`；
+- 按 file path、command line、signature 等字段逐级构造节点标签；
+- 合并父子关系和额外行为边；
+- 使用 WL Kernel 生成图结构表示；
+- 使用完全链接层次聚类，限制簇内最不相似样本的距离。
 
-DFS 序列化:
-  "cmd.exe[powershell.exe[net.exe|reg.exe]|explorer.exe]"
-```
+旧页面写成了“DFS 序列化 + 树编辑距离 / 子树同构”，这并不是最终落地路线，现已删除。
 
-### 结构模式匹配
-
-使用 **树编辑距离（Tree Edit Distance）** 或 **子树同构检测** 衡量进程树相似性：
-
-| 匹配类型 | 方法 | 用途 |
-|---------|------|------|
-| 精确匹配 | 哈希比对 | 已知恶意家族识别 |
-| 近似匹配 | 树编辑距离 | 变种攻击发现 |
-| 子树匹配 | 子树同构 | 攻击阶段识别 |
+图路径也有自己的边界：进程树一旦新增节点，WL 特征就可能发生明显变化。对于随时间不断生长的同一事件，这种敏感性会把同一个 `cgId` 拆成大量图簇。因此图特征适合判断结构差异，但不能直接作为生长事件去重的强信号。
 
 ---
 
-## 双路径融合
+## 两个分数怎样汇总
 
-### 联合评分机制
+语义相似度通常分布在一个较窄的连续区间，图相似度却可能接近二值。如果直接做固定权重平均，某一维很容易因为数值分布不同而主导结果。
 
-将两条路径的评分融合，提高 Rare TTP 识别准确率：
+当前方案分别计算：
 
-$$
-Score_{fusion} = \alpha \cdot Score_{semantic} + (1-\alpha) \cdot Score_{structural}$$
-
-其中：
-- $Score_{semantic}$ = 语义向量路径的异常分数（密度聚类的逆密度）
-- $Score_{structural}$ = 进程树路径的异常分数（结构匹配差异度）
-- $\alpha$ = 融合权重（通过验证集调优，通常 0.6 ~ 0.7）
-
-### 决策逻辑
-
-```python
-def is_rare_ttp(semantic_score, structural_score, threshold=0.8):
-    fusion_score = 0.65 * semantic_score + 0.35 * structural_score
-    
-    # 双路径同时异常 → 高置信度 Rare TTP
-    if semantic_score > threshold and structural_score > threshold:
-        return "HIGH_CONFIDENCE"
-    
-    # 单路径异常 → 中置信度，需人工审核
-    elif fusion_score > threshold:
-        return "MEDIUM_CONFIDENCE"
-    
-    # 正常行为
-    else:
-        return "BENIGN"
+```text
+semantic anomaly = percentile_rank(1 - semantic_similarity)
+graph anomaly    = percentile_rank(1 - graph_similarity)
 ```
 
+汇总后输出的是运营排序信号，而不是攻击概率。典型样本、簇边界样本、rare 候选和标签冲突样本会进入不同的 review 优先级。
+
+这也修正了旧页面里并不存在的 `0.65 × semantic + 0.35 × structural` 固定权重，以及“两个分数都超过 0.8 就确认 Rare TTP”的伪代码。
+
 ---
 
-## 自进化 Agent 闭环
+## 最棘手的问题：同一个事件会一直长
 
-### 训练样本生成
+同一次攻击事件可能在几十毫秒内连续触发多条记录。它们共享 `cgId`，但进程树和研判文本会随着新行为加入不断扩展。若逐条送进聚类：
 
-识别出的 Rare TTP 自动进入训练样本池：
+- 同一事件会占据多个 review 名额；
+- 新节点导致图簇频繁跳变；
+- 运营人员看到的仍然是一组时间上相邻的重复记录。
 
+所以项目在聚类完成后、生成 review 包之前增加 `cgId` 后处理。它依据语义簇跳变、文本变化和时间顺序保留关键 checkpoint，不把每次图结构变化都当成新模式。
+
+在一组 1,118 条生长记录上：
+
+| 策略 | 保留记录 | 结果 |
+| --- | ---: | --- |
+| 把图簇跳变作为强信号 | 993 | 几乎没有压缩，图结构过于敏感 |
+| 以语义变化为主要触发条件 | 240 | 压缩约 78%，仍保留关键阶段 |
+
+这次对比比“换一个更复杂的图模型”更有价值，因为它直接解释了业务数据为什么会重复，以及哪个信号适合做保留决策。
+
+---
+
+## 从全量聚类到增量处理
+
+12 万条告警无法每次都重算完整相似度矩阵。首批数据用于建立语义簇心库和行为图代表库，后续批次只与已有簇心比较：
+
+```text
+batch_0000
+  └─ 全量聚类 → 初始化 semantic / graph centers
+
+batch_0001+
+  └─ 新样本 × 现有簇心 → 归并或建立 candidate center
 ```
-Rare TTP 识别
-    │
-    ├──► 运营团队审核（>80% 合格率）
-    │     │
-    │     ├──► 通过 → 加入训练集
-    │     │
-    │     └──► 拒绝 → 分析原因，优化模型
-    │
-    └──► 定期重训练 Agent
-          │
-          └──► 检测能力提升 → 发现更多 Rare TTP
-```
 
-### 样本质量控制
+新图簇不会立即升级为稳定簇心，而是先进入 candidate 状态，避免一个偶然离群点污染后续批次。每个 checkpoint 会冻结当前结果、执行生长数据后处理，并导出 review 包。
 
-- **运营合格率** > 80%：确保训练样本的准确性
-- **多样性约束**：避免同类攻击过度采样
-- **时间衰减**：旧样本权重逐渐降低，适应攻击演进
+review 包不是简单截取异常分最高的若干行，而是组合：
+
+- 每个稳定簇的中心样本；
+- 簇内边界样本；
+- rare 候选；
+- 标签冲突或需要二次核查的样本。
+
+最后根据 AIID 回到原始 JSONL 回捞完整字段，确保运营拿到的不是被特征工程裁剪后的中间记录。
 
 ---
 
-## 成果数据
+## 已验证结果
 
-| 指标 | 数值 | 说明 |
-|------|------|------|
-| 罕见样本识别准确率 | **>70%** | 正样本极少场景下的识别能力 |
-| 运营合格率 | **>80%** | 通过运营团队审核的比例 |
-| 高价值训练样本生成 | **2,000+** | 用于 Agent 持续进化 |
-| 覆盖终端数 | 企业级 | 深信服终端安全产品部署 |
-| 攻击类型覆盖 | APT / 0-day / 变种木马 | 多种罕见攻击模式 |
+在 12 万条数据的前两个真实批次中，管道完成了 **10,000 条告警 → 680 条代表与待审样本** 的压缩，约减少 93% 的人工审查量。
 
----
+| 验证项 | 结果 |
+| --- | --- |
+| 输入记录 | 10,000 |
+| review 候选 | 680 |
+| AIID 原始记录回捞 | 680 / 680 |
+| 产物闭环 | 聚类结果、去重结果、簇心库、checkpoint review 包均生成 |
 
-## 技术栈
-
-| 技术 | 用途 |
-|------|------|
-| Python | 数据处理、模型训练 |
-| scikit-learn | 密度聚类（DBSCAN / HDBSCAN）|
-| sentence-transformers | 行为序列 Embedding |
-| NetworkX | 进程树结构分析 |
-| pandas / numpy | 数据清洗与特征工程 |
+这 680 条是**运营待审候选**，不是已经审核通过的训练样本。旧页面中的“识别准确率 >70%”“运营合格率 >80%”“生成 2,000+ 高价值训练样本”缺少与当前结果一一对应的验收记录，因此全部移除。
 
 ---
 
-## 实习收获
+## 保密边界与项目收获
 
-1. **工业级 AI 落地经验**：从算法设计到生产部署的完整流程
-2. **安全领域知识**：深入了解终端安全、APT 攻击模式、TTP 框架
-3. **数据驱动思维**：通过指标（准确率、合格率）持续优化系统
-4. **跨团队协作**：与产品、运营、研发团队的高效沟通
+这项工作涉及真实终端安全数据，公开页面不会展示告警正文、客户信息、内部界面截图或私有代码。这里保留的是经过抽象的算法结构、排错过程和能够公开说明的规模结果。
+
+这段实习最重要的收获不是“用聚类发现攻击”，而是学会把算法输出变成运营可以消费的交付物：既要控制 review 数量，又不能把稀有模式在压缩过程中一起删掉；既要支持增量运行，也要保留回溯到原始记录的路径。
 
 ---
 
-## 链接
+## 项目说明
 
-- 实习内容涉及公司机密，GitHub 仓库为私有
-- 如需了解更多，欢迎通过邮件联系
+- 项目源码与原始数据属于公司内部资产，不提供公开仓库。

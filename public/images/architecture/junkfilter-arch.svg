@@ -1,104 +1,81 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" style="background:#0d1117">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 650" role="img" aria-labelledby="title desc">
+  <title id="title">JunkFilter 系统架构</title>
+  <desc id="desc">系统分为 RSS 采集、LLM 评估与用户交互三条链路，Redis Stream 解耦抓取和评估，PostgreSQL 保存订阅、文章、评估结果与偏好。</desc>
   <defs>
-    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#58a6ff;stop-opacity:0.2"/>
-      <stop offset="100%" style="stop-color:#58a6ff;stop-opacity:0.05"/>
-    </linearGradient>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
-    </filter>
-  </defs>
-
-  <!-- Title -->
-  <text x="450" y="35" text-anchor="middle" fill="#e6edf3" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold">JunkFilter 系统架构图</text>
-
-  <!-- RSS Sources -->
-  <rect x="50" y="70" width="120" height="40" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1"/>
-  <text x="110" y="95" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="12">RSS 源 (73个)</text>
-
-  <!-- Arrow -->
-  <path d="M170 90 L210 90" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-  <!-- Go Fetch Layer -->
-  <rect x="220" y="60" width="160" height="60" rx="10" fill="url(#grad1)" stroke="#58a6ff" stroke-width="2" filter="url(#shadow)"/>
-  <text x="300" y="82" text-anchor="middle" fill="#58a6ff" font-family="system-ui" font-size="14" font-weight="bold">Go 抓取层</text>
-  <text x="300" y="100" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">协程池 + 三级去重</text>
-  <text x="300" y="114" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">质量过滤 + Favicon推导</text>
-
-  <!-- Arrow -->
-  <path d="M380 90 L420 90" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-  <!-- Redis Stream -->
-  <rect x="430" y="60" width="140" height="60" rx="10" fill="#21262d" stroke="#a371f7" stroke-width="2" filter="url(#shadow)"/>
-  <text x="500" y="82" text-anchor="middle" fill="#a371f7" font-family="system-ui" font-size="14" font-weight="bold">Redis Stream</text>
-  <text x="500" y="100" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">ingestion_queue</text>
-  <text x="500" y="114" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">消费者组 + 至少一次语义</text>
-
-  <!-- Arrow -->
-  <path d="M570 90 L610 90" stroke="#a371f7" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-  <!-- Python Eval Layer -->
-  <rect x="620" y="60" width="160" height="60" rx="10" fill="url(#grad1)" stroke="#3fb950" stroke-width="2" filter="url(#shadow)"/>
-  <text x="700" y="82" text-anchor="middle" fill="#3fb950" font-family="system-ui" font-size="14" font-weight="bold">Python 评估层</text>
-  <text x="700" y="100" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">LangGraph 状态机</text>
-  <text x="700" y="114" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">自动重试 + 偏好注入</text>
-
-  <!-- Down arrows to storage -->
-  <path d="M700 120 L700 160" stroke="#3fb950" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-  <!-- PostgreSQL -->
-  <rect x="620" y="170" width="160" height="50" rx="8" fill="#21262d" stroke="#f0883e" stroke-width="2" filter="url(#shadow)"/>
-  <text x="700" y="192" text-anchor="middle" fill="#f0883e" font-family="system-ui" font-size="13" font-weight="bold">PostgreSQL</text>
-  <text x="700" y="210" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">content + evaluation + JSONB</text>
-
-  <!-- Left branch: ReAct Agent -->
-  <path d="M620 90 L500 90 L500 200 L420 200" stroke="#3fb950" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-
-  <!-- ReAct Agent -->
-  <rect x="250" y="170" width="160" height="60" rx="10" fill="url(#grad1)" stroke="#f778ba" stroke-width="2" filter="url(#shadow)"/>
-  <text x="330" y="192" text-anchor="middle" fill="#f778ba" font-family="system-ui" font-size="14" font-weight="bold">ReAct Agent</text>
-  <text x="330" y="210" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">自研实现 · 5个工具</text>
-  <text x="330" y="224" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">SSE 流式 + 工具调用可视化</text>
-
-  <!-- Arrow to Frontend -->
-  <path d="M330 230 L330 270" stroke="#f778ba" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-  <!-- Frontend -->
-  <rect x="250" y="280" width="160" height="50" rx="8" fill="#21262d" stroke="#58a6ff" stroke-width="2" filter="url(#shadow)"/>
-  <text x="330" y="302" text-anchor="middle" fill="#58a6ff" font-family="system-ui" font-size="13" font-weight="bold">前端 (Vue3 + Tauri)</text>
-  <text x="330" y="320" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">桌面应用 · 跨平台</text>
-
-  <!-- Right branch: Telegram Bot -->
-  <path d="M780 90 L780 130 L850 130 L850 200" stroke="#3fb950" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-
-  <!-- Telegram Bot -->
-  <rect x="740" y="210" width="140" height="60" rx="10" fill="#21262d" stroke="#2f81f7" stroke-width="2" filter="url(#shadow)"/>
-  <text x="810" y="232" text-anchor="middle" fill="#2f81f7" font-family="system-ui" font-size="14" font-weight="bold">Telegram Bot</text>
-  <text x="810" y="250" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">长轮询 + 任务队列</text>
-  <text x="810" y="264" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">三层防护 + 上下文记忆</text>
-
-  <!-- Arrow to Push -->
-  <path d="M810 270 L810 310" stroke="#2f81f7" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-  <!-- iOS Push -->
-  <rect x="740" y="320" width="140" height="40" rx="8" fill="#21262d" stroke="#3fb950" stroke-width="2" filter="url(#shadow)"/>
-  <text x="810" y="345" text-anchor="middle" fill="#3fb950" font-family="system-ui" font-size="12">iOS 推送通知</text>
-
-  <!-- Legend -->
-  <rect x="50" y="400" width="800" height="160" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-  <text x="70" y="425" fill="#e6edf3" font-family="system-ui" font-size="14" font-weight="bold">核心设计决策</text>
-
-  <text x="70" y="450" fill="#8b949e" font-family="system-ui" font-size="11">• 三级去重: Bloom Filter(L1) → Redis Set(L2) → PostgreSQL UNIQUE(L3) — 99.9% 重复在纳秒级拦截</text>
-  <text x="70" y="470" fill="#8b949e" font-family="system-ui" font-size="11">• 异构语言: Go 做 I/O 密集抓取，Python 做 LLM 评估 — 各取所长</text>
-  <text x="70" y="490" fill="#8b949e" font-family="system-ui" font-size="11">• Redis Stream 解耦: 抓取速率(ms)与评估速率(s)差距 1000 倍，Stream 作弹性缓冲</text>
-  <text x="70" y="510" fill="#8b949e" font-family="system-ui" font-size="11">• 偏好零样本注入: 自然语言描述偏好 → 动态拼入 system prompt → 无需重训练改变评估权重</text>
-  <text x="70" y="530" fill="#8b949e" font-family="system-ui" font-size="11">• SSE 流式: fetch + ReadableStream 手动消费，支持 POST 带 body，实时推送评估结果</text>
-  <text x="70" y="550" fill="#8b949e" font-family="system-ui" font-size="11">• 自研 ReAct: 不依赖 Agent SDK，兼容任意 OpenAI Function Calling 协议，完全控制中间步骤输出</text>
-
-  <!-- Arrow marker -->
-  <defs>
-    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#8b949e"/>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#64748b"/>
     </marker>
+    <style>
+      .title{font:700 24px ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif;fill:#e2e8f0}
+      .lane{font:600 13px ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif;fill:#94a3b8;letter-spacing:.08em}
+      .head{font:650 16px ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif;fill:#f8fafc}
+      .body{font:400 12px ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif;fill:#94a3b8}
+      .label{font:500 11px ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif;fill:#cbd5e1}
+      .box{fill:#111827;stroke:#334155;stroke-width:1.5}
+      .line{fill:none;stroke:#64748b;stroke-width:2;marker-end:url(#arrow)}
+      .dash{fill:none;stroke:#475569;stroke-width:1.5;stroke-dasharray:6 6;marker-end:url(#arrow)}
+    </style>
   </defs>
+  <rect width="1080" height="650" rx="22" fill="#0b1120"/>
+  <text x="44" y="48" class="title">JunkFilter · 从 RSS 到可交互的内容评估</text>
+
+  <rect x="32" y="75" width="1016" height="156" rx="16" fill="#0f172a" stroke="#1e293b"/>
+  <text x="54" y="103" class="lane">01 采集链路</text>
+  <rect x="72" y="126" width="170" height="72" rx="12" class="box"/>
+  <text x="157" y="154" text-anchor="middle" class="head">RSS Sources</text>
+  <text x="157" y="177" text-anchor="middle" class="body">定时抓取 · 来源级间隔</text>
+  <rect x="326" y="116" width="220" height="92" rx="12" fill="#10213a" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="436" y="146" text-anchor="middle" class="head">Go Fetcher</text>
+  <text x="436" y="169" text-anchor="middle" class="body">Worker Pool · 正文清洗</text>
+  <text x="436" y="188" text-anchor="middle" class="body">Bloom → Redis → DB UNIQUE</text>
+  <rect x="646" y="126" width="190" height="72" rx="12" fill="#211734" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="741" y="154" text-anchor="middle" class="head">Redis Stream</text>
+  <text x="741" y="177" text-anchor="middle" class="body">Consumer Group · Pending</text>
+  <path d="M242 162 H326" class="line"/>
+  <path d="M546 162 H646" class="line"/>
+  <text x="590" y="150" text-anchor="middle" class="label">XADD</text>
+
+  <rect x="32" y="247" width="1016" height="156" rx="16" fill="#0f172a" stroke="#1e293b"/>
+  <text x="54" y="275" class="lane">02 评估链路</text>
+  <rect x="326" y="289" width="220" height="82" rx="12" fill="#11281f" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="436" y="318" text-anchor="middle" class="head">Python Consumer</text>
+  <text x="436" y="341" text-anchor="middle" class="body">偏好注入 · 有限重试</text>
+  <text x="436" y="360" text-anchor="middle" class="body">LangGraph 结构化评估</text>
+  <rect x="646" y="289" width="190" height="82" rx="12" fill="#2a1d12" stroke="#fb923c" stroke-width="1.5"/>
+  <text x="741" y="318" text-anchor="middle" class="head">PostgreSQL</text>
+  <text x="741" y="341" text-anchor="middle" class="body">Articles · Evaluations</text>
+  <text x="741" y="360" text-anchor="middle" class="body">Preferences · Notifications</text>
+  <path d="M646 191 C600 225 570 274 546 319" class="line"/>
+  <text x="597" y="257" class="label">XREADGROUP</text>
+  <path d="M546 330 H646" class="line"/>
+  <text x="592" y="318" text-anchor="middle" class="label">persist</text>
+  <path d="M720 289 C695 244 681 224 707 199" class="dash"/>
+  <text x="741" y="246" class="label">ACK after persist</text>
+
+  <rect x="32" y="419" width="1016" height="198" rx="16" fill="#0f172a" stroke="#1e293b"/>
+  <text x="54" y="447" class="lane">03 交互与通知</text>
+  <rect x="72" y="477" width="170" height="92" rx="12" fill="#10213a" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="157" y="506" text-anchor="middle" class="head">Vue Web / Tauri</text>
+  <text x="157" y="529" text-anchor="middle" class="body">阅读器 · 配置中心</text>
+  <text x="157" y="548" text-anchor="middle" class="body">SSE 工具调用过程</text>
+  <rect x="326" y="477" width="220" height="92" rx="12" fill="#2b1830" stroke="#f472b6" stroke-width="1.5"/>
+  <text x="436" y="506" text-anchor="middle" class="head">ReAct Agent API</text>
+  <text x="436" y="529" text-anchor="middle" class="body">查询 · 订阅管理 · 偏好更新</text>
+  <text x="436" y="548" text-anchor="middle" class="body">OpenAI Function Calling</text>
+  <rect x="646" y="477" width="190" height="92" rx="12" fill="#142438" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="741" y="506" text-anchor="middle" class="head">Telegram Bot</text>
+  <text x="741" y="529" text-anchor="middle" class="body">长轮询 · 用户队列</text>
+  <text x="741" y="548" text-anchor="middle" class="body">查询与主动推送</text>
+  <path d="M242 523 H326" class="line"/>
+  <text x="284" y="511" text-anchor="middle" class="label">POST + SSE</text>
+  <path d="M646 523 H546" class="line"/>
+  <path d="M436 477 C470 420 585 397 671 371" class="line"/>
+  <path d="M741 477 V371" class="dash"/>
+  <text x="755" y="427" class="label">通知</text>
+  <rect x="880" y="477" width="130" height="92" rx="12" class="box"/>
+  <text x="945" y="506" text-anchor="middle" class="head">LLM API</text>
+  <text x="945" y="529" text-anchor="middle" class="body">兼容接口</text>
+  <text x="945" y="548" text-anchor="middle" class="body">流式输出</text>
+  <path d="M546 502 C680 456 798 456 880 502" class="line"/>
+  <path d="M546 336 C710 394 823 429 892 477" class="dash"/>
 </svg>

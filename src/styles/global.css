@@ -213,9 +213,11 @@
   }
 
   .project-content {
+    min-width: 0;
     color: hsl(var(--muted-foreground));
     font-size: 0.9375rem;
     line-height: 1.9;
+    overflow-wrap: anywhere;
   }
   .project-content > * + * {
     margin-top: 1rem;
@@ -342,10 +344,24 @@
     color: hsl(var(--muted-foreground));
     font-style: italic;
   }
+
+  @media (max-width: 639px) {
+    .project-content img[src*="/images/architecture/"] {
+      min-height: 0;
+      height: auto;
+    }
+  }
 }
 
 html {
   scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Grid pattern SVG */

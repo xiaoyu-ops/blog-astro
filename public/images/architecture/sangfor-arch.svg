@@ -1,68 +1,84 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" style="background:#0d1117">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 690" role="img" aria-labelledby="title desc">
+  <title id="title">安全告警双维度增量聚类管道</title>
+  <desc id="desc">终端告警分别进入语义和行为图路径，结果经过百分位归一化、生长事件后处理与代表样本选择，形成可回溯原始记录的运营 review 包。</desc>
   <defs>
-    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#58a6ff;stop-opacity:0.2"/>
-      <stop offset="100%" style="stop-color:#58a6ff;stop-opacity:0.05"/>
-    </linearGradient>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
-    </filter>
-    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#8b949e"/>
-    </marker>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#64748b"/></marker>
+    <style>
+      .title{font:700 24px ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif;fill:#e2e8f0}
+      .step{font:600 12px ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif;fill:#94a3b8;letter-spacing:.08em}
+      .head{font:650 16px ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif;fill:#f8fafc}
+      .body{font:400 12px ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif;fill:#94a3b8}
+      .small{font:500 11px ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif;fill:#cbd5e1}
+      .box{fill:#111827;stroke:#334155;stroke-width:1.5}
+      .line{fill:none;stroke:#64748b;stroke-width:2;marker-end:url(#arrow)}
+      .dash{fill:none;stroke:#64748b;stroke-width:1.5;stroke-dasharray:6 6;marker-end:url(#arrow)}
+    </style>
   </defs>
+  <rect width="1120" height="690" rx="22" fill="#0b1120"/>
+  <text x="42" y="48" class="title">安全告警数据 · 双维度聚类与运营交付</text>
 
-  <!-- Title -->
-  <text x="450" y="35" text-anchor="middle" fill="#e6edf3" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold">深信服 — 双路径聚类管道</text>
+  <rect x="42" y="91" width="198" height="94" rx="14" class="box"/>
+  <text x="141" y="121" text-anchor="middle" class="head">Raw Alerts</text>
+  <text x="141" y="145" text-anchor="middle" class="body">研判文本 · treeList</text>
+  <text x="141" y="165" text-anchor="middle" class="body">virtualEdges · cgId</text>
 
-  <!-- Terminal Data -->
-  <rect x="50" y="70" width="140" height="50" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1"/>
-  <text x="120" y="90" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="11">终端行为数据</text>
-  <text x="120" y="108" text-anchor="middle" fill="#6e7681" font-family="system-ui" font-size="9">进程树 · API 调用 · 文件操作</text>
+  <rect x="300" y="78" width="332" height="148" rx="16" fill="#10213a" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="324" y="107" class="step">SEMANTIC PATH</text>
+  <text x="324" y="140" class="head">研判文本 → SBERT → 簇中心</text>
+  <text x="324" y="166" class="body">字段回退 · 模板词过滤 · 384d embedding</text>
+  <text x="324" y="190" class="body">相似簇 / 边界样本 / rare candidate</text>
+  <rect x="324" y="207" width="158" height="7" rx="3.5" fill="#38bdf8"/>
 
-  <!-- Arrow -->
-  <path d="M190 95 L230 95" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <rect x="300" y="260" width="332" height="148" rx="16" fill="#211734" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="324" y="289" class="step">BEHAVIOR GRAPH PATH</text>
+  <text x="324" y="322" class="head">进程树 → WL Kernel → 完全链接</text>
+  <text x="324" y="348" class="body">嵌套树展平 · 节点标签降级 · 行为边</text>
+  <text x="324" y="372" class="body">结构相似簇 / graph candidate</text>
+  <rect x="324" y="389" width="158" height="7" rx="3.5" fill="#a78bfa"/>
 
-  <!-- Path A: Semantic Vector -->
-  <rect x="240" y="60" width="160" height="70" rx="10" fill="url(#grad1)" stroke="#58a6ff" stroke-width="2" filter="url(#shadow)"/>
-  <text x="320" y="82" text-anchor="middle" fill="#58a6ff" font-family="system-ui" font-size="14" font-weight="bold">路径 A: 语义向量</text>
-  <text x="320" y="100" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">Embedding 编码</text>
-  <text x="320" y="116" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">基于嵌入的相似性聚类</text>
+  <path d="M240 138 C273 138 268 152 300 152" class="line"/>
+  <path d="M240 138 C273 138 268 334 300 334" class="line"/>
 
-  <!-- Path B: Process Tree -->
-  <rect x="240" y="150" width="160" height="70" rx="10" fill="url(#grad1)" stroke="#a371f7" stroke-width="2" filter="url(#shadow)"/>
-  <text x="320" y="172" text-anchor="middle" fill="#a371f7" font-family="system-ui" font-size="14" font-weight="bold">路径 B: 进程树</text>
-  <text x="320" y="190" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">DFS 序列化</text>
-  <text x="320" y="206" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">结构模式匹配</text>
+  <rect x="692" y="133" width="198" height="148" rx="16" fill="#11281f" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="716" y="162" class="step">FUSION</text>
+  <text x="791" y="196" text-anchor="middle" class="head">百分位归一化</text>
+  <text x="791" y="222" text-anchor="middle" class="body">semantic anomaly</text>
+  <text x="791" y="243" text-anchor="middle" class="body">graph anomaly</text>
+  <text x="791" y="264" text-anchor="middle" class="body">review priority</text>
+  <path d="M632 152 C662 152 666 188 692 188" class="line"/>
+  <path d="M632 334 C676 334 658 242 692 242" class="line"/>
 
-  <!-- Arrows to Fusion -->
-  <path d="M400 95 L440 95 L440 130 L480 130" stroke="#58a6ff" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-  <path d="M400 185 L440 185 L440 160 L480 160" stroke="#a371f7" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <rect x="936" y="133" width="142" height="148" rx="16" fill="#2b2012" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="1007" y="163" text-anchor="middle" class="step">CENTERS</text>
+  <text x="1007" y="197" text-anchor="middle" class="head">增量簇心库</text>
+  <text x="1007" y="223" text-anchor="middle" class="body">stable</text>
+  <text x="1007" y="244" text-anchor="middle" class="body">candidate</text>
+  <text x="1007" y="265" text-anchor="middle" class="body">batch checkpoint</text>
+  <path d="M890 207 H936" class="line"/>
+  <path d="M1007 281 V327 C1007 343 976 343 976 315 V281" class="dash"/>
 
-  <!-- Fusion Layer -->
-  <rect x="490" y="100" width="180" height="90" rx="10" fill="url(#grad1)" stroke="#f0883e" stroke-width="2" filter="url(#shadow)"/>
-  <text x="580" y="125" text-anchor="middle" fill="#f0883e" font-family="system-ui" font-size="14" font-weight="bold">双路径融合层</text>
-  <text x="580" y="145" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">向量相似度 + 结构匹配</text>
-  <text x="580" y="162" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">联合评分 → 异常检测</text>
-  <text x="580" y="179" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">Rare TTP 识别</text>
+  <rect x="42" y="468" width="250" height="150" rx="16" fill="#0f172a" stroke="#1e293b"/>
+  <text x="66" y="498" class="step">GROWTH EVENT CLEANUP</text>
+  <text x="66" y="532" class="head">cgId 生长数据后处理</text>
+  <text x="66" y="558" class="body">按时间保留关键 checkpoint</text>
+  <text x="66" y="581" class="body">语义变化为主，图变化为辅</text>
+  <text x="66" y="604" class="small">1,118 → 240（验证集）</text>
 
-  <!-- Arrow to Output -->
-  <path d="M670 145 L710 145" stroke="#f0883e" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <rect x="350" y="468" width="308" height="150" rx="16" fill="#0f172a" stroke="#1e293b"/>
+  <text x="374" y="498" class="step">REPRESENTATIVE SELECTION</text>
+  <text x="374" y="532" class="head">选出真正值得看的样本</text>
+  <text x="374" y="558" class="body">簇心 · 边界 · rare · 标签冲突</text>
+  <text x="374" y="581" class="body">同一 AIID 去重，回捞完整原始字段</text>
+  <text x="374" y="604" class="small">不是训练样本自动入库</text>
 
-  <!-- Output -->
-  <rect x="720" y="110" width="160" height="70" rx="10" fill="#21262d" stroke="#3fb950" stroke-width="2" filter="url(#shadow)"/>
-  <text x="800" y="135" text-anchor="middle" fill="#3fb950" font-family="system-ui" font-size="14" font-weight="bold">输出结果</text>
-  <text x="800" y="155" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">罕见攻击模式标注</text>
-  <text x="800" y="172" text-anchor="middle" fill="#8b949e" font-family="system-ui" font-size="10">高价值训练样本</text>
+  <rect x="716" y="468" width="362" height="150" rx="16" fill="#171a2f" stroke="#818cf8" stroke-width="1.5"/>
+  <text x="740" y="498" class="step">OPERATIONS REVIEW PACKAGE</text>
+  <text x="740" y="532" class="head">10,000 alerts → 680 candidates</text>
+  <text x="740" y="558" class="body">聚类结果 · 去重结果 · 簇心库</text>
+  <text x="740" y="581" class="body">checkpoint JSONL · AIID 回溯 680 / 680</text>
+  <text x="740" y="604" class="small">由运营人员复核，不自动确认攻击类型</text>
 
-  <!-- Legend -->
-  <rect x="50" y="260" width="800" height="180" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-  <text x="70" y="285" fill="#e6edf3" font-family="system-ui" font-size="14" font-weight="bold">核心设计决策</text>
-
-  <text x="70" y="310" fill="#8b949e" font-family="system-ui" font-size="11">• 双路径设计: 语义向量捕获行为意图相似性，进程树结构捕获执行路径相似性，两者互补</text>
-  <text x="70" y="330" fill="#8b949e" font-family="system-ui" font-size="11">• DFS 序列化: 将进程树转换为序列表示，保留父子关系和执行顺序，适用于结构匹配</text>
-  <text x="70" y="350" fill="#8b949e" font-family="system-ui" font-size="11">• Rare TTP 识别: 正常行为形成密集簇，罕见攻击模式落在稀疏区域，通过密度检测发现</text>
-  <text x="70" y="370" fill="#8b949e" font-family="system-ui" font-size="11">• 自进化 Agent: 识别出的 Rare TTP 自动加入训练集，持续提升终端安全 Agent 的检测能力</text>
-  <text x="70" y="390" fill="#8b949e" font-family="system-ui" font-size="11">• 运营合格: 识别结果经过运营团队验证，&gt;80% 合格率确保训练样本质量</text>
-  <text x="70" y="410" fill="#8b949e" font-family="system-ui" font-size="11">• 准确率 &gt;70%: 在罕见样本（正样本极少）场景下，通过双路径融合实现较高的识别准确率</text>
+  <path d="M791 281 C791 410 198 410 167 468" class="line"/>
+  <path d="M292 543 H350" class="line"/>
+  <path d="M658 543 H716" class="line"/>
 </svg>
