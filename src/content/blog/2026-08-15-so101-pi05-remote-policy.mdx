@@ -1,0 +1,190 @@
+---
+title: "把 π0.5 接上真机：SO-101 的远程推理与动作交接"
+titleEn: "Running π0.5 on a Real SO-101: Remote Inference and Action Handoff"
+description: "记录从 50 条真机示教、RTX 3090 远程推理，到三种动作交接路线对比的 π0.5 真机闭环。"
+descriptionEn: "A practical record of 50 real-robot demonstrations, remote π0.5 inference on an RTX 3090, and three action-handoff strategies."
+date: "2026-08-15"
+category: "technical"
+bilingual: true
+draft: false
+tags:
+  - Embodied AI
+  - VLA
+  - LeRobot
+  - SO-101
+  - pi0.5
+---
+
+import BlogVideo from "../../components/BlogVideo.astro";
+
+<section data-lang="zh">
+
+[π0.5](https://www.physicalintelligence.company/download/pi05.pdf) 是 Physical Intelligence 提出的视觉—语言—动作（VLA）模型。它把相机画面、自然语言指令和机器人状态放进同一个策略，直接预测机器人接下来该怎样动作。相比上一篇使用的 ACT，π0.5 不只学习画面到动作的映射，还把语言作为任务条件，希望同一个模型能处理更多机器人和场景。
+
+**这次没有测试 π0.5 的通用能力，而是先把它用在一个固定任务上：读取腕部相机画面、SO-101 的关节状态和一句任务指令，再预测接下来的一段关节动作。模型变大以后，问题也从“能不能学会”变成了“远端模型怎样持续控制本地真机”。**
+
+任务仍然没变：让 SO-101 把白色方框里的蓝色胶带卷抓起来，搬到旁边的白色盒子里。这样做是为了保留 ACT 的参照，不把换模型、换任务和换场景三个变量混在一起。
+
+这一轮真正跑通的不是一个离线 Demo，而是一条跨机器的真机闭环：Home Linux 负责相机和机械臂，LAB-2 上的 RTX 3090 负责 π0.5 推理，两端通过网络交换观测和动作。
+
+## 先把数据扩到 50 条
+
+ACT 的 9 条示教证明了链路可行，但直接拿来训练 π0.5 还是太少。第二批数据扩到 **50 Episodes、约 18,000 Frames**，仍然只做蓝色胶带到白色盒子的单任务，指令固定为：
+
+`Pick up the blue tape roll and place it in the white tray.`
+
+采集时没有刻意追求复杂语言，而是先保证动作边界、物体复位、腕部画面和任务文本稳定。50 条轨迹按不同起始区域分组，避免胶带每次都出现在完全相同的位置。模型最终使用 30K Checkpoint；这里的“语言条件”只代表策略收到了任务句子，不等于已经证明它能理解任意新指令。
+
+## 为什么要做远程 Policy Server
+
+机械臂所在的 Home Linux 负责 USB 相机、串口和 30 Hz 控制，但不适合同时承担 π0.5 推理。于是把系统拆成两部分：
+
+**机器人端：采集图像和关节状态 → 推理端：RTX 3090 生成动作块 → 机器人端：按节拍执行并继续上传新观测。**
+
+正式下发动作之前，先跑 Shadow Mode。它会把真实观测发送到 3090，打印预测动作和当前状态的差值，但不会给机械臂发送任何指令。只有图像尺寸、关节顺序、动作范围和网络往返都通过检查，才进入短时真机测试。
+
+8 月 14 日第一次完整跑通时，真机连续执行了 **360 个动作周期**，控制循环稳定在 **30 Hz**，`deadline_misses=0`。图像上传平均 **103 ms**、P95 为 **149 ms**，3090 单次推理约 **400–430 ms**。20° 的单周期关节保护在 360 帧中修正了 11 帧异常目标。
+
+数字看上去很稳，视频里的机械臂却仍有明显顿挫。这件事很关键：**30 Hz 没有丢 Deadline，不代表动作本身连续。**
+
+## 问题出在动作块怎样交接
+
+π0.5 每次返回的是一段未来动作，而不是一个孤立控制点。新动作块到达时，旧动作块还可能没有执行完。怎样交接，直接决定机械臂是停下来等、突然跳到新目标，还是在两段预测之间做融合。
+
+最后保留了三条路线做同场景对比：
+
+| 路线 | 交接方式 | 本次观测 | 主要现象 |
+| --- | --- | --- | --- |
+| 非 RTC | 同步等待下一动作块 | 1 次成功 | 动作跳变最小，但等待新块时会停顿，实测 21.94 Hz |
+| 冻结 RTC | `latest_only` | 1 次成功、1 次失败 | 保持 30 Hz，但肩、肘目标在交接处出现较大跳变 |
+| 加权 RTC | `weighted_average` | 1 次成功、1 次失败 | 能持续执行，但这组实验里没有证明比冻结基线更稳 |
+
+这里不能把 1/1 或 1/2 写成“成功率”。样本只有五轮，只能说明这五次录像里发生了什么。两次失败都出现在接触和夹紧阶段；只要胶带被可靠夹住，后面的搬运和释放都能完成。
+
+先看非 RTC 的一次完整成功。它会等待新的动作块，因此节拍不如 RTC 连续，但这组观测里的关节跳变最小。
+
+</section>
+
+<section data-lang="en">
+
+[π0.5](https://www.physicalintelligence.company/download/pi05.pdf) is a vision-language-action (VLA) model developed by Physical Intelligence. It places camera images, natural-language instructions and robot state inside one policy, then directly predicts what the robot should do next. Compared with the ACT baseline in the previous article, π0.5 also uses language as a task condition and is designed to work across a broader range of robots and scenes.
+
+**This experiment did not test the model's general capabilities. It first applied π0.5 to one fixed task, using the wrist-camera image, SO-101 joint state and a single instruction to predict a chunk of future actions. Once the model became larger, the main question shifted from “can it learn?” to “how can a remote model keep controlling a local robot?”**
+
+The task stayed unchanged: SO-101 had to pick up the blue tape roll inside the marked square and place it in the nearby white box. Keeping the same task preserved the ACT baseline instead of changing the model, task and scene at once.
+
+This was not an offline demo. It was a closed loop across two machines: Home Linux handled the wrist camera and robot, while the RTX 3090 on LAB-2 ran π0.5 inference. Observations and action chunks travelled between them over the network.
+
+## Expanding the dataset to 50 demonstrations
+
+The nine ACT demonstrations proved that the pipeline worked, but they were too few for the next experiment. The π0.5 dataset was expanded to **50 episodes and about 18,000 frames**, still focused on the single blue-tape-to-white-box task. The instruction was fixed as:
+
+`Pick up the blue tape roll and place it in the white tray.`
+
+The priority was not linguistic variety. Episode boundaries, object resets, wrist images and task text had to remain consistent. The 50 trajectories were grouped across different starting regions so that the tape did not always appear at exactly the same position. The deployed policy used the 30K checkpoint. “Language-conditioned” here only means that the task sentence was provided to the policy; it does not demonstrate open-ended instruction following.
+
+## Why the policy ran on a remote server
+
+Home Linux handled the USB camera, serial devices and 30 Hz control loop, but it was not the right place to run π0.5 inference. The system was therefore split into two parts:
+
+**Robot endpoint: capture image and joint state → inference endpoint: generate an action chunk on the RTX 3090 → robot endpoint: execute it on schedule and upload the next observation.**
+
+Before any action was sent, Shadow Mode forwarded real observations to the 3090 and printed the difference between the predicted actions and current state without commanding the arm. Real-robot tests started only after the image shape, joint order, action range and network path had passed inspection.
+
+The first complete rollout on August 14 executed **360 action cycles** at a stable **30 Hz** with `deadline_misses=0`. Image upload averaged **103 ms**, with a P95 of **149 ms**, while one policy inference took roughly **400–430 ms**. A 20-degree per-cycle joint guard corrected 11 of the 360 commanded frames.
+
+The timing numbers looked stable, but the arm still showed visible jerkiness. That distinction mattered: **meeting every 30 Hz deadline did not guarantee continuous action targets.**
+
+## The real issue was action-chunk handoff
+
+π0.5 returns a sequence of future actions rather than one isolated control point. When a new chunk arrives, the previous chunk may still be executing. The handoff policy determines whether the arm pauses, jumps to a new target or blends two predictions.
+
+Three routes were kept for a same-scene comparison:
+
+| Route | Handoff | This observation set | Main behavior |
+| --- | --- | --- | --- |
+| Non-RTC | Wait synchronously for the next chunk | 1 success | Smallest target jumps, but pauses reduced the measured rate to 21.94 Hz |
+| Frozen RTC | `latest_only` | 1 success, 1 failure | Maintained 30 Hz, but shoulder and elbow targets jumped at handoff |
+| Weighted RTC | `weighted_average` | 1 success, 1 failure | Kept running continuously, but did not outperform the frozen baseline here |
+
+These are five recorded trials, not statistically meaningful success rates. Both failures happened during contact and closure. Once the tape was securely grasped, carrying and release completed normally.
+
+The first video shows a complete non-RTC success. It waits for the next action chunk, so the timing is less continuous than RTC, but it produced the smallest joint jumps in this observation set.
+
+</section>
+
+<BlogVideo
+  src="/videos/2026-08-15-so101-pi05-remote-policy/non-rtc-success.mp4"
+  poster="/images/blog/2026-08-15-so101-pi05-remote-policy/non-rtc-success-contact-sheet.jpg"
+  title="π0.5 非 RTC 同步分块：一次完整抓放"
+  caption="非 RTC 路线的一次成功：接近、夹取、搬运并释放。动作较稳，但等待新动作块时会出现停顿。"
+  captionEn="A successful non-RTC rollout: approach, grasp, carry and release. Motion was relatively stable, with pauses while waiting for new chunks."
+/>
+
+<section data-lang="zh">
+
+冻结 RTC 能把执行频率保持在 30 Hz。下面是其中一次成功，但同样参数的另一轮没有可靠夹住胶带。逐帧回看后，失败不是发生在搬运途中，而是接触阶段就已经错过了夹持位置。
+
+</section>
+
+<section data-lang="en">
+
+Frozen RTC maintained a 30 Hz execution rate. The next video is one successful trial, while another trial with the same route failed to secure the tape. Frame-by-frame review showed that the failure happened at contact, not during transport.
+
+</section>
+
+<BlogVideo
+  src="/videos/2026-08-15-so101-pi05-remote-policy/frozen-rtc-success.mp4"
+  poster="/images/blog/2026-08-15-so101-pi05-remote-policy/frozen-rtc-failure-contact-sheet.jpg"
+  title="冻结 RTC：同一路线既有成功，也有接触失败"
+  caption="视频为成功轮；封面时间片来自同路线的一次失败轮，用来保留实验边界。"
+  captionEn="The video is the successful trial; the poster frames come from a failed trial on the same route to preserve the experimental boundary."
+/>
+
+<section data-lang="zh">
+
+加权 RTC 的想法是把新旧动作块做融合，避免整段切换。但在这组数据里，它仍出现了较大的单周期目标变化，也有一轮在夹紧前失败。一次成功录像不能证明加权就更好。
+
+</section>
+
+<section data-lang="en">
+
+Weighted RTC blended old and new chunks to avoid an abrupt replacement. In this observation set, however, it still produced large one-cycle target changes and failed once before secure closure. One successful video was not enough to show that weighting was better.
+
+</section>
+
+<BlogVideo
+  src="/videos/2026-08-15-so101-pi05-remote-policy/weighted-rtc-success.mp4"
+  poster="/images/blog/2026-08-15-so101-pi05-remote-policy/weighted-rtc-failure-contact-sheet.jpg"
+  title="加权 RTC：连续执行不等于动作更平滑"
+  caption="加权路线的一次成功；同路线也出现过接触失败，因此暂未替换冻结 RTC 基线。"
+  captionEn="One successful weighted-RTC rollout. A contact failure also occurred, so this route did not replace the frozen RTC baseline."
+/>
+
+<section data-lang="zh">
+
+## 网络不是唯一原因
+
+把日志和视频对齐后，三条路线暴露的是两类不同问题。非 RTC 的不连续主要来自“一个动作块执行完后等待下一块”；RTC 的抽动则更多来自“新预测块的目标和正在执行的目标差得太远”。前者是等待，后者是跳变，不能用同一个补丁解决。
+
+冻结 RTC 的成功配置因此被保留下来作为可回退基线，而不是继续覆盖。下一步要比较的是肩、肘单周期变化、方向反转、目标—实测跟踪误差和限幅次数，同时继续记录任务有没有真的完成。只看动作顺滑、不看抓取成功，同样会把问题带偏。
+
+到这里，π0.5 已经完成了蓝色胶带到白色盒子的远程真机闭环，但“跑通”和“足够丝滑”仍是两件事。后者需要更稳定的动作交接，也需要在仿真里把物体、夹爪和接触关系看得更清楚。这也是下一篇开始搭 Isaac Sim 数字孪生的原因。
+
+和 ACT 那篇不同，π0.5 到这里还不能算收尾。目前只能说第一版远程真机闭环已经跑通，动作平滑度、不同起点下的稳定性、重复测试以及语言条件下的泛化都还没有充分验证。后续还会继续补充数据、优化动作交接并扩大测试轮次，新的结果也会继续记录在这个项目里。
+
+</section>
+
+<section data-lang="en">
+
+## The network was not the only cause
+
+Aligning logs with video revealed two different discontinuities. Non-RTC motion paused because one chunk finished before the next arrived. RTC motion jerked because a new predicted target could be far from the action already being executed. One problem was waiting; the other was target discontinuity. They required different fixes.
+
+The successful frozen-RTC configuration was preserved as a rollback baseline instead of being overwritten. The next comparison needs to track per-cycle shoulder and elbow change, direction reversals, target-to-measured tracking error and safety clamps, while still recording whether the task actually succeeds. Smooth motion without a reliable grasp would not be an improvement.
+
+At this point, π0.5 had completed the remote real-robot loop from blue tape to white box. But “working” and “smooth enough” were still separate milestones. The latter needs a better action handoff and a clearer view of the object, gripper and contact geometry. That is where the Isaac Sim digital-twin work in the next article begins.
+
+Unlike the ACT work, the π0.5 project is not finished here. The current result only shows that the first remote real-robot loop can run. Motion smoothness, stability across starting positions, repeated evaluation and generalization under language conditioning still need substantially more testing. The next stage will add data, improve action handoff and expand the evaluation, with new results recorded as the project continues.
+
+</section>
