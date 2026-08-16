@@ -298,7 +298,7 @@
     border-radius: 0;
     background: transparent;
     padding: 0;
-    color: hsl(var(--foreground));
+    color: inherit;
     font-size: 0.78rem;
   }
   .project-content img {
