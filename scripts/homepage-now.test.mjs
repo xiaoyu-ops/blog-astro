@@ -7,7 +7,7 @@ import test from "node:test";
 
 const root = new URL("../", import.meta.url);
 
-test("keeps the date-driven now and archive section wired up", async () => {
+test("keeps current-work data commands independent from the homepage", async () => {
   const [homepage, items, packageJson, contentReadme, script] = await Promise.all([
     readFile(new URL("src/pages/index.astro", root), "utf8"),
     readFile(new URL("src/data/now.json", root), "utf8"),
@@ -19,18 +19,8 @@ test("keeps the date-driven now and archive section wired up", async () => {
   const parsedItems = JSON.parse(items);
   assert.equal(parsedItems.length, 3);
   assert.ok(parsedItems.every((item) => /^\d{4}-\d{2}-\d{2}$/.test(item.startedAt)));
-  assert.match(homepage, /data-now-item/);
-  assert.match(homepage, /data-now-progress/);
-  assert.match(homepage, /data-now-archive-list/);
-  assert.match(homepage, /todayDay >= deadlineDay/);
-  assert.match(homepage, /const elapsedDays = Math\.max\(0, Math\.min\(totalDays, todayDay - startedDay\)\)/);
-  assert.match(homepage, /const progressRatio = elapsedDays \/ totalDays/);
-  assert.match(homepage, /--progress/);
-  assert.match(homepage, /daysUntilStart === 1 \? "明天开始"/);
-  assert.match(homepage, /daysUntilStart === 1 \? "Starts tomorrow"/);
-  assert.match(homepage, /linear-gradient\(90deg, hsl\(198 82% 48%\), hsl\(253 76% 63%\)\)/);
-  assert.match(homepage, /animation: now-flow 1\.9s cubic-bezier\(0\.16, 1, 0\.3, 1\) infinite/);
-  assert.match(homepage, /prefers-reduced-motion: reduce/);
+  assert.doesNotMatch(homepage, /<aside id="now"|now-widget|data-now-|<LabStatusRow|nowItems/);
+  assert.match(contentReadme, /首页不再显示 NOW 卡片/);
 
   const scripts = JSON.parse(packageJson).scripts;
   assert.equal(scripts["now:add"], "node scripts/now.mjs add");

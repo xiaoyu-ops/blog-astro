@@ -5,46 +5,6 @@ import test from "node:test";
 const root = new URL("../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
 
-test("keeps the LAB-2 row first, locally scrollable, and separate from archive", async () => {
-  const [homepage, row, client] = await Promise.all([
-    read("src/pages/index.astro"),
-    read("src/components/LabStatusRow.astro"),
-    read("src/lib/lab-status-client.ts"),
-  ]);
-
-  const rowPosition = homepage.indexOf("<LabStatusRow");
-  const nowItemPosition = homepage.indexOf("{nowItems.map");
-  const archivePosition = homepage.indexOf('<details class="now-archive"');
-  const scrollEndPosition = homepage.indexOf("</div>\n\n        <details", rowPosition);
-
-  assert.ok(rowPosition > 0 && rowPosition < nowItemPosition);
-  assert.ok(scrollEndPosition > nowItemPosition && archivePosition > scrollEndPosition);
-  assert.match(homepage, /data-now-scroll/);
-  assert.match(homepage, /max-height: 10\.75rem/);
-  assert.match(homepage, /max-height: 12rem/);
-  assert.match(homepage, /overscroll-behavior-y: contain/);
-  assert.match(homepage, /tabindex="0"/);
-  assert.match(homepage, /ResizeObserver/);
-
-  assert.match(row, /href="\/lab-status\/"/);
-  assert.match(row, /data-lab-status-root/);
-  assert.match(row, /data-lab-state-zh/);
-  assert.match(row, /data-lab-summary-en/);
-  assert.match(row, /prefers-reduced-motion: reduce/);
-
-  assert.match(client, /window\.setInterval\(\(\) => void refresh\(\), 30_000\)/);
-  assert.match(client, /window\.addEventListener\("focus"/);
-  assert.match(client, /visibilitychange/);
-  assert.match(client, /controller\.abort\(\), 5_000/);
-  assert.match(client, /observedAt <= 0/);
-  assert.match(client, /fresh: \{ zh: "在线", en: "LIVE" \}/);
-  assert.match(client, /stale: \{ zh: "数据延迟", en: "STALE" \}/);
-  assert.match(client, /offline: \{ zh: "未上报", en: "OFFLINE" \}/);
-  assert.match(client, /unknown: \{ zh: "暂不可用", en: "UNKNOWN" \}/);
-  assert.match(client, /未收到实验状态/);
-  assert.match(client, /实验状态未同步/);
-});
-
 test("detail page exposes resources, health, and exactly 60 heartbeat cells", async () => {
   const [page, detail, client] = await Promise.all([
     read("src/pages/lab-status.astro"),
