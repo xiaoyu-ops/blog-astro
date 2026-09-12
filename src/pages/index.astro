@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
+import HomeMascot from "../components/HomeMascot.astro";
 import { getCollection } from "astro:content";
 
 const posts = (await getCollection("blog")).filter((post) => import.meta.env.DEV || !post.data.draft);
@@ -47,6 +48,7 @@ const projectBeams = [
 
 <Layout title="Zhuoyang Wu" description="吴卓阳 — 具身智能、AI Agent、数据系统。中山大学本科生。">
   <Header />
+  <HomeMascot />
 
   <!-- Hero -->
   <section class="flex flex-col px-4 max-w-3xl mx-auto pt-24 md:pt-28 pb-8 overflow-x-clip">

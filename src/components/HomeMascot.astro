@@ -1,0 +1,266 @@
+---
+const poses = ["idle", "talking", "working", "confirm", "thinking"] as const;
+---
+
+<aside class="home-mascot" data-home-mascot>
+  <div class="home-mascot-note" data-mascot-note aria-live="polite" aria-atomic="true"></div>
+  <button
+    type="button"
+    class="home-mascot-button"
+    data-mascot-button
+    aria-label="点击小奥特曼"
+    data-language-aria-zh="点击小奥特曼"
+    data-language-aria-en="Tap the tiny hero"
+  >
+    <span class="home-mascot-glow" aria-hidden="true"></span>
+    {poses.map((pose) => (
+      <img
+        src={`/images/pet-mascot/${pose}.webp`}
+        alt=""
+        class:list={["home-mascot-image", { "is-active": pose === "idle" }]}
+        data-mascot-pose={pose}
+        width="444"
+        height="542"
+        decoding="async"
+        draggable="false"
+      />
+    ))}
+  </button>
+</aside>
+
+<style>
+  .home-mascot {
+    position: fixed;
+    right: clamp(0.75rem, 3.6vw, 2.4rem);
+    bottom: clamp(0.9rem, 4.2vh, 2.5rem);
+    z-index: 30;
+    width: clamp(5.2rem, 10vw, 7.2rem);
+    pointer-events: none;
+  }
+
+  .home-mascot-button {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 444 / 542;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    pointer-events: auto;
+    animation: home-mascot-bob 5.2s ease-in-out infinite;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .home-mascot-button:focus-visible {
+    outline: 1px solid hsl(var(--foreground) / 0.55);
+    outline-offset: 0.35rem;
+    border-radius: 999px;
+  }
+
+  .home-mascot-glow {
+    position: absolute;
+    right: 8%;
+    bottom: 3%;
+    left: 8%;
+    height: 13%;
+    border-radius: 50%;
+    background: hsl(var(--foreground) / 0.08);
+    filter: blur(0.7rem);
+    opacity: 0.6;
+    transform: scaleX(0.78);
+    transition: opacity 220ms ease, transform 420ms ease;
+  }
+
+  .home-mascot-button:hover .home-mascot-glow,
+  .home-mascot-button:focus-visible .home-mascot-glow {
+    opacity: 0.35;
+    transform: scaleX(0.62);
+  }
+
+  .home-mascot-image {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    filter: drop-shadow(0 0.45rem 0.5rem hsl(var(--foreground) / 0.14));
+    transform: translateY(0.35rem) scale(0.985) rotate(1deg);
+    transition: opacity 220ms ease, transform 460ms cubic-bezier(0.22, 0.8, 0.24, 1);
+    user-select: none;
+  }
+
+  .home-mascot-image.is-active {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(-1deg);
+  }
+
+  .home-mascot-button:hover .home-mascot-image.is-active,
+  .home-mascot-button:focus-visible .home-mascot-image.is-active {
+    transform: translateY(-0.22rem) scale(1.018) rotate(-2deg);
+  }
+
+  .home-mascot-note {
+    position: absolute;
+    right: 45%;
+    bottom: calc(100% - 0.8rem);
+    min-width: 6.2rem;
+    max-width: min(12rem, calc(100vw - 2rem));
+    padding: 0.55rem 0.75rem 0.6rem;
+    border: 1px solid hsl(var(--border) / 0.9);
+    border-radius: 1.1rem 1.1rem 1.1rem 0.35rem;
+    background: hsl(var(--background) / 0.9);
+    box-shadow: 0 0.65rem 1.6rem hsl(var(--foreground) / 0.1);
+    color: hsl(var(--muted-foreground));
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    line-height: 1.55;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(0.15rem, 0.45rem) scale(0.86);
+    transform-origin: bottom right;
+    transition: opacity 180ms ease, transform 300ms cubic-bezier(0.22, 0.8, 0.24, 1);
+    backdrop-filter: blur(0.7rem);
+  }
+
+  .home-mascot-note::before,
+  .home-mascot-note::after {
+    content: "";
+    position: absolute;
+    right: -0.7rem;
+    bottom: -0.9rem;
+    width: 0.34rem;
+    height: 0.34rem;
+    border: 1px solid hsl(var(--border) / 0.9);
+    border-radius: 50%;
+    background: hsl(var(--background) / 0.9);
+  }
+
+  .home-mascot-note::after {
+    right: -1.2rem;
+    bottom: -1.35rem;
+    width: 0.22rem;
+    height: 0.22rem;
+  }
+
+  .home-mascot.is-note-visible .home-mascot-note {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+
+  @keyframes home-mascot-bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-0.2rem);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .home-mascot {
+      right: 0.7rem;
+      bottom: 0.85rem;
+      width: 5.35rem;
+    }
+
+    .home-mascot-note {
+      right: 32%;
+      max-width: 9.6rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-mascot-button {
+      animation: none;
+    }
+
+    .home-mascot-image,
+    .home-mascot-note,
+    .home-mascot-glow {
+      transition: none;
+    }
+  }
+
+  @media print {
+    .home-mascot {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  type Pose = "idle" | "talking" | "working" | "confirm" | "thinking";
+
+  const root = document.querySelector<HTMLElement>("[data-home-mascot]");
+  const button = root?.querySelector<HTMLButtonElement>("[data-mascot-button]");
+  const note = root?.querySelector<HTMLElement>("[data-mascot-note]");
+  const images = root
+    ? Array.from(root.querySelectorAll<HTMLImageElement>("[data-mascot-pose]"))
+    : [];
+  const poses: Pose[] = ["idle", "talking", "working", "confirm", "thinking"];
+  const messages: Record<Pose, { zh: string; en: string }> = {
+    idle: { zh: "再读一页？", en: "One more page?" },
+    talking: { zh: "这个值得展开", en: "Worth unpacking." },
+    working: { zh: "让我算一下", en: "Let me work it out." },
+    confirm: { zh: "要继续吗？", en: "Ready to proceed?" },
+    thinking: { zh: "嗯……再想想", en: "Thinking…" },
+  };
+
+  if (root && button && note && images.length === poses.length) {
+    let currentIndex = 0;
+    let noteTimer: number | undefined;
+    let resetTimer: number | undefined;
+
+    const currentLanguage = () => (document.documentElement.dataset.lang === "en" ? "en" : "zh");
+
+    const setPose = (pose: Pose) => {
+      root.dataset.mascotPose = pose;
+      images.forEach((image) => image.classList.toggle("is-active", image.dataset.mascotPose === pose));
+    };
+
+    const hideNote = () => {
+      root.classList.remove("is-note-visible");
+    };
+
+    const showNote = (pose: Pose) => {
+      note.textContent = messages[pose][currentLanguage()];
+      root.classList.add("is-note-visible");
+      if (noteTimer !== undefined) window.clearTimeout(noteTimer);
+      noteTimer = window.setTimeout(hideNote, 2600);
+    };
+
+    const resetToIdle = () => {
+      currentIndex = 0;
+      setPose("idle");
+      hideNote();
+      resetTimer = undefined;
+    };
+
+    images.forEach((image) => {
+      image.addEventListener("load", () => image.classList.add("is-loaded"), { once: true });
+    });
+
+    button.addEventListener("click", () => {
+      currentIndex = (currentIndex + 1) % poses.length;
+      const pose = poses[currentIndex];
+      setPose(pose);
+      showNote(pose);
+      if (resetTimer !== undefined) window.clearTimeout(resetTimer);
+      resetTimer = window.setTimeout(resetToIdle, 3800);
+    });
+
+    const languageObserver = new MutationObserver(() => {
+      const pose = poses[currentIndex];
+      if (root.classList.contains("is-note-visible")) note.textContent = messages[pose][currentLanguage()];
+    });
+    languageObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-lang"],
+    });
+  }
+</script>
