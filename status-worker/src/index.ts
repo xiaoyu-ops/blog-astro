@@ -69,7 +69,9 @@ export const handleRequest = async (request: Request, env: WorkerEnv, now = new 
   if (request.method !== "POST") return errorResponse(405, "method_not_allowed");
   const origin = request.headers.get("origin");
   if (origin && origin !== ALLOWED_ORIGIN) return errorResponse(403, "origin_not_allowed");
-  const response = await handleViewPost(request, env, now);
+  const upstream = await handleViewPost(request, env, now);
+  // Durable Object responses may have immutable headers in production.
+  const response = new Response(upstream.body, upstream);
   response.headers.set("access-control-allow-origin", ALLOWED_ORIGIN);
   response.headers.set("vary", "Origin");
   return response;

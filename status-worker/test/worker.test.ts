@@ -82,6 +82,19 @@ test("answers the CORS preflight and fails closed without identity inputs", asyn
   assert.equal((await handleRequest(viewRequest("203.0.113.14"), missingSecret)).status, 503);
 });
 
+test("adds CORS headers without mutating an immutable upstream response", async () => {
+  const env = {
+    ANALYTICS_HASH_SECRET: "test-analytics-secret",
+    LAB2_GUARD: {
+      idFromName: () => ({ toString: () => "views" }),
+      get: () => ({ fetch: async () => Response.redirect("https://example.com", 302) }),
+    },
+  } as unknown as WorkerEnv;
+  const response = await handleRequest(viewRequest("203.0.113.16"), env);
+  assert.equal(response.status, 302);
+  assert.equal(response.headers.get("access-control-allow-origin"), "https://blog.xiaoyu666.cyou");
+});
+
 test("caps analytics requests in a minute", async () => {
   const { env } = createEnvironment();
   for (let i = 0; i < 60; i += 1) {
