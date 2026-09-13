@@ -1,5 +1,5 @@
 ---
-title: "深信服实习：把 10,000 条安全告警压成 680 条待审样本"
+title: "深信服实习"
 titleEn: "Sangfor Internship: Reducing 10,000 Security Alerts to 680 Review Candidates"
 description: "为终端安全数据构建语义与行为图双维度的增量聚类管道，处理生长告警、簇心更新和运营 review 包交付。"
 descriptionEn: "An incremental clustering pipeline for endpoint-security data, combining semantic and behavior-graph signals with growth-event deduplication and review-package delivery."

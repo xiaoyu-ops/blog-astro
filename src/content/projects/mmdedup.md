@@ -1,5 +1,5 @@
 ---
-title: "MMdedup：多模态数据去重，难点不只是找相似"
+title: "MMdedup"
 titleEn: "MMdedup: Multimodal Deduplication Is More Than Similarity Search"
 description: "一个面向文本、图像、音频及图文对的数据清洗研究项目，重点区分候选召回、重复关系判断与安全删除，并为实验结果保留可追溯证据。"
 descriptionEn: "A research system for cleaning text, image, audio, and image-caption data, separating candidate retrieval, duplicate relation typing, and safe deletion with traceable experiment evidence."

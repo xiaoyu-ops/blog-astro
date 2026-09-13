@@ -1,5 +1,5 @@
 ---
-title: "yu_agent：为了看懂 Agent，我把核心零件重新写了一遍"
+title: "yu_agent"
 titleEn: "yu_agent: Rebuilding the Core Pieces to Understand Agents"
 description: "一个学习阶段的 Python Agent 框架：实现统一 LLM 接口、四类 Agent、工具与 MCP、分层记忆和 RAG，也诚实记录尚未解决的路由与自修正问题。"
 descriptionEn: "A learning-stage Python agent framework implementing a unified LLM interface, four agent types, tools and MCP, layered memory, and RAG—along with its unresolved routing and self-correction limits."

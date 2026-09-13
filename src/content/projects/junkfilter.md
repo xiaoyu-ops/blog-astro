@@ -1,5 +1,5 @@
 ---
-title: "JunkFilter：把每天刷不完的 RSS 交给 Agent 先读一遍"
+title: "JunkFilter"
 titleEn: "JunkFilter: Letting an Agent Read the RSS Backlog First"
 description: "一个由 Go、Python、Redis Stream 和 PostgreSQL 组成的个人信息过滤系统：抓取 RSS，去重并评估内容，再通过网页和 Telegram 交互。"
 descriptionEn: "A personal information-filtering system built with Go, Python, Redis Streams, and PostgreSQL for RSS ingestion, deduplication, LLM evaluation, and web or Telegram interaction."
