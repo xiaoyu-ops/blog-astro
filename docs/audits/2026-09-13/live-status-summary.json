@@ -1,0 +1,22 @@
+{
+  "checkedDate": "2026-09-13",
+  "url": "https://blog.xiaoyu666.cyou/api/lab2/status",
+  "observedAt": "2026-08-18T14:11:12+00:00",
+  "freshness": {
+    "state": "offline",
+    "ageSeconds": 2204298
+  },
+  "fields": [
+    "schemaVersion",
+    "server",
+    "telemetry",
+    "experiment",
+    "resources",
+    "health",
+    "observedAt",
+    "freshness",
+    "collector",
+    "heartbeats",
+    "resourceSamples"
+  ]
+}

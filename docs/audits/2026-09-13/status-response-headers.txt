@@ -1,0 +1,11 @@
+HTTP/2 200
+cache-control: public, max-age=15, stale-if-error=30
+cf-ray: a3a3b98b5eaefda8-SIN
+content-type: application/json; charset=utf-8
+date: Sun, 13 Sep 2026 02:29:32 GMT
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=zA2Qr%2BnYgWms2K%2FfRfMoKodGFAFgc4rq9zeq4ToYmPdeLxMctvear5m5EM8b1PO3YqeUtgG93ujOaWNKyRt6Cf3wfgQiscQFTYG4pBY6EHB3P0C8gG4ULR%2B4a9HVMswDJ6%2Bvzjjr%2Bu%2FdUtCLzRT1QGbIee%2F5oXEzMXg%2BsRGUYQ%3D%3D"}]}
+server: Vercel
+strict-transport-security: max-age=63072000
+x-vercel-cache: MISS
+x-vercel-id: sin1::fcs9w-1789266571712-cda831de85b2

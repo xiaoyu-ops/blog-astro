@@ -1,0 +1,69 @@
+$ astro build && node scripts/validate-build.mjs
+11:24:52 [content] Syncing content
+11:24:52 [content] Synced content
+11:24:52 [types] Generated 227ms
+11:24:52 [build] output: "static"
+11:24:52 [build] mode: "static"
+11:24:52 [build] directory: /Users/wuzhuoyang/code/blog-astro/dist/
+11:24:52 [build] Collecting build info...
+11:24:52 [build] ✓ Completed in 243ms.
+11:24:52 [build] Building static entrypoints...
+11:24:53 [vite] ✓ built in 290ms
+11:24:53 [WARN] [vite] [plugin builtin:vite-reporter]
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+11:24:53 [vite] ✓ built in 130ms
+11:24:53 [build] Rearranging server assets...
+
+ generating static routes
+11:24:53   ├─ /blog/2026-07-21-english-slug/index.html (+7ms)
+11:24:53   ├─ /blog/2026-08-10-so101-assembly/index.html (+4ms)
+11:24:53   ├─ /blog/2026-08-13-so101-act-real-robot-loop/index.html (+2ms)
+11:24:53   ├─ /blog/2026-08-15-so101-pi05-remote-policy/index.html (+2ms)
+11:24:53   ├─ /blog/2026-08-16-so101-isaac-sim-digital-twin/index.html (+5ms)
+11:24:53   ├─ /blog/2026-09-12-act-paper-reading-notes/index.html (+4ms)
+11:24:53   ├─ /blog/hello-world/index.html (+1ms)
+11:24:53   ├─ /blog/秋招前准备/index.html (+1ms)
+11:24:53   ├─ /projects/junkfilter/index.html (+1ms)
+11:24:53   ├─ /projects/mmdedup/index.html (+1ms)
+11:24:53   ├─ /projects/sangfor/index.html (+0ms)
+11:24:53   ├─ /projects/yu-agent/index.html (+0ms)
+11:24:53   ├─ /index.html (+2ms)
+11:24:53 ✓ Completed in 42ms.
+
+ generating optimized images
+11:24:53   ▶ /_astro/thescoreofielts.BenUu1jr_17g8p6.webp (reused cache entry) (+1ms) (1/26)
+11:24:53   ▶ /_astro/act-task-overview.DKE07EhB_Z1ggFlM.webp (reused cache entry) (+1ms) (2/26)
+11:24:53   ▶ /_astro/act-network-training-testing.PYrdePWO_Z1D6Ckw.webp (reused cache entry) (+1ms) (3/26)
+11:24:53   ▶ /_astro/thescoreofielts.BenUu1jr_Z1fciz5.webp (reused cache entry) (+0ms) (4/26)
+11:24:53   ▶ /_astro/act-paper-first-page.D1oLSDE2_1t9D5H.webp (reused cache entry) (+1ms) (5/26)
+11:24:53   ▶ /_astro/act-task-overview.DKE07EhB_1UC1yM.webp (reused cache entry) (+1ms) (6/26)
+11:24:53   ▶ /_astro/thescoreofielts.BenUu1jr_Z1nwK1e.webp (reused cache entry) (+1ms) (7/26)
+11:24:53   ▶ /_astro/act-50ep-contact-sheet.DetSxW4y_ZcXJmC.webp (reused cache entry) (+2ms) (8/26)
+11:24:53   ▶ /_astro/act-network-training-testing.PYrdePWO_1uXKey.webp (reused cache entry) (+1ms) (9/26)
+11:24:53   ▶ /_astro/thescoreofielts.BenUu1jr_6IOOu.webp (reused cache entry) (+1ms) (10/26)
+11:24:53   ▶ /_astro/act-task-overview.DKE07EhB_ZdjRCP.webp (reused cache entry) (+1ms) (11/26)
+11:24:53   ▶ /_astro/act-paper-first-page.D1oLSDE2_Q6gqp.webp (reused cache entry) (+1ms) (12/26)
+11:24:53   ▶ /_astro/thescoreofielts.BenUu1jr_ZoEeou.webp (reused cache entry) (+0ms) (13/26)
+11:24:53   ▶ /_astro/act-task-overview.DKE07EhB_Z15HYBf.webp (reused cache entry) (+2ms) (14/26)
+11:24:53   ▶ /_astro/act-network-training-testing.PYrdePWO_2aKarV.webp (reused cache entry) (+2ms) (15/26)
+11:24:53   ▶ /_astro/thescoreofielts.BenUu1jr_2uhbvf.webp (reused cache entry) (+2ms) (16/26)
+11:24:53   ▶ /_astro/act-50ep-contact-sheet.DetSxW4y_1474Lt.webp (reused cache entry) (+3ms) (17/26)
+11:24:53   ▶ /_astro/act-paper-first-page.D1oLSDE2_2mTpb5.webp (reused cache entry) (+2ms) (18/26)
+11:24:53   ▶ /_astro/thescoreofielts.BenUu1jr_F1nYX.webp (reused cache entry) (+0ms) (19/26)
+11:24:53   ▶ /_astro/act-task-overview.DKE07EhB_160pvq.webp (reused cache entry) (+1ms) (20/26)
+11:24:53   ▶ /_astro/act-network-training-testing.PYrdePWO_pIe4h.webp (reused cache entry) (+1ms) (21/26)
+11:24:53   ▶ /_astro/act-task-overview.DKE07EhB_Z1wJlzP.webp (reused cache entry) (+1ms) (22/26)
+11:24:53   ▶ /_astro/act-paper-first-page.D1oLSDE2_1a7fnX.webp (reused cache entry) (+1ms) (23/26)
+11:24:53   ▶ /_astro/act-50ep-contact-sheet.DetSxW4y_Z19xEbk.webp (reused cache entry) (+1ms) (24/26)
+11:24:53   ▶ /_astro/act-task-overview.DKE07EhB_1jCY4n.webp (reused cache entry) (+2ms) (25/26)
+11:24:53   ▶ /_astro/act-50ep-contact-sheet.DetSxW4y_Gm6UF.webp (reused cache entry) (+3ms) (26/26)
+11:24:53 ✓ Completed in 9ms.
+
+11:24:53 [build] ✓ Completed in 488ms.
+11:24:53 [@astrojs/sitemap] `sitemap-index.xml` created at `dist`
+11:24:53 [build] 13 page(s) built in 743ms
+11:24:53 [build] Complete!
+build validation: 13 HTML files passed CSP and retired-reference checks

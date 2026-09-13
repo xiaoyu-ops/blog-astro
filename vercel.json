@@ -2,14 +2,16 @@
   "buildCommand": "pnpm build",
   "outputDirectory": "dist",
   "installCommand": "pnpm install --frozen-lockfile",
-  "rewrites": [
+  "headers": [
     {
-      "source": "/api/lab2/status",
-      "destination": "https://lab2-public-status.wuzhuoyang252.workers.dev/api/lab2/status"
-    },
-    {
-      "source": "/api/views/track",
-      "destination": "https://lab2-public-status.wuzhuoyang252.workers.dev/api/views/track"
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'sha256-y72eHbGN8+GjpXBVFRwQo35Q0KrjGV5XibXbQcIdQhE=' 'sha256-xkDYGqutoKv+JJEi6Hyogtanqz9ERYiE9uGhaiXuUcw=' 'sha256-KcGtG/AOpa9Q2EcTH/UOcDzOtekeiroqRnLVrvZD8RU='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; media-src 'self'; connect-src 'self' https://lab2-public-status.wuzhuoyang252.workers.dev; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "DENY" }
+      ]
     }
-  ]
+  ],
+  "rewrites": []
 }

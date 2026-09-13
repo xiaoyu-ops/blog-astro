@@ -21,35 +21,7 @@ const imageUrl = new URL(Astro.props.image ?? "/avatar.jpg", site).toString();
 <!doctype html>
 <html lang="zh-CN" data-lang="zh">
   <head>
-    <script is:inline>
-      document.documentElement.classList.add('js');
-      (function() {
-        const browserLanguage = navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'en';
-
-        try {
-          const stored = localStorage.getItem('theme');
-          const storedLanguage = localStorage.getItem('language');
-          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          const language = storedLanguage === 'zh' || storedLanguage === 'en'
-            ? storedLanguage
-            : browserLanguage;
-
-          document.documentElement.dataset.lang = language;
-          document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
-
-          if (stored === 'dark' || (!stored && prefersDark)) {
-            document.documentElement.classList.add('dark');
-          }
-        } catch (error) {
-          document.documentElement.dataset.lang = browserLanguage;
-          document.documentElement.lang = browserLanguage === 'zh' ? 'zh-CN' : 'en';
-
-          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.classList.add('dark');
-          }
-        }
-      })();
-    </script>
+    <script is:inline src="/scripts/site-init.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
@@ -85,53 +57,9 @@ const imageUrl = new URL(Astro.props.image ?? "/avatar.jpg", site).toString();
     <slot />
 
     <!-- Intersection Observer for fade-up animations -->
-    <script is:inline>
-      (function() {
-        const revealElements = () => {
-          document.querySelectorAll('.fade-up').forEach(el => el.classList.add('fade-visible'));
-        };
-
-        if (!('IntersectionObserver' in window)) {
-          revealElements();
-          return;
-        }
-
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('fade-visible');
-              observer.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.1, rootMargin: '-20px 0px -20px 0px' });
-
-        document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-      })();
-    </script>
+    <script is:inline src="/scripts/fade-observer.js"></script>
 
     <!-- Keep in sync with scripts/homepage-analytics.test.mjs. -->
-    <script is:inline>
-      (function() {
-        const totalEl = document.getElementById('view-total');
-        const todayEl = document.getElementById('view-today');
-
-        function render(data) {
-          if (!data) return;
-          if (totalEl) totalEl.textContent = Number(data.total || 0).toLocaleString();
-          if (todayEl) todayEl.textContent = Number(data.today || 0).toLocaleString();
-        }
-
-        fetch('/api/views/track', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'same-origin',
-          keepalive: true,
-          body: JSON.stringify({ path: location.pathname })
-        })
-          .then((res) => res.ok ? res.json() : null)
-          .then(render)
-          .catch(function() {});
-      })();
-    </script>
+    <script is:inline src="/scripts/analytics.js"></script>
   </body>
 </html>

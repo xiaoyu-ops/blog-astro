@@ -4,18 +4,8 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-07-30",
   "workers_dev": true,
-  "routes": [
-    {
-      "pattern": "blog.xiaoyu666.cyou/api/lab2/status*",
-      "zone_name": "xiaoyu666.cyou"
-    }
-  ],
-  "kv_namespaces": [
-    {
-      "binding": "LAB2_STATUS",
-      "id": "5e91b081b6f04d53a0e78d5a564d6bcc"
-    }
-  ],
+  "routes": [],
+  "triggers": { "crons": [] },
   "durable_objects": {
     "bindings": [
       {
@@ -34,7 +24,4 @@
     "enabled": true,
     "head_sampling_rate": 0.1
   },
-  "triggers": {
-    "crons": ["* * * * *"]
-  }
 }

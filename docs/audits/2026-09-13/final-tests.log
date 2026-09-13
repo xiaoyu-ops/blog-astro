@@ -1,0 +1,49 @@
+Scope: all 2 workspace projects
+✓ Lockfile passes supply-chain policies (verified 8m ago)
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+Done in 1.2s using pnpm v11.9.0
+$ pnpm test:site && pnpm test:worker
+$ node --test scripts/*.test.mjs
+✔ keeps homepage visit counters wired to the first-party analytics worker (2.068167ms)
+✔ homepage mounts the approved mascot without replacing the hero sticker (2.785166ms)
+✔ mascot frames are aligned RGBA assets with transparent corners (8.10325ms)
+✔ keeps current-work data commands independent from the homepage (2.948333ms)
+✔ local now command records start date when an item is added (80.047958ms)
+✔ keeps the homepage sticker progressive and self-contained (3.142333ms)
+✔ keeps homepage writing categories, local history scroll, and contact icons wired up (3.152208ms)
+✔ assigns every existing blog post to a writing category (1.567375ms)
+✔ fixes backticks and an image extension that does not match its content (6.3095ms)
+✔ reports a missing local image before the build starts (0.6035ms)
+✔ rejects traversal and symlinked images outside the post directory (1.793167ms)
+✔ keeps the global language switch, persistence, and localized homepage wired up (3.024667ms)
+✔ every existing card has natural English metadata (2.107375ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 176.343709
+$ pnpm --dir status-worker check && pnpm --dir status-worker test
+$ tsc --noEmit
+$ node --experimental-strip-types --test test/*.test.ts
+✔ retired monitoring endpoint returns 410 (2.284291ms)
+✔ counts one daily visitor per Cloudflare IP regardless of user agent (15.23675ms)
+✔ rejects oversized view body while streaming (0.311709ms)
+✔ cancels a multi-chunk body at the byte limit (0.408209ms)
+✔ rejects non production origins (0.109125ms)
+✔ answers the CORS preflight and fails closed without identity inputs (0.253292ms)
+✔ caps analytics requests in a minute (10.416958ms)
+✔ reports saturation explicitly and keeps the compact state under the engineering budget (0.643333ms)
+✔ normalizes oversized legacy state while preserving totals and rolling over by day (0.792959ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 138.712417

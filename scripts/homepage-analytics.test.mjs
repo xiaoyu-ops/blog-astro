@@ -3,26 +3,20 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const homepagePath = new URL("../src/pages/index.astro", import.meta.url);
-const layoutPath = new URL("../src/layouts/Layout.astro", import.meta.url);
-const vercelPath = new URL("../vercel.json", import.meta.url);
+const analyticsPath = new URL("../public/scripts/analytics.js", import.meta.url);
 
-test("keeps homepage visit counters and visitor map wired up", async () => {
-  const [homepage, layout, vercel] = await Promise.all([
+test("keeps homepage visit counters wired to the first-party analytics worker", async () => {
+  const [homepage, analytics] = await Promise.all([
     readFile(homepagePath, "utf8"),
-    readFile(layoutPath, "utf8"),
-    readFile(vercelPath, "utf8"),
+    readFile(analyticsPath, "utf8"),
   ]);
 
   assert.match(homepage, /id="view-total"/);
   assert.match(homepage, /id="view-today"/);
-  assert.match(homepage, /id="_waubmap"/);
-  assert.match(homepage, /blogxiaoyu66/);
-  assert.match(homepage, /https:\/\/waust\.at\/m\.js/);
-  assert.match(layout, /fetch\(['"]\/api\/views\/track['"]/);
-  assert.match(layout, /JSON\.stringify\(\{ path: location\.pathname \}\)/);
-  assert.match(vercel, /"source": "\/api\/views\/track"/);
+  assert.doesNotMatch(homepage, /waust\.at|_waubmap/);
   assert.match(
-    vercel,
+    analytics,
     /lab2-public-status\.wuzhuoyang252\.workers\.dev\/api\/views\/track/,
   );
+  assert.match(analytics, /JSON\.stringify\(\{ path: location\.pathname \}\)/);
 });

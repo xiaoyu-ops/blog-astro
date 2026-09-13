@@ -1,4 +1,4 @@
-import { access, rename } from "node:fs/promises";
+import { access, realpath, rename } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
@@ -62,6 +62,9 @@ export async function preparePostImages(source, postPath, logger = console) {
   }
 
   const postDir = path.dirname(postPath);
+  const mediaRoot = await realpath(postDir);
+  const isContained = (candidate) =>
+    candidate === mediaRoot || candidate.startsWith(`${mediaRoot}${path.sep}`);
 
   for (const imagePath of references) {
     const absolutePath = path.resolve(postDir, imagePath);
@@ -70,6 +73,16 @@ export async function preparePostImages(source, postPath, logger = console) {
       await access(absolutePath);
     } catch {
       throw new Error(`Image not found: ${imagePath}`);
+    }
+
+    let sourceRealPath;
+    try {
+      sourceRealPath = await realpath(absolutePath);
+    } catch {
+      throw new Error(`Image cannot be resolved: ${imagePath}`);
+    }
+    if (!isContained(sourceRealPath)) {
+      throw new Error(`Image path escapes the post media directory: ${imagePath}`);
     }
 
     let metadata;
@@ -88,6 +101,11 @@ export async function preparePostImages(source, postPath, logger = console) {
     const correctedPath = currentExtension
       ? `${absolutePath.slice(0, -currentExtension.length)}${expectedExtension}`
       : `${absolutePath}${expectedExtension}`;
+
+    const correctedParent = await realpath(path.dirname(correctedPath));
+    if (!isContained(correctedParent)) {
+      throw new Error(`Image target escapes the post media directory: ${imagePath}`);
+    }
 
     try {
       await access(correctedPath);

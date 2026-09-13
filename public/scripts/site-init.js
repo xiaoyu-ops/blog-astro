@@ -1,0 +1,3 @@
+document.documentElement.classList.add("js");
+const browserLanguage = navigator.language.toLowerCase().startsWith("zh") ? "zh" : "en";
+try { const stored = localStorage.getItem("theme"); const storedLanguage = localStorage.getItem("language"); const language = storedLanguage === "zh" || storedLanguage === "en" ? storedLanguage : browserLanguage; document.documentElement.dataset.lang = language; document.documentElement.lang = language === "zh" ? "zh-CN" : "en"; if (stored === "dark" || (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches)) document.documentElement.classList.add("dark"); } catch { document.documentElement.dataset.lang = browserLanguage; document.documentElement.lang = browserLanguage === "zh" ? "zh-CN" : "en"; }

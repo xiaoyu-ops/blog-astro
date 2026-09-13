@@ -1,0 +1,11 @@
+[Unit]
+Description=Optional paid-tier watch for immediate MMdedup state reports
+Documentation=file:///srv/experiment/services/public-status/README.md
+
+[Path]
+PathChanged=/srv/experiment/services/public-status/public-experiment-status.json
+Unit=mmdedup-public-status-event.service
+
+# Deliberately has no [Install] section. The two-minute timer is the supported
+# free-tier deployment. Start this path unit manually only after provisioning a
+# KV write budget above the Workers KV free-tier limit.

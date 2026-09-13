@@ -7,6 +7,7 @@ const root = new URL("../", import.meta.url);
 test("keeps the global language switch, persistence, and localized homepage wired up", async () => {
   const [
     layout,
+    siteInit,
     header,
     homepage,
     globalStyles,
@@ -19,6 +20,7 @@ test("keeps the global language switch, persistence, and localized homepage wire
   ] =
     await Promise.all([
       readFile(new URL("src/layouts/Layout.astro", root), "utf8"),
+      readFile(new URL("public/scripts/site-init.js", root), "utf8"),
       readFile(new URL("src/components/Header.astro", root), "utf8"),
       readFile(new URL("src/pages/index.astro", root), "utf8"),
       readFile(new URL("src/styles/global.css", root), "utf8"),
@@ -30,9 +32,9 @@ test("keeps the global language switch, persistence, and localized homepage wire
       readFile(new URL("src/content/README.md", root), "utf8"),
     ]);
 
-  assert.match(layout, /localStorage\.getItem\(['"]language['"]\)/);
-  assert.match(layout, /navigator\.language/);
-  assert.match(layout, /document\.documentElement\.dataset\.lang/);
+  assert.match(siteInit, /localStorage\.getItem\(['"]language['"]\)/);
+  assert.match(siteInit, /navigator\.language/);
+  assert.match(siteInit, /document\.documentElement\.dataset\.lang/);
 
   assert.match(header, /id="language-toggle"/);
   assert.match(header, /localStorage\.setItem\(['"]language['"]/);

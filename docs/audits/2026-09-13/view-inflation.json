@@ -1,0 +1,44 @@
+{
+  "results": [
+    {
+      "userAgent": "same-ip-a",
+      "status": 200,
+      "body": {
+        "total": 85,
+        "today": 1,
+        "date": "2026-09-13",
+        "counted": true
+      }
+    },
+    {
+      "userAgent": "same-ip-b",
+      "status": 200,
+      "body": {
+        "total": 86,
+        "today": 2,
+        "date": "2026-09-13",
+        "counted": true
+      }
+    },
+    {
+      "userAgent": "same-ip-c",
+      "status": 200,
+      "body": {
+        "total": 87,
+        "today": 3,
+        "date": "2026-09-13",
+        "counted": true
+      }
+    }
+  ],
+  "storedViews": {
+    "total": 87,
+    "date": "2026-09-13",
+    "today": 3,
+    "visitors": [
+      "f3dd39ad0577ef7fb8492e08092d9d109817f876ff9cfd26d9d5d84afb4f81e5",
+      "a1ee78714d1df224b24c0e62b921cc28e055def9f3c5f1ea2ed72cf6768c45b0",
+      "1ea019f367c43bd5c3ab86f846608e6ec009f7163574eaadeaa3c8713c4d9a66"
+    ]
+  }
+}
