@@ -27,6 +27,40 @@ import BlogVideo from "../../components/BlogVideo.astro";
 
 这一轮真正跑通的不是一个离线 Demo，而是一条跨机器的真机闭环：Home Linux 负责相机和机械臂，LAB-2 上的 RTX 3090 负责 π0.5 推理，两端通过网络交换观测和动作。
 
+## RTC 是什么
+
+RTC 是 **Real-Time Chunking（实时动作分块）**。它处理的是这样一个问题：模型还在计算下一段动作时，机器人该怎么继续动，以及新旧两段动作怎样接上。这里讲的是本项目采用的推理时 RTC，不是后来需要配合训练的变体。
+
+**动作块**就是模型一次预测的一串未来动作。例如一次返回 50 个关节目标，机器人按顺序执行。分块能减少调用模型的次数，但如果等这 50 步走完才请求下一块，机械臂就会停下来等模型。提前请求可以把计算和运动重叠起来，却还需要处理交接处的目标跳变。
+
+RTC 会在生成新块时参考旧块还没执行完的动作。推理等待期间必然执行的那一段，作为新预测的前缀约束；后面还有调整余地的动作，则允许结合新观测更新。这种“保留已确定部分、补出后续动作”的方法叫 **inpainting（补全）**，这里补的是动作序列。参见 [Physical Intelligence 的 RTC 说明](https://www.pi.website/research/real_time_chunking) 和 [LeRobot RTC 文档](https://huggingface.co/docs/lerobot/en/rtc)。
+
+### 用 50 步动作理解交接
+
+下面用 30 Hz 控制、每块 50 步举例。假设执行了约 20 步就请求下一块，队列还剩约 30 步；再假设从发出请求到拿到结果需要 0.5 秒，这期间机械臂还会执行约 15 步。这里的 0.5 秒用于说明时间关系，不是新增的测试结果。
+
+```text
+旧块：执行约 20 步 → 继续执行约 15 步 → 交接
+新块：             采集观测并开始推理 → 结果到达
+                  按同一时间轴约束前缀，交接时使用尚未过期的动作
+```
+
+新块到达时，不能再从对应旧观测时刻的第一个动作开始执行，因为那段时间已经过去。也不能让模型完全忽略机器人在等待期间的运动。RTC 生成约束与客户端的时间对齐需要一起工作。
+
+第一块还没有上一块可参考，因此旧动作前缀的约束从第二块才开始发挥作用。在本项目的服务端代码里，`prev_chunk_left_over` 传入按观测步数对齐后的旧块剩余动作，`inference_delay` 表示估计延迟对应的控制步数，`execution_horizon` 控制这次约束的范围。配置中的 `rtc_execution_horizon=30` 是步数上限，绝不是“从第 30 个动作块开始”。
+
+### RTC 和加权平均有什么区别
+
+| 做法 | 发生在什么时候 | 解决什么 |
+| --- | --- | --- |
+| 异步请求 | 旧块仍在执行时请求新块 | 减少等模型造成的停顿 |
+| 服务端 RTC | 新动作块生成过程中 | 用旧块剩余动作约束新预测，改善衔接 |
+| 客户端加权平均 | 新动作块已经生成之后 | 将同一时刻的新旧目标做数值融合 |
+
+后文的“冻结 RTC”是保留的实验配置名称：服务端使用 RTC，客户端采用 `latest_only`，不做新旧目标平均；“加权 RTC”则在服务端 RTC 之外，又加了 `weighted_average`。不能把加权平均本身当成 RTC。两个分别合理的动作，平均后也未必适合当前接触阶段，例如接近物体和闭合夹爪对时机的要求就不同。
+
+面试时，我会这样概括：**RTC 让机器人执行旧动作块的同时生成下一块，并把等待期间已经确定要执行的动作作为生成约束，使新预测能接上正在发生的运动。它缓解推理延迟和块间不连续，但不会让模型本身算得更快，也不保证抓取成功。** 下面的实验仍需要分别检查执行频率、交接跳变和任务是否完成。
+
 ## 先把数据扩到 50 条
 
 ACT 的 9 条示教证明了链路可行，但直接拿来训练 π0.5 还是太少。第二批数据扩到 **50 Episodes、约 18,000 Frames**，仍然只做蓝色胶带到白色盒子的单任务，指令固定为：
@@ -74,6 +108,30 @@ ACT 的 9 条示教证明了链路可行，但直接拿来训练 π0.5 还是太
 The task stayed unchanged: SO-101 had to pick up the blue tape roll inside the marked square and place it in the nearby white box. Keeping the same task preserved the ACT baseline instead of changing the model, task and scene at once.
 
 This was not an offline demo. It was a closed loop across two machines: Home Linux handled the wrist camera and robot, while the RTX 3090 on LAB-2 ran π0.5 inference. Observations and action chunks travelled between them over the network.
+
+## What RTC does
+
+**RTC means Real-Time Chunking.** It addresses how a robot keeps moving while a model computes its next action chunk, and how the two chunks connect. This project uses inference-time RTC, rather than a later training-time variant.
+
+An **action chunk** is a sequence of future actions predicted in one call, such as 50 joint targets. Waiting until all 50 have executed before requesting another chunk creates a pause. Requesting early overlaps inference with execution, but a new prediction can still disagree with the motion already underway.
+
+RTC conditions generation on the unexecuted portion of the previous chunk. Actions committed during the inference delay constrain the new prefix; later actions have more freedom to respond to fresh observations. This is action-sequence **inpainting**: preserve the committed part and generate the continuation. See [Physical Intelligence's RTC explanation](https://www.pi.website/research/real_time_chunking) and the [LeRobot RTC documentation](https://huggingface.co/docs/lerobot/en/rtc).
+
+### A 50-step example
+
+Consider 50-step chunks at 30 Hz. If the next request starts after roughly 20 steps, about 30 remain. Suppose the request takes 0.5 seconds to return: another 15 steps execute during that interval. The 0.5-second delay is an illustrative assumption, not an additional measurement.
+
+The arriving chunk must be aligned to the current execution time; its first entries refer to time that has already passed. Generation constraints and client-side time alignment must work together. The first chunk has no predecessor, so previous-chunk prefix guidance starts with chunk two.
+
+In this project's server, `prev_chunk_left_over` provides the previous suffix aligned to the observation timestep, `inference_delay` estimates latency in control steps, and `execution_horizon` controls the current constraint span. The configured `rtc_execution_horizon=30` is a step limit, not an instruction to begin at chunk 30.
+
+### RTC versus weighted averaging
+
+Asynchronous requests overlap inference with execution. Server-side RTC constrains the new chunk while it is being generated. Client-side weighted averaging combines targets only after generation. These are distinct operations.
+
+The experiment label “frozen RTC” refers to the retained server-RTC configuration with `latest_only` on the client, without averaging targets. “Weighted RTC” adds client-side `weighted_average` to server RTC. Averaging is not itself RTC, and two individually valid actions can average into an unsuitable action during contact or gripper closure.
+
+My short explanation is: **RTC generates the next chunk while the robot executes the current one, conditioning generation on actions committed during the delay so the continuation agrees with ongoing motion. It addresses waiting and chunk discontinuity; it does not make inference itself faster or guarantee a successful grasp.** Execution timing, target jumps and task completion still need separate checks in the experiments below.
 
 ## Expanding the dataset to 50 demonstrations
 
