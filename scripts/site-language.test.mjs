@@ -48,7 +48,7 @@ test("keeps the global language switch, persistence, and localized homepage wire
   assert.match(contentConfig, /descriptionEn: z\.string\(\)\.min\(1\)\.optional\(\)/);
   assert.match(contentConfig, /tagsEn: z\.array\(z\.string\(\)\)\.optional\(\)/);
 
-  assert.match(homepage, /My work centers on/);
+  assert.match(homepage, /I explore/);
   assert.match(homepage, />AI agents</);
   assert.match(homepage, /Do work<br \/>that matters/);
   assert.match(homepage, /project\.data\.titleEn/);
