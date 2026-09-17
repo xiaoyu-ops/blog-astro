@@ -77,11 +77,11 @@ ACT 的 9 条示教证明了链路可行，但直接拿来训练 π0.5 还是太
 
 正式下发动作之前，先跑 Shadow Mode。它会把真实观测发送到 3090，打印预测动作和当前状态的差值，但不会给机械臂发送任何指令。只有图像尺寸、关节顺序、动作范围和网络往返都通过检查，才进入短时真机测试。
 
-8 月 14 日第一次完整跑通时，真机连续执行了 **360 个动作周期**，控制循环稳定在 **30 Hz**，`deadline_misses=0`。图像上传平均 **103 ms**、P95 为 **149 ms**，3090 单次推理约 **400–430 ms**。20° 的单周期关节保护在 360 帧中修正了 11 帧异常目标。
+8 月 14 日第一次完整跑通时，真机连续执行了 **360 个动作周期**，控制循环稳定在 **30 Hz**，`deadline_misses=0`。图像上传平均 **103 ms**、P95 为 **149 ms**，服务器日志中的模型调用约 **400–430 ms**，其计时包围 `predict_action_chunk()`，不包含图像上传和动作回传。客户端从发出观测到收到动作块的总等待还包含通信及其他处理，不能把这两个口径混用。20° 的单周期关节保护在 360 帧中修正了 11 帧异常目标。
 
 数字看上去很稳，视频里的机械臂却仍有明显顿挫。这件事很关键：**30 Hz 没有丢 Deadline，不代表动作本身连续。**
 
-## 问题出在动作块怎样交接
+## 对比动作块的交接方式
 
 π0.5 每次返回的是一段未来动作，而不是一个孤立控制点。新动作块到达时，旧动作块还可能没有执行完。怎样交接，直接决定机械臂是停下来等、突然跳到新目标，还是在两段预测之间做融合。
 
@@ -149,11 +149,11 @@ Home Linux handled the USB camera, serial devices and 30 Hz control loop, but it
 
 Before any action was sent, Shadow Mode forwarded real observations to the 3090 and printed the difference between the predicted actions and current state without commanding the arm. Real-robot tests started only after the image shape, joint order, action range and network path had passed inspection.
 
-The first complete rollout on August 14 executed **360 action cycles** at a stable **30 Hz** with `deadline_misses=0`. Image upload averaged **103 ms**, with a P95 of **149 ms**, while one policy inference took roughly **400–430 ms**. A 20-degree per-cycle joint guard corrected 11 of the 360 commanded frames.
+The first complete rollout on August 14 executed **360 action cycles** at a stable **30 Hz** with `deadline_misses=0`. Image upload averaged **103 ms**, with a P95 of **149 ms**, while the server-side model call took roughly **400–430 ms**. That timer surrounds `predict_action_chunk()` and excludes image upload and action return. The client-observed wait also includes communication and other processing; these timing scopes are different. A 20-degree per-cycle joint guard corrected 11 of the 360 commanded frames.
 
 The timing numbers looked stable, but the arm still showed visible jerkiness. That distinction mattered: **meeting every 30 Hz deadline did not guarantee continuous action targets.**
 
-## The real issue was action-chunk handoff
+## Comparing action-chunk handoff strategies
 
 π0.5 returns a sequence of future actions rather than one isolated control point. When a new chunk arrives, the previous chunk may still be executing. The handoff policy determines whether the arm pauses, jumps to a new target or blends two predictions.
 
@@ -221,7 +221,21 @@ Weighted RTC blended old and new chunks to avoid an abrupt replacement. In this 
 
 <section data-lang="zh">
 
-## 网络不是唯一原因
+
+## 2026-09-17 补测：图片上传到动作回传有多慢
+
+这次用原 30K 权重、8 次去噪和同一张示教图像，从 Mac 经阿里云 SSH 通道把 RGB 图像、关节状态和任务文本发到 3090，再接收完整的 50×6 动作数组。每组测 7 次，排除第一轮，下面是剩余 6 次的中位数。
+
+| 上传尺寸 | 普通推理完整往返 | RTC 完整往返 | 普通模型调用 | RTC 模型调用 |
+| --- | ---: | ---: | ---: | ---: |
+| 224×224 | 424 ms | 483 ms | 348 ms | 410 ms |
+| 640×480 | 487 ms | 529 ms | 350 ms | 397 ms |
+
+完整往返从 Mac 准备图像字节开始，到解析完返回动作结束，包含上传、服务器处理和回传；不含提前读取和缩放图片、实际拍照、模型加载及电机执行。模型计时用 CUDA 同步确认计算完成。模型首次加载约 178 秒，加载后首次推理约 3.54 秒，单独记录，未混入表中。
+
+这次用了原服务端的推理处理流程，但传输接口是 SSH 字节流，不是机器人端原有的 gRPC，因此不能把结果直接当作 Home Linux 链路的复测。它说明当前路径上的完整等待约为半秒，模型计算占主要部分；约 30 ms 的短消息网络往返不能代替真实图像请求的总时间。由于没有同期旧线路对照，本次也不能量化阿里云优化前后总等待缩短了多少，更不能据此确认历史抓取失败的主因。
+
+## 分开检查等待、目标跳变和抓取失败
 
 把日志和视频对齐后，三条路线暴露的是两类不同问题。非 RTC 的不连续主要来自“一个动作块执行完后等待下一块”；RTC 的抽动则更多来自“新预测块的目标和正在执行的目标差得太远”。前者是等待，后者是跳变，不能用同一个补丁解决。
 
@@ -235,7 +249,21 @@ Weighted RTC blended old and new chunks to avoid an abrupt replacement. In this 
 
 <section data-lang="en">
 
-## The network was not the only cause
+
+## September 17, 2026 retest: image upload to action return
+
+Using the original 30K checkpoint, eight denoising steps and one recorded observation, the Mac sent RGB bytes, joint state and task text through the Aliyun SSH route to the RTX 3090 and received all 50×6 action values. Each group had seven requests; the first was excluded. The following medians use the remaining six.
+
+| Uploaded image | Standard end-to-end | RTC end-to-end | Standard model call | RTC model call |
+| --- | ---: | ---: | ---: | ---: |
+| 224×224 | 424 ms | 483 ms | 348 ms | 410 ms |
+| 640×480 | 487 ms | 529 ms | 350 ms | 397 ms |
+
+End-to-end timing starts before image-byte serialization on the Mac and ends after parsing the returned actions. It includes upload, server processing and return, but excludes prior image loading/resizing, camera capture, model loading and motor execution. Model timing uses CUDA synchronization. Initial model loading took about 178 seconds; the first inference after loading took about 3.54 seconds. Both were recorded separately.
+
+The test reused the original server processing path through an SSH byte-stream adapter, not the robot's original gRPC transport. It therefore does not retest the Home Linux connection. On this measured route, the complete wait was roughly half a second and model computation accounted for most of it. A roughly 30 ms short-message round trip is not the image-request latency. Without a contemporaneous old-route comparison, this test cannot quantify the improvement from Aliyun or establish the cause of historical grasp failures.
+
+## Separating waiting, target jumps and grasp failures
 
 Aligning logs with video revealed two different discontinuities. Non-RTC motion paused because one chunk finished before the next arrived. RTC motion jerked because a new predicted target could be far from the action already being executed. One problem was waiting; the other was target discontinuity. They required different fixes.
 
