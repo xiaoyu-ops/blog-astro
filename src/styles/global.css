@@ -400,3 +400,21 @@ body {
     margin-bottom: 1.6em;
   }
 }
+
+/* Optional layouts for small paper details; full-width figures are unchanged. */
+.blog-content .paper-side-by-side {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  align-items: start;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+.blog-content .paper-side-by-side > div { min-width: 0; }
+.blog-content .paper-side-by-side > div > p:first-child { margin-top: 0; }
+.blog-content .paper-small-figure { width: 100%; max-width: 240px; margin-inline: auto; }
+.blog-content .paper-compact-figure { max-width: 340px; margin: 1.5rem auto; }
+.blog-content .paper-small-figure img,
+.blog-content .paper-compact-figure img { width: 100%; height: auto; }
+@media (max-width: 639px) {
+  .blog-content .paper-side-by-side { grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
+}
