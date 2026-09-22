@@ -129,14 +129,19 @@ const projectBeams = [
             </svg>
             Email
           </a>
-          <span class="inline-flex items-center gap-1.5">
+          <details class="relative" id="wechat-contact">
+            <summary class="inline-flex cursor-pointer list-none items-center gap-1.5 hover:text-[hsl(var(--foreground))] transition-colors [&::-webkit-details-marker]:hidden">
             <svg class="h-3.5 w-3.5 shrink-0" data-contact-icon="wechat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M21 15a4 4 0 0 1-4 4H8l-4 3v-3.5A7 7 0 1 1 8 5h7a6 6 0 0 1 6 10Z" />
               <path d="M8 12h.01M12 12h.01M16 12h.01" />
             </svg>
-            <span data-lang="zh">微信: woshiwudachong</span>
-            <span data-lang="en">WeChat: woshiwudachong</span>
-          </span>
+              <span data-lang="zh">微信</span>
+              <span data-lang="en">WeChat</span>
+            </summary>
+            <div class="absolute left-0 top-full z-20 mt-2 rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-3 py-2 text-[hsl(var(--foreground))] shadow-sm select-text">
+              woshiwudachong
+            </div>
+          </details>
         </div>
       </div>
     </div>
