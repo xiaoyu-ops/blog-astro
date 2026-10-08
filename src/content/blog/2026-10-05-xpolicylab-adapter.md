@@ -1,5 +1,5 @@
 ---
-title: "XPolicyLab 初读"
+title: "XPolicyLab"
 titleEn: "First Notes on XPolicyLab"
 description: "从 π0.5 的输入输出适配，看 XPolicyLab 怎样复用模型接入代码，连接仿真与真机。"
 descriptionEn: "How XPolicyLab adapts π0.5 inputs and outputs and reuses policy integrations across simulation and real robots."
